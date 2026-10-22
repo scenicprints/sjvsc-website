@@ -97,8 +97,10 @@ retroactively alters a quote already sent to a renter.**
 | Email | **Deferred** — see below | Needs a sending domain |
 | Payments | **Stripe** (Phase 4 only) | Defer until the board decides |
 
-**Running cost through Phase 3: $0.** A custom domain later is ~$12/year; Stripe adds
-per-transaction fees but no fixed cost.
+**Running cost: $0, permanently.** The club already owns and renews
+`sjvscriponswiss.com`, so the eventual custom domain costs this project nothing — we
+inherit a domain that is already paid for. Stripe adds per-transaction fees in Phase 4,
+but no fixed cost. **We should not be buying anything.**
 
 ### Two corrections to the earlier draft
 
@@ -114,17 +116,38 @@ renter hitting a cold or paused database is a lost enquiry. D1 does not pause. I
 move off Cloudflare, Turso is the equivalent choice; Neon is acceptable but suspends
 after five minutes idle and pays a cold-start penalty.
 
-### The one place "free" has a genuine cost
+### Outbound email — solved by DNS, not by money
 
-**Outbound email needs a domain we control.** Transactional services will not let you
-send to arbitrary recipients from a shared sandbox address. Until there is a domain:
+Transactional providers will not send to arbitrary recipients from a shared sandbox
+address; they need a verified sending domain. The club already has one.
 
-- Rental enquiries land in the admin dashboard, which is the system of record anyway.
-- The board is notified at their existing Gmail address.
-- The renter's emailed copy of the quote waits for a domain, or for ~$12/year.
+**Verifying a domain for sending does not require taking over the website.** It needs
+two or three DNS records, and they can be put on a subdomain — `mail.sjvscriponswiss.com`
+— which touches none of the records pointing at the current live site. Zero risk to
+what is running today, and it can happen long before the handover.
 
-This does not block the build. It is worth knowing before launch, because a quote the
-renter cannot keep a copy of is a weaker product.
+Using a subdomain is also the correct practice regardless: it keeps transactional
+sending reputation separate from the club's main domain.
+
+**The ask to whoever manages their DNS is small and specific:** *"Please add these
+three TXT records for `mail.sjvscriponswiss.com`."* That is a very different
+conversation from *"please transfer the domain."*
+
+Sequencing:
+
+| Stage | Renter gets emailed quote? | Board notified? |
+|---|---|---|
+| Now, free subdomain, no DNS access | No — quote is a shareable link instead | Yes, at their Gmail |
+| DNS records added (can be early) | **Yes** | Yes |
+| Full domain handover | Yes | Yes |
+
+The middle stage is the one to aim for, and it costs nothing. Until then enquiries
+still land in the admin, which is the system of record anyway, and the renter gets a
+referenced link to their quote rather than an attachment.
+
+**One thing to check:** the current site runs on a website builder, which sometimes
+manages DNS itself and restricts which records can be added. Worth confirming early —
+it determines whether the middle stage is actually available.
 
 ### Why not the alternatives
 

@@ -145,7 +145,8 @@ re-argued.
 | 6 | 2026-10-22 | Must run at **$0** for now | Client constraint |
 | 7 | 2026-10-22 | **Cloudflare** (Workers/Pages + D1), not Vercel | Vercel's free tier forbids commercial use, and a hall-rental site is commercial. Cloudflare's free tier does not, and D1 never sleeps |
 | 8 | 2026-10-22 | Temporary free subdomain now; migrate `sjvscriponswiss.com` later | Club will hand over the domain in time; launch should not wait for it |
-| 9 | 2026-10-22 | Outbound email to renters deferred until a domain exists | Transactional providers require a verified sending domain. Enquiries live in the admin regardless |
+| 9 | 2026-10-22 | Outbound email waits on **DNS records**, not on buying a domain | The club already owns `sjvscriponswiss.com`. Sending can be verified on a `mail.` subdomain without touching the live site — see Open Question 6 |
+| 10 | 2026-10-22 | **Buy nothing.** Total project cost is $0 | Hosting and database are free tiers; the domain is already owned and renewed by the club |
 
 ---
 
@@ -182,8 +183,17 @@ These are launch-blocking or handover-blocking instead.
    Stripe — must belong to the club, not to a volunteer's personal login. The club has
    already lost `sjvalleyswisshall.com` this way.
 
-6. **The `sjvscriponswiss.com` handover.** Who holds the registrar login today? Find
-   out early; this tends to be the slowest item in any migration.
+6. **DNS access to `sjvscriponswiss.com` — ask for this early, and ask small.**
+   Two separate things, often confused:
+
+   - **DNS records only.** Three TXT records on a `mail.` subdomain unlock emailed
+     quotes to renters. Touches nothing on the live site, carries no risk, and can
+     happen at any point. *Ask for this first.*
+   - **Full handover.** Pointing the domain at the new site. Only at launch.
+
+   Who holds the registrar login today, and does the website builder manage the DNS
+   itself? Some builders restrict which records can be added, which would rule out the
+   first option. This tends to be the slowest item in any migration — start it now.
 
 ### Lower priority
 
@@ -199,6 +209,13 @@ These are launch-blocking or handover-blocking instead.
 ---
 
 ## Changelog
+
+### 2026-10-22 (third pass)
+- Dropped the suggestion of buying a domain for email sending. The club already owns
+  and renews `sjvscriponswiss.com`; this project should cost $0 and buy nothing
+- Established that email sending needs **DNS records, not a purchase**, and that they
+  can go on a `mail.` subdomain without disturbing the live site — so emailed quotes
+  can work well before the full domain handover
 
 ### 2026-10-22 (later)
 - Client constraints received: must be free for now, on a temporary domain, with
