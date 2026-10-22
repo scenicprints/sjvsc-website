@@ -184,9 +184,8 @@ h3{font-size:1.22rem}
 .shields::before{left:0;background:linear-gradient(90deg,var(--ink),rgba(26,22,19,0))}
 .shields::after{right:0;background:linear-gradient(270deg,var(--ink),rgba(26,22,19,0))}
 .shields-cap{text-align:center;color:var(--gold);margin-bottom:22px}
-.shield-track{display:flex;gap:40px;width:max-content;animation:march 54s linear infinite}
-.shields:hover .shield-track{animation-play-state:paused}
-.shield{display:flex;flex-direction:column;align-items:center;gap:9px;flex:0 0 auto}
+.shield-track{display:flex;width:max-content;animation:march 60s linear infinite}
+.shield{display:flex;flex-direction:column;align-items:center;gap:9px;flex:0 0 auto;margin-right:46px}
 .shield svg{width:42px;height:48px;filter:drop-shadow(0 3px 5px rgba(0,0,0,.45));
   transition:transform .3s cubic-bezier(.22,.7,.3,1)}
 .shield:hover svg{transform:translateY(-6px) scale(1.1)}
@@ -225,3 +224,18 @@ h3{font-size:1.22rem}
   .shield-track{animation:none}
   .btn:hover,.g3 .card:hover,.shield:hover svg,.frame:hover img{transform:none}
 }
+
+/* ── admin-filled placeholders ───────────────────────────── */
+.ph{border:1.5px dashed var(--line);background:rgba(26,22,19,.018);padding:22px 20px;border-radius:2px}
+.ph+.ph{margin-top:18px}
+.ph-label{font-size:.66rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-soft);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.ph-label::before{content:"";width:7px;height:7px;background:var(--red);flex:0 0 auto;
+  clip-path:polygon(40% 0,60% 0,60% 40%,100% 40%,100% 60%,60% 60%,60% 100%,40% 100%,40% 60%,0 60%,0 40%,40% 40%)}
+.ph-line{height:10px;background:var(--line);border-radius:2px;margin-bottom:10px;opacity:.6}
+.ph-line:last-child{margin-bottom:0}
+.ph-img{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;
+  color:var(--ink-soft);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase}
+.ph-rows{display:grid;gap:11px}
+.ph-row{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:center}
+.ph-row .ph-line{margin:0}

@@ -1,112 +1,106 @@
 # Image generation prompts
 
-Art to generate and drop into `assets/img/`. The homepage currently uses hand-written
-SVG for its ornament — mountains, fir trees, edelweiss, the Swiss cross shield. These
-prompts replace that with something far richer.
+Art for `assets/img/`. The first version of this file asked for pure black silhouette
+on white, which is why it produced flat, ugly monochrome. These ask for colour.
 
-## Two rules
+## Direction
 
-1. **No text in any generated image.** Generators mangle lettering, and German and
-   Swiss German words come out as nonsense. All type is set in HTML.
-2. **Generate atmosphere, never the club's own property.** Alpine landscapes, alphorn
-   players, papercut art, cowbells, village scenes — all fine, and their current site
-   already uses exactly this kind of imagery. What we must not generate is the hall's
-   interior or a fake Schwingfest presented as theirs: renters judge the actual room,
-   and the board would spot it instantly. Those stay real photographs.
+**Vintage Swiss travel poster.** The 1930s Swiss tourism lithographs — bold flat
+colour, a limited palette, strong geometric composition, dramatic scale. It is one of
+the most recognisable graphic traditions in the world, it is genuinely Swiss rather
+than generic alpine, and it suits a club that has been going since 1926.
 
-## Technical notes
+Where a prompt should match the site, the palette is **Swiss red, warm cream, deep
+pine green, near-black, brass**.
 
-- **Scherenschnitt** (Swiss papercutting) is the signature device: pure black
-  silhouette, intricate, symmetrical. Ask for **pure black on pure white** — easy to
-  key out, recolour, or use as a CSS mask.
-- Transparent PNG where the tool supports it; otherwise black-on-white and we key it.
-- Generate at 2× the display size.
+## Rules
+
+- **No text.** Generators mangle lettering, and German and Swiss German come out as
+  nonsense. All type is set in HTML.
+- **Atmosphere, not property.** Landscapes, alphorns, wrestlers, cowbells, villages
+  are fine, and their current site already uses that kind of imagery. Do not generate
+  the hall's interior and present it as theirs — renters judge that actual room.
+- Generate at 2× display size.
 
 ---
 
-## A. Hero papercut band — the signature piece
+## A. Hero — alpine poster
 
-Replaces the SVG treeline at the bottom of the red hero.
+> Vintage Swiss travel poster in the style of 1930s tourism lithographs. Snow-capped
+> alpine peaks in flat geometric planes, dark pine forest on the lower slopes, a green
+> meadow with a wooden chalet. Bold flat colour, limited palette of deep red, warm
+> cream, pine green and charcoal. Strong diagonal composition, dramatic scale, crisp
+> hard-edged shapes, subtle paper grain. No text, no lettering.
 
-> Traditional Swiss Scherenschnitt papercut, pure black silhouette on pure white
-> background. A horizontal alpine panorama: jagged snow-capped mountain peaks, dense
-> fir forest, a tiny chalet with a steep roof, a herd of cows with bells walking in a
-> line, a goat on a rock, edelweiss flowers scattered along the lower edge. Perfectly
-> symmetrical, intricate hand-cut detail, fine connecting bridges between shapes, crisp
-> clean edges. Folk art, no shading, no gradients, no text.
+**Ratio** 3:2 · **Use** home page hero
 
-**Ratio** 12:1 (very wide) · **Use** full-bleed divider between coloured bands
+## B. Schwingen — the signature image
 
-## B. Schwingen papercut — the one that matters most
+The club is first a Swiss wrestling club. This is the one worth getting right.
 
-The club is first and foremost a Swiss wrestling club. This becomes the site's
-signature image.
+> Vintage Swiss travel poster in the style of 1930s tourism lithographs. Two Swiss
+> wrestlers in Schwingen hold, gripping each other's heavy burlap wrestling breeches,
+> bent forward with heads at the shoulder and legs braced wide. A ring of golden
+> sawdust beneath them, alpine peaks behind. Bold flat colour, limited palette of deep
+> red, cream, ochre and charcoal. Strong silhouette, dramatic low angle, crisp
+> hard-edged shapes. No text, no lettering.
 
-> Traditional Swiss Scherenschnitt papercut, pure black silhouette on pure white
-> background. Two Swiss wrestlers in Schwingen hold: both men gripping each other's
-> heavy burlap wrestling breeches, bent forward, heads together at the shoulder, legs
-> braced wide. Encircled by a decorative wreath of edelweiss, alpine roses and fir
-> sprigs. Symmetrical circular composition, intricate hand-cut folk art detail, crisp
-> clean edges, no shading, no gradients, no text.
-
-**Ratio** 1:1 · **Use** Schwingen section, and as a site-wide emblem
+**Ratio** 3:4 · **Use** Schwingen page, and as a site-wide emblem
 
 ## C. Alphorn player
 
-> Traditional Swiss Scherenschnitt papercut, pure black silhouette on pure white
-> background. A single alphorn player in traditional Appenzell dress standing on a
-> grassy ridge, the long curved alphorn resting on the ground before him, mountain
-> peaks behind, two cows grazing nearby, fir trees at the edges. Intricate hand-cut
-> folk art detail, crisp clean edges, no shading, no text.
+> Vintage Swiss travel poster in the style of 1930s tourism lithographs. An alphorn
+> player in traditional Appenzell dress standing on a green ridge, the long curved
+> alphorn sweeping down to the grass, snow-capped peaks and a wide sky behind, two
+> cows grazing. Bold flat colour, limited palette, warm evening light, crisp
+> hard-edged shapes. No text, no lettering.
 
-**Ratio** 4:3 · **Use** Swiss Echoes section
+**Ratio** 4:5 · **Use** Swiss Echoes page
 
-**Photographic alternative**, if you want warmth instead of graphic punch:
+## D. Alpine landscape, photographic
 
-> Golden hour photograph of an alphorn player in traditional Swiss dress on an alpine
-> meadow, long wooden alphorn raised, snow-capped Bernese Alps behind, wildflowers in
-> the foreground, soft warm backlight, shallow depth of field, documentary style.
+For where a poster would be too stylised.
 
-## D. Alpine panorama
-
-> Wide photograph of the Swiss Alps at golden hour: snow-capped peaks, dark green
-> pine forest on the lower slopes, an alpine meadow with wildflowers, a wooden chalet
-> with a steep roof, soft mist in the valley. Warm natural light, rich colour,
+> Photograph of the Bernese Alps at golden hour. Snow-capped peaks, dark pine forest
+> on the lower slopes, an alpine meadow with wildflowers, a wooden chalet with a steep
+> roof, soft mist in the valley. Warm natural light, rich saturated colour, wide
 > landscape photography, no people, no text.
 
-**Ratio** 21:9 · **Use** full-bleed band behind the mission statement
+**Ratio** 21:9 · **Use** full-bleed band
 
-## E. Edelweiss ornament
+## E. Bauernmalerei border
 
-> Traditional Swiss Scherenschnitt papercut, pure black silhouette on pure white
-> background. A single edelweiss flower with woolly star-shaped petals, seen from
-> above, flanked by symmetrical sprigs of alpine rose and fir. Small, simple,
-> intricate hand-cut detail, crisp edges, no shading, no text.
+Swiss peasant painting — the decorative folk style on painted furniture and farm
+signs. Colourful, which is the point.
 
-**Ratio** 1:1 · **Use** section dividers (replaces the SVG edelweiss)
+> Traditional Swiss Bauernmalerei folk painting. A horizontal decorative border of
+> alpine flowers, edelweiss, gentian and alpine rose, with scrolling vines and small
+> painted hearts, in the style of painted Swiss farmhouse furniture. Rich reds, deep
+> greens, gold and cream on a cream ground. Symmetrical, hand-painted texture, fine
+> brushwork. No text, no lettering.
 
-## F. Cantonal shields
+**Ratio** 10:1 · **Use** section dividers
 
-The hall has the cantonal crests mounted on its wall — worth echoing.
+## F. Edelweiss
 
-> Traditional Swiss heraldic shields arranged in a single horizontal row, flat vector
-> style, bold solid colours — red, white, blue, yellow, black — simple geometric
-> charges, clean crisp edges, even spacing, white background, no shading, no gradients,
-> no text, no lettering.
+> Botanical illustration of an edelweiss flower, woolly white star-shaped petals with
+> a soft grey-green felted texture, yellow centres, grey-green leaves. Painted in
+> gouache on a warm cream ground, fine detail, soft natural light, centred, no text.
 
-**Ratio** 8:1 · **Use** thin decorative band above the footer
-
-## G. Parchment texture
-
-> Seamless tileable texture of aged cream paper, subtle fibre grain, very faint warm
-> mottling, soft and even, no creases, no stains, no text. Extremely subtle, almost flat.
-
-**Ratio** 1:1, tileable · **Use** background overlay at ~4% opacity
+**Ratio** 1:1 · **Use** small ornament
 
 ---
 
-## Suggested order
+## Order
 
-**B** first — the Schwingen papercut carries the identity and is the one the board
-will respond to. Then **A**, then **C**. **E**, **F** and **G** are polish; the SVG
-versions already in the page hold up without them.
+**B** first. The Schwingen poster carries the identity and is the one the board will
+react to. Then **A**, then **C**. **E** and **F** are polish; the SVG ornament already
+in the page holds up without them.
+
+## If results come back poor
+
+- Add *"flat vector illustration, no gradients, no photorealism"* to push it further
+  toward poster and away from muddy digital painting.
+- Add *"limited palette of five colours"* — the vintage posters were printed in few
+  inks, and that constraint is most of what makes them look right.
+- Drop the word *"vintage"* if it is adding fake ageing, grain or torn edges.
