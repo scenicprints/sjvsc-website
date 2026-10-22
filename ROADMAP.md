@@ -5,7 +5,8 @@ machine, read this file first, then `ARCHITECTURE.md`, then `docs/current-site-a
 
 - **Client:** San Joaquin Valley Swiss Club (SJVSC), 110 N. Manley Road, Ripon, CA
 - **Existing site:** https://sjvscriponswiss.com/ (website-builder template, to be replaced)
-- **Status:** Phase 0 — planning
+- **Status:** Phase 0 — stack agreed, scaffolding next
+- **Hosting:** Cloudflare free tier, temporary subdomain (see Decisions 6–8)
 - **Last updated:** 2026-10-22
 
 ---
@@ -71,7 +72,9 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done · **(P1)** priorit
 - [ ] **(P1)** Member rate applied automatically (an existing member benefit)
 - [ ] **(P1)** Alcohol toggle drives required insurance / bartender / security line items
 - [ ] **(P1)** Enquiry lands in the admin pipeline and emails both parties
-- [ ] **(P2)** Admin-editable rate card — raise prices without a deploy
+- [ ] **(P1)** Admin-editable rate card — raise prices without a deploy (foundational,
+      not a nicety: the engine reads every number from it)
+- [ ] **(P1)** Ship with clearly marked placeholder rates so every screen works day one
 - [ ] **(P2)** Tentative holds with automatic expiry
 - [ ] **(P2)** Suggest nearby open dates when the chosen one is taken
 - [ ] **(P2)** Shareable quote link with reference number and expiry date
@@ -137,50 +140,76 @@ re-argued.
 | 1 | 2026-10-22 | Rebuild rather than restyle the existing builder site | The three core features cannot be built on it |
 | 2 | 2026-10-22 | Keep the project in Git on GitHub | Work must resume on any machine |
 | 3 | 2026-10-22 | `ROADMAP.md` is the living record | One file to read first, whatever machine you are on |
-| — | — | *Stack: pending* | See Open Question 1 |
+| 4 | 2026-10-22 | **Nothing operational is hardcoded** — rates, events, copy, contacts all live in the database behind admin screens | The club must run this for years without a developer. Also takes pricing off the critical path: we build against placeholders |
+| 5 | 2026-10-22 | Rate cards are versioned with `effectiveFrom`; quotes store their own line items | A price change must never rewrite a quote already sent to a renter |
+| 6 | 2026-10-22 | Must run at **$0** for now | Client constraint |
+| 7 | 2026-10-22 | **Cloudflare** (Workers/Pages + D1), not Vercel | Vercel's free tier forbids commercial use, and a hall-rental site is commercial. Cloudflare's free tier does not, and D1 never sleeps |
+| 8 | 2026-10-22 | Temporary free subdomain now; migrate `sjvscriponswiss.com` later | Club will hand over the domain in time; launch should not wait for it |
+| 9 | 2026-10-22 | Outbound email to renters deferred until a domain exists | Transactional providers require a verified sending domain. Enquiries live in the admin regardless |
 
 ---
 
-## Open questions and blockers
+## Open questions
 
-Ordered by how much they block. **1–3 need answers from the club, not from us.**
+**Nothing here blocks the build.** Every operational value is admin-editable and ships
+with a marked placeholder, so development proceeds while the club gathers its answers.
+These are launch-blocking or handover-blocking instead.
 
-1. **Hall rental pricing — hard blocker on the quote system.**
-   Nothing is published anywhere and both old rental sites are dead. Needed from the
-   board: base rates, whether Friday/Saturday differ, seasonal variation, the member
-   discount, the included hours and the overage rate, the damage deposit, add-on
-   pricing (kitchen, bar, tables and chairs, linens, PA, cleaning), and the alcohol
-   rules — who must be insured, whether a licensed bartender or security is required.
-   *Until these exist the quote engine cannot be built, only scaffolded.*
+### Needed before launch
 
-2. **Who is the client contact and who approves?**
-   The President (Chris Portmann) and the rental coordinator are the obvious two. Is
-   there a board vote, or does one person sign off?
+1. **The rate card contents.** Base rates, whether Friday and Saturday differ, seasonal
+   variation, the member discount, included hours and the overage rate, the damage
+   deposit, add-on pricing (kitchen, bar, tables and chairs, linens, PA, cleaning), and
+   the alcohol rules — who must be insured, whether a licensed bartender or security is
+   required. *This is data entry into the admin, not development.* The club has
+   published no rental pricing anywhere since both old rental sites died, so this is
+   also the single biggest revenue unlock on the site.
 
-3. **Who administers it after handover?**
-   This determines how much the admin must hold the user's hand. A single competent
-   volunteer is a different design from "three board members who rotate annually."
+2. **Photography.** Six usable images recovered, which is not enough. The rentals page
+   needs a proper shoot: the empty hall, the hall set for a wedding, the kitchen, the
+   grounds, the playground, the new entrance. Club photographer, or a budget?
 
-4. **Budget.** Hosting and domain can run near zero; payments add Stripe fees
-   (~2.9% + 30¢). Someone must own the accounts and the card on file.
+3. **Who approves.** The President (Chris Portmann) and the rental coordinator are the
+   obvious two. Board vote, or one signature?
 
-5. **Domain.** Keep `sjvscriponswiss.com`, or move to something people can actually
-   spell? The dead `sjvalleyswisshall.com` suggests domains have already been lost
-   once — find out who holds the registrar login before anything else.
+### Needed before handover
 
-6. **Photography.** Six usable images recovered. The rentals page needs a proper
-   shoot: empty hall, set for a wedding, the kitchen, the grounds, the playground,
-   the new entrance. Is there a club photographer, or a budget?
+4. **Who administers it.** A single competent volunteer is a different design from
+   "three board members who rotate annually." Determines how much the admin must
+   hold the user's hand, and how much documentation to write.
 
-7. **Existing data.** Is there a member list, a rental enquiry history or a booking
-   calendar in a spreadsheet somewhere that should be imported?
+5. **Account ownership.** Every account — host, database, domain registrar, and later
+   Stripe — must belong to the club, not to a volunteer's personal login. The club has
+   already lost `sjvalleyswisshall.com` this way.
+
+6. **The `sjvscriponswiss.com` handover.** Who holds the registrar login today? Find
+   out early; this tends to be the slowest item in any migration.
+
+### Lower priority
+
+7. **Existing data.** Is there a member list, rental enquiry history or booking
+   calendar in a spreadsheet that should be imported?
 
 8. **The Swiss Echoes relationship.** Separate officers, separate email, separate
-   membership. Sub-section of this site, or their own thing that we link to?
+   membership. A section of this site, or their own site that we link to?
+
+9. **Payments, when we get there.** Stripe takes ~2.9% + 30¢ and needs a bank account
+   in the club's name. A board decision, not a technical one.
 
 ---
 
 ## Changelog
+
+### 2026-10-22 (later)
+- Client constraints received: must be free for now, on a temporary domain, with
+  `sjvscriponswiss.com` taken over later
+- Established "nothing operational is hardcoded" as a governing principle
+  (`ARCHITECTURE.md` §1b) — rates and events are data with admin screens, not code
+- Pricing moved off the critical path; it is now launch-blocking data entry, not a
+  build blocker
+- Stack revised to Cloudflare Workers/Pages + D1, replacing Vercel + Postgres, after
+  finding Vercel's free tier forbids commercial use and Supabase's free tier sleeps
+- Flagged outbound email as the one genuine cost of staying free
 
 ### 2026-10-22
 - Audited all eight pages of the existing site; recorded content, contacts and copy

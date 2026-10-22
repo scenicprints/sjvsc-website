@@ -25,9 +25,15 @@ founded 1926. Replaces https://sjvscriponswiss.com/.
 
 ## Status
 
-**Phase 0 — planning.** No application code yet; the stack is still to be agreed
-(Open Question 1 in the roadmap). `assets/img/` holds six photographs recovered from
-the old site's CDN.
+**Phase 0 — stack agreed, scaffolding next.** No application code yet.
+`assets/img/` holds six photographs recovered from the old site's CDN.
+
+Built to run at **$0**: Next.js + Drizzle on Cloudflare Workers/Pages with a D1
+database, on a temporary subdomain until the club hands over `sjvscriponswiss.com`.
+
+**Governing principle:** if a board member would ever want it different, it lives in
+the database with a screen in the admin — rates, events, page copy, contacts. The club
+has to run this without a developer. See `ARCHITECTURE.md` §1b.
 
 ## Resuming on another machine
 

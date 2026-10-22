@@ -7,9 +7,11 @@ one idea that connects it all.
 
 ---
 
-## 1. The organising idea
+## 1. Two organising ideas
 
-> **One calendar is the source of truth. Everything else reads from it.**
+### 1a. One calendar is the source of truth
+
+> **Everything else reads from it.**
 
 The old site keeps event information in three hand-typed places and rental
 availability nowhere at all. That is why the homepage goes stale and why nobody can
@@ -46,9 +48,41 @@ Two consequences fall out of this for free:
 - **The hall cannot be double-booked.** Scheduling the Championship Schwingfest
   automatically removes that weekend from the rental quote tool. No one has to remember.
 
+### 1b. Nothing operational is hardcoded
+
+> **If a board member would ever want it different, it lives in the database and has
+> a screen in the admin.**
+
+Changing a price, a date, a phone number or a paragraph must never require a developer,
+a deploy, or a text editor. The club has to run this by itself for years after handover.
+
+What that covers:
+
+| Lives in the database, editable in the admin | Lives in code |
+|---|---|
+| Rental rates, included hours, overage rate | Page layout and components |
+| Add-on list and prices | The calculation *order* |
+| Member discount, deposits | Availability rules |
+| Alcohol requirements and what they add | Authentication |
+| Events and their advertising windows | Routing |
+| Page copy, FAQ answers, hero text | Design system |
+| Board directory, contact routing | Database schema |
+| Club address, phone, email, social links | Email templates (structure) |
+
+We ship with **clearly marked placeholder values** so every screen works from day one.
+The board replaces them with real figures before launch — that is data entry, not
+development, and it is not on the critical path.
+
+One consequence worth stating: because rates change over time, every rate card carries
+an `effectiveFrom` date and quotes store their own line items. **Raising prices never
+retroactively alters a quote already sent to a renter.**
+
 ---
 
 ## 2. Stack
+
+**Constraint: this has to run at $0 for now**, on a temporary domain, and migrate to
+`sjvscriponswiss.com` once the club hands over the registrar.
 
 ### Recommendation
 
@@ -56,15 +90,41 @@ Two consequences fall out of this for free:
 |---|---|---|
 | Framework | **Next.js (App Router) + TypeScript** | Public pages and admin in one codebase; server-rendered for SEO |
 | Styling | **Tailwind CSS** | Fast, consistent, no stylesheet archaeology later |
-| Database | **Postgres** (Neon or Supabase) | Relational data; generous free tier |
-| ORM | **Drizzle** or **Prisma** | Typed queries, versioned migrations |
+| Hosting | **Cloudflare Workers / Pages** | Free tier permits commercial use; free `*.pages.dev` subdomain now, free custom domain later; deploys from GitHub on push |
+| Database | **Cloudflare D1** (SQLite) | Free, 5 GB, and **does not sleep** |
+| ORM | **Drizzle** | Typed queries, versioned migrations, first-class D1 support |
 | Auth | **Auth.js** | Email + password or magic link; roles |
-| Email | **Resend** or **Postmark** | Quotes and enquiry notifications |
-| Hosting | **Vercel** | Deploys from GitHub on push; free tier covers this easily |
-| Payments | **Stripe** (Phase 4 only) | Industry standard; defer until the board decides |
+| Email | **Deferred** — see below | Needs a sending domain |
+| Payments | **Stripe** (Phase 4 only) | Defer until the board decides |
 
-**Running cost at Phase 3: roughly $0–20/month**, plus the domain. Payments add
-transaction fees but no fixed cost.
+**Running cost through Phase 3: $0.** A custom domain later is ~$12/year; Stripe adds
+per-transaction fees but no fixed cost.
+
+### Two corrections to the earlier draft
+
+**Vercel is out, and the reason matters.** Vercel's free Hobby plan is restricted to
+non-commercial use. A site that quotes and takes hall rentals is commercial by any
+reasonable reading, which would eventually mean a forced upgrade to Pro at $20/month.
+Cloudflare's and Netlify's free tiers carry no such restriction. Better to start
+somewhere the club can stay.
+
+**Database sleep is a real constraint at this traffic level.** Supabase pauses free
+projects after seven days of inactivity, and a club site will have quiet weeks — a
+renter hitting a cold or paused database is a lost enquiry. D1 does not pause. If we
+move off Cloudflare, Turso is the equivalent choice; Neon is acceptable but suspends
+after five minutes idle and pays a cold-start penalty.
+
+### The one place "free" has a genuine cost
+
+**Outbound email needs a domain we control.** Transactional services will not let you
+send to arbitrary recipients from a shared sandbox address. Until there is a domain:
+
+- Rental enquiries land in the admin dashboard, which is the system of record anyway.
+- The board is notified at their existing Gmail address.
+- The renter's emailed copy of the quote waits for a domain, or for ~$12/year.
+
+This does not block the build. It is worth knowing before launch, because a quote the
+renter cannot keep a copy of is a weaker product.
 
 ### Why not the alternatives
 
@@ -249,8 +309,25 @@ Calculation order — deliberately explicit, because the club will want to check
 - It feeds a pipeline, so no enquiry is lost in a volunteer's inbox.
 - Prices live in the database, so the board changes them without a developer.
 
-**Not yet buildable.** Every number above comes from a rate card that does not exist
-publicly. See Open Question 1 — this is the one blocker that cannot be designed around.
+### Pricing is data, not code
+
+Every number above is read from the database at runtime and edited on
+`/admin/pricing`. None of it is compiled in. We build the engine against clearly
+marked placeholder rates; the board replaces them with real figures through the admin
+before launch.
+
+This matters beyond convenience:
+
+- The build does not wait on a board meeting.
+- Raising rates next year is a five-minute job for a volunteer, not a support request.
+- Rate cards carry `effectiveFrom`, and quotes store their own line items, so a price
+  change never rewrites a quote already in a renter's hands.
+- Seasonal and day-of-week variation is just more rows, so the club can experiment
+  with a Friday discount without touching the application.
+
+The same principle governs the events calendar: the board adds, edits and schedules
+events entirely through `/admin/events`, including the advertising windows. Nothing
+about the club's operating year is expressed in code.
 
 ---
 
