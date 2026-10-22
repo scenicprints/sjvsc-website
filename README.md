@@ -1,7 +1,9 @@
-# SJVSC concept site
+# San Joaquin Valley Swiss Club — concept site
 
-A concept website for the **San Joaquin Valley Swiss Club** of Ripon, California,
-founded 1926 — built on spec to show the club what their site could be.
+**Live: https://scenicprints.github.io/sjvsc-website/**
+
+A concept website for the San Joaquin Valley Swiss Club of Ripon, California,
+founded 1926, built on spec to show the club what their site could be.
 
 Their current site: https://sjvscriponswiss.com/
 
@@ -13,34 +15,46 @@ Their current site: https://sjvscriponswiss.com/
 | File | What's in it |
 |---|---|
 | **[ROADMAP.md](ROADMAP.md)** | The living plan: what success means, phases, backlog, decisions. **Read this first.** |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Stack, every page, the data model, how the quote engine works |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Page map, data model, how the quote engine works |
 | [docs/current-site-audit.md](docs/current-site-audit.md) | Everything on the old site: content, contacts, copy errors, what's broken |
+| [docs/image-prompts.md](docs/image-prompts.md) | Prompts for generated artwork |
 
 ## What the demo has to prove
 
-1. **It looks like a different class of thing.** Theirs is a builder template; this
-   should look designed for a 100-year-old Swiss cultural club, specifically.
+1. **It looks like a different class of thing.** Theirs is a builder template.
 2. **Events can't go stale.** Each event carries an advertising window and removes
-   itself. Their homepage currently leads with a September event — in late October.
-3. **The hall can be quoted online.** A smart quote system that checks the club's own
-   calendar for availability, prices from an editable rate card, and applies the member
-   discount. Both of their old rental sites are dead, so the club publishes no pricing
-   at all today.
+   itself. Their homepage led with a September event in late October.
+3. **The hall can be quoted online.** The quote builder on
+   [the rentals page](https://scenicprints.github.io/sjvsc-website/rentals.html)
+   checks the club's own calendar, prices from an editable rate card and applies the
+   member discount. Try `2027-09-04` — it refuses the date, because the Championship
+   Schwingfest has the hall.
 
-## Status
+## How it is built
 
-**Phase 0 complete — design next.** No application code yet.
-`assets/img/` holds six photographs recovered from the old site's CDN.
+Plain HTML, CSS and JavaScript. No build step, no dependencies, no backend. Served by
+GitHub Pages from the root of `main`, so a push is a deploy.
 
-Built to run at **$0**: Next.js + Tailwind, statically exported to Cloudflare Pages,
-with seeded data and no backend. A demo needs no database, and nothing that can fail
-during a presentation should exist. See `ARCHITECTURE.md` §2 for what swaps if the
-club says yes.
+```
+index.html, *.html     the fourteen pages
+assets/css/site.css    the whole design system
+assets/js/site.js      navigation, scroll, timeline
+assets/js/quote.js     the hall rental quote engine
+assets/img/            six photographs recovered from the old site
+docs/                  research and notes
+```
 
-## Resuming on another machine
+Rates, events and page copy are written as data rather than baked into the markup,
+standing in for the admin screens a real build would have. Figures on the rentals page
+are placeholders; the club sets the real ones.
+
+## Running it locally
 
 ```bash
 git clone https://github.com/scenicprints/sjvsc-website.git
+cd sjvsc-website
+python -m http.server 8000
 ```
 
-Then read `ROADMAP.md` — its changelog records what was last done.
+Then open http://localhost:8000. Opening `index.html` straight from disk mostly works,
+but a server is closer to how it is hosted.
