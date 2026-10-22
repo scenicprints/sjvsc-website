@@ -2,6 +2,9 @@
 
 **Live:** https://scenicprints.github.io/sjvsc-website/
 **Repo:** https://github.com/scenicprints/sjvsc-website (public)
+**Artifact mirror:** https://claude.ai/artifact/AaotMvHL1hmNDFnqzW56bR — private to the
+owner, kept in sync by hand. GitHub Pages is the one that matters; do not create a
+second artifact.
 
 ## Setup
 
@@ -15,7 +18,9 @@ That is the whole setup. No install, no dependencies, no framework, no build ste
 
 ### To push
 
-Cloning needs nothing. Pushing needs credentials once:
+Cloning needs nothing. Pushing needs credentials once.
+
+**This step is for the human, not the agent — it opens a browser and waits for input.**
 
 ```bash
 gh auth login
@@ -82,6 +87,26 @@ These were all learned the hard way. Breaking them is how the work gets rejected
   at all in a minimised window. The timeline therefore eases by hand with a timer
   that guarantees it lands. If you test in a headless or background browser and an
   animation "does nothing", suspect this before suspecting the code.
+
+## Do not reintroduce
+
+All of this was written, shown to the client and explicitly rejected. Some of it is
+sourced from `docs/current-site-audit.md`, so rule 1 will not stop you putting it
+back. This list will.
+
+| Removed | Why |
+|---|---|
+| The 2026 building work — new entrance, dance floor refinished, kitchen remodelled, new playground | Rejected outright, in every location, more than once. It is in the audit because the old site said it. It does not go on the new one |
+| Anything about a security guard at a rental | Cut from the rate card, the quote engine and the house rules |
+| Member count (702) and chorus voice count (32) | Both would need constant updating |
+| "The club in numbers", "At a glance", "Words you'll hear", "Fundraising" (cookbook and bricks), Schwingen's "What it is" | All removed as filler or stale |
+| A "what's included" list or house rules on the rentals page | The previous ones were invented. They are now deliberate empty placeholders |
+| Any note explaining how the site works, e.g. "how this page stays current" | See rule 3 |
+| Capacity figures, "maple" floor, a stage, a commercial range, caterers, a 1am curfew | Invented, removed |
+
+Two phrasings the client rejected by name: the hero subline "We hold Swiss wrestling
+tournaments, run a chorus, and rent our hall…" and the heading "Three reasons to come
+up Manley Road". The calendar heading reads **"What's going on"**, not "What's on".
 
 ## What is next
 

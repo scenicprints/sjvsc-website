@@ -3,6 +3,20 @@
 Art for `assets/img/`. The first version of this file asked for pure black silhouette
 on white, which is why it produced flat, ugly monochrome. These ask for colour.
 
+## Status: the poster direction below was rejected
+
+Prompts A, C, D and E were tried. The output was good on its own terms and **wrong for
+this site** — twice over. The palette drifted green, which the site never uses, and the
+art style clashed: the site speaks in photographs and flat heraldry, and a scenic
+illustration with perspective and painted depth is a third language that sits apart
+from both.
+
+**Only prompt B is still live**, because an emblem is ornament rather than scenery and
+sits in the same register as the cantonal arms. Everything below it is kept as a record
+of what was tried, not as a recommendation.
+
+Before generating anything scenic, re-read this paragraph.
+
 ## Direction
 
 **Vintage Swiss travel poster.** The 1930s Swiss tourism lithographs — bold flat
@@ -34,7 +48,19 @@ pine green, near-black, brass**.
 
 **Ratio** 3:2 · **Use** home page hero
 
-## B. Schwingen — the signature image
+## B. Schwingen emblem — the one still worth making
+
+Flat, heraldic, no landscape, no perspective. It must sit beside the cantonal arms
+without looking like it came from somewhere else.
+
+> Flat heraldic emblem in the style of a Swiss cantonal coat of arms. Two Swiss
+> wrestlers in Schwingen hold, gripping each other's burlap breeches, reduced to a
+> bold two-colour silhouette inside a shield. Deep red and cream only, hard edges,
+> no shading, no gradients, no background, no perspective, no text.
+
+**Ratio** 1:1, transparent background · **Use** site-wide emblem
+
+## B2. Earlier scenic version — rejected
 
 The club is first a Swiss wrestling club. This is the one worth getting right.
 
