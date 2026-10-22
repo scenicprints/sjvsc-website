@@ -22,7 +22,6 @@
     cleaning:{ label: 'End-of-night cleaning', price: 300 }
   };
   var BARTENDER = { label: 'Licensed bartender (required when alcohol is served)', price: 240 };
-  var SECURITY  = { label: 'Security guard (required over 150 guests with alcohol)', price: 320 };
 
   var CLUB = {
     '2027-02-07': 'the Jass Party',
@@ -111,10 +110,6 @@
       lines.push({ label: BARTENDER.label, amount: BARTENDER.price });
       requirements.push('A certificate of liability insurance naming the club as additional insured.');
       requirements.push('No alcohol may be sold without a one-day permit from California ABC.');
-      if (guests > 150) {
-        lines.push({ label: SECURITY.label, amount: SECURITY.price });
-        requirements.push('One security guard is required for events over 150 guests where alcohol is served.');
-      }
     }
 
     var subtotal = lines.reduce(function (s, l) { return s + l.amount; }, 0);

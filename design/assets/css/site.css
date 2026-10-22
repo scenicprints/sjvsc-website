@@ -16,7 +16,7 @@ html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--ui);
   font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--ink)}
-img{max-width:100%;display:block}
+img{max-width:100%;height:auto;display:block}
 a{color:var(--red)}
 h1,h2,h3,h4{font-family:var(--display);font-weight:700;margin:0;line-height:1.12;letter-spacing:-.015em;text-wrap:balance}
 p,ul,ol,table{margin:0}
@@ -125,6 +125,7 @@ h3{font-size:1.22rem}
 /* tables */
 .tbl{width:100%;border-collapse:collapse;font-size:.94rem;margin-top:18px}
 .tbl caption{text-align:left;font-size:.8rem;color:var(--ink-soft);padding-bottom:8px}
+.tbl th.num{text-align:right}
 .tbl th,.tbl td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
 .tbl th{font-family:var(--ui);font-size:.72rem;font-weight:600;letter-spacing:.12em;
   text-transform:uppercase;color:var(--ink-soft);background:var(--cream-2)}
@@ -170,3 +171,57 @@ h3{font-size:1.22rem}
 @media(max-width:880px){.ftr-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.ftr-grid{grid-template-columns:1fr}body{font-size:16px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ── Swiss cross texture in the hero ─────────────────────── */
+.hero{position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='52'%3E%3Cpath d='M23 14h6v9h9v6h-9v9h-6v-9h-9v-6h9z' fill='%23fff' fill-opacity='.05'/%3E%3C/svg%3E")}
+.hero-in{position:relative;z-index:1}
+
+/* ── cantonal shields ────────────────────────────────────── */
+.shields{background:var(--ink);overflow:hidden;padding-block:30px;position:relative}
+.shields::before,.shields::after{content:"";position:absolute;top:0;bottom:0;width:100px;z-index:2;pointer-events:none}
+.shields::before{left:0;background:linear-gradient(90deg,var(--ink),rgba(26,22,19,0))}
+.shields::after{right:0;background:linear-gradient(270deg,var(--ink),rgba(26,22,19,0))}
+.shields-cap{text-align:center;color:var(--gold);margin-bottom:22px}
+.shield-track{display:flex;gap:40px;width:max-content;animation:march 54s linear infinite}
+.shields:hover .shield-track{animation-play-state:paused}
+.shield{display:flex;flex-direction:column;align-items:center;gap:9px;flex:0 0 auto}
+.shield svg{width:42px;height:48px;filter:drop-shadow(0 3px 5px rgba(0,0,0,.45));
+  transition:transform .3s cubic-bezier(.22,.7,.3,1)}
+.shield:hover svg{transform:translateY(-6px) scale(1.1)}
+.shield span{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:#8E8277;white-space:nowrap}
+@keyframes march{to{transform:translateX(-50%)}}
+
+/* ── edelweiss divider ───────────────────────────────────── */
+.ediv{display:flex;align-items:center;gap:18px;color:var(--red);margin-bottom:38px}
+.ediv .rule{height:1px;background:var(--line);flex:1}
+.ediv svg{width:26px;height:26px;flex:0 0 auto}
+.band-ink .ediv{color:var(--gold)}
+.band-ink .ediv .rule{background:var(--line-dark)}
+
+/* ── motion ──────────────────────────────────────────────── */
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.rv{animation:rise .6s cubic-bezier(.22,.7,.3,1) both;animation-delay:var(--d,0s)}
+
+.nav a{border-bottom:none;padding-bottom:7px;position:relative}
+.nav a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:2px;
+  background:var(--red);transition:right .28s cubic-bezier(.22,.7,.3,1)}
+.nav a:hover::after,.nav a[aria-current]::after{right:0}
+.nav a:hover{border-bottom-color:transparent}
+
+.btn{transition:transform .2s,background .2s,border-color .2s,color .2s}
+.btn:hover{transform:translateY(-2px)}
+.evt .dt,.evt .dt b,.evt .dt span{transition:background .28s,border-color .28s,color .28s}
+.evt:hover .dt{background:var(--red);border-color:var(--red)}
+.evt:hover .dt b,.evt:hover .dt span{color:#fff}
+.card{transition:transform .28s,box-shadow .28s}
+.g3 .card:hover{transform:translateY(-5px);box-shadow:0 16px 32px rgba(26,22,19,.12)}
+.frame img{transition:transform .5s cubic-bezier(.22,.7,.3,1)}
+.frame:hover img{transform:scale(1.02)}
+
+@media(prefers-reduced-motion:reduce){
+  .rv{animation:none}
+  .shield-track{animation:none}
+  .btn:hover,.g3 .card:hover,.shield:hover svg,.frame:hover img{transform:none}
+}
