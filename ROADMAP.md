@@ -8,7 +8,8 @@ machine, read this file first, then `ARCHITECTURE.md`, then `docs/current-site-a
 - **Audience:** the SJVSC board. They have not asked for this and are not involved yet.
 - **If they say yes:** the concept becomes the basis for their real site.
 - **Their current site:** https://sjvscriponswiss.com/
-- **Status:** Phase 0 — planning complete, design next
+- **Live:** https://scenicprints.github.io/sjvsc-website/
+- **Status:** public site built and live. Admin demo not started.
 - **Last updated:** 2026-10-22
 
 ---
@@ -89,21 +90,21 @@ audit findings are ammunition for building the right thing — they are not slid
 Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 
 ### Phase 1 — Design direction
-- [ ] Palette, typography, and layout system grounded in the club, not a template
-- [ ] Homepage: hero, next events, rental CTA, membership CTA, centennial
-- [ ] Mobile layout — most of this audience arrives from Facebook on a phone
-- [ ] Decide how to carry six photographs across a whole site
+- [x] Palette, typography, and layout system grounded in the club, not a template
+- [x] Homepage: hero, next events, rental CTA, membership CTA, centennial
+- [x] Mobile layout — most of this audience arrives from Facebook on a phone
+- [x] Decide how to carry six photographs across a whole site
 
 ### Phase 2 — Public site
-- [ ] Flat navigation; nothing hidden under "More"
-- [ ] Events listing and event detail
-- [ ] **Hall rental page** — the one that earns money
-- [ ] Membership: four tiers, dues, 31 March deadline, benefits
-- [ ] About / 100 years
-- [ ] Schwingen
-- [ ] Swiss Echoes
-- [ ] Contact that routes by topic instead of listing 14 phone numbers
-- [ ] Migrate content and fix the copy errors (audit §6)
+- [x] Flat navigation; nothing hidden under "More"
+- [x] Events listing and event detail
+- [x] **Hall rental page** — the one that earns money
+- [x] Membership: four tiers, dues, 31 March deadline, benefits
+- [x] About / 100 years
+- [x] Schwingen
+- [x] Swiss Echoes
+- [x] Contact that routes by topic instead of listing 14 phone numbers
+- [x] Migrate content and fix the copy errors (audit §6)
 
 ### Phase 3 — Demo admin
 - [ ] Login screen (demo credentials, shown on screen)
@@ -143,11 +144,14 @@ security. All are Phase 2 conversations that only happen if they say yes.
 | 4 | 2026-10-22 | **Nothing operational is hardcoded** | Demonstrates the pitch: the board could run this themselves |
 | 5 | 2026-10-22 | Rate cards versioned; quotes store their own line items | Correct for production, and costs nothing to build in now |
 | 6 | 2026-10-22 | Must run at **$0** | Spec work, unpaid, no client budget |
-| 7 | 2026-10-22 | Cloudflare Pages | Free, no commercial-use restriction, works with a private repo |
+| 7 | 2026-10-22 | ~~Cloudflare Pages~~ superseded by 12 | Was chosen before the stack simplified to static files |
 | 8 | 2026-10-22 | **This is a concept pitch, not a commissioned build** | Reframes everything below |
 | 9 | 2026-10-22 | **No backend.** Seeded data, admin state in the browser | A demo needs no database; removes every piece of infrastructure that could fail during a presentation |
 | 10 | 2026-10-22 | Realistic invented rates, labelled illustrative | Obviously fake numbers undercut the demo; the engine is the point |
 | 11 | 2026-10-22 | Pitch frames everything as opportunity, never as criticism | The current site was built by volunteers who will be in the room |
+| 12 | 2026-10-22 | **Public repo, GitHub Pages from the root of `main`** | Pages will not serve a private repo on a free plan, and Pages serves only a branch root or `/docs`. A push is now a deploy |
+| 13 | 2026-10-22 | Cantonal arms come from Wikimedia, not hand-drawn SVG | Hand-drawing heraldry silently dropped the 14 cantons with figurative charges |
+| 14 | 2026-10-22 | No build step, no dependencies, no framework | The whole site is HTML, CSS and two script files. Nothing to install, nothing to go stale |
 
 ---
 
@@ -175,6 +179,18 @@ payments, and importing any existing member or booking data.
 ---
 
 ## Changelog
+
+### 2026-10-22 (fifth pass)
+- **The site is live and public** at https://scenicprints.github.io/sjvsc-website/
+- Repository made public and Pages enabled from the root of `main`; the site moved
+  out of `design/` because Pages serves only a branch root or `/docs`
+- `index.html` became a standalone document; it had relied on the artifact viewer
+  for its doctype and charset, which would have meant quirks mode on any real host
+- Rebuilt graphic-led after finding the club's Instagram is flyers rather than
+  photographs: poster mastheads, colour bands, a twelve-month calendar grid, a
+  horizontal timeline, and all 26 cantonal arms
+- Stripped every invented claim from the copy and turned the event pages into
+  admin templates
 
 ### 2026-10-22 (fourth pass)
 - **Reframed as a concept pitch built on spec.** The club is the audience, not the

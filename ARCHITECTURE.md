@@ -6,6 +6,8 @@ the one idea that connects it all.
 This describes a **concept build** — a demo made to pitch the club, not a production
 system. Where the two would differ, that is called out explicitly.
 
+**Live:** https://scenicprints.github.io/sjvsc-website/
+
 ---
 
 ## 1. Two organising ideas
@@ -77,57 +79,55 @@ behaviour, and it costs nothing to build in from the start.
 
 ## 2. Stack
 
-**This is a demo.** It has to look real, work convincingly in a meeting, and cost
-nothing. It does not have to store anyone's data.
+Plain HTML, CSS and JavaScript. No framework, no build step, no dependencies, no
+backend, nothing to install.
 
-| Layer | Choice | Why |
-|---|---|---|
-| Framework | **Next.js (App Router) + TypeScript** | Same code survives into production if approved |
-| Styling | **Tailwind CSS** | Fast, consistent |
-| Output | **Static export** | No server to fail during a presentation |
-| Data | **Seeded TypeScript files** | Version-controlled, reviewable, no database |
-| Admin state | **Browser storage**, resettable | Edits persist while they click around; reset wipes clean |
-| Auth | **Fake login**, credentials shown on screen | It is a prop, not security |
-| Hosting | **Cloudflare Pages** | Free, no commercial-use restriction, works with a private repo |
+| Layer | What it actually is |
+|---|---|
+| Pages | Fourteen hand-written HTML files at the repository root |
+| Styling | One stylesheet, `assets/css/site.css` |
+| Behaviour | `assets/js/site.js` — navigation, scroll-to-top, the timeline |
+| | `assets/js/quote.js` — the hall rental quote engine |
+| Data | In the markup, and in one table at the top of `quote.js`, standing in for the admin screens a real build would have |
+| Heraldry | Twenty-six public-domain cantonal arms from Wikimedia Commons |
+| Photography | Six images recovered from the old site's CDN |
+| Hosting | **GitHub Pages**, from the root of `main` |
 
-**Running cost: $0.** Nothing is purchased, nothing is subscribed to.
+**Running cost: $0.** A push to `main` is a deploy, live in about a minute.
 
-### What a demo deliberately does not have
+### Why nothing more
 
-No database, no auth server, no email, no payments. Every one of those is
-infrastructure that can break in front of an audience while adding nothing to the
-argument. A board member cannot tell whether the data came from Postgres or a seeded
-file — they can only tell whether the thing works.
+An earlier draft of this file specified Next.js, Tailwind, Drizzle and a D1 database
+on Cloudflare. None of it was ever needed. The demo has no accounts, stores nothing,
+sends nothing and serves one organisation's brochure. Every layer removed is a layer
+that cannot break during a presentation, cannot need updating in a year, and cannot
+stop someone picking this up on a different machine.
 
-**The fake login deserves one explicit note:** it checks a hardcoded credential in the
-browser and is not security. It exists so the pitch can show an admin area. If the
-club says yes, it is replaced before anything real touches it.
+The constraint that settled it: the club's own Instagram is event flyers rather than
+photographs, so only six photographs exist. A site that cannot lean on imagery has to
+be carried by type, colour, flat shape and heraldry — and none of that needs a
+framework.
 
 ### What changes if they say yes
 
-The public site carries over almost entirely. The swap is confined to the data layer:
+The public pages carry over. The work is confined to making the data live:
 
-| Demo | Production |
+| Now | Production |
 |---|---|
-| Seeded TypeScript files | Database (SQLite/D1 or Postgres) |
-| Browser storage for admin edits | Server-side writes |
-| Fake login | Auth.js with real sessions |
-| Quote shown on screen only | Quote emailed and stored |
-| Static export | Server rendering |
-
-Choosing Next.js now is what makes that a swap rather than a rewrite.
+| Rates in a table at the top of `quote.js` | An admin screen writing to a database |
+| Events written into the markup | Event records with advertising windows |
+| Empty labelled blocks on event pages | Fields the board fills in |
+| No login | Real authentication |
+| Quote shown on screen | Quote emailed, stored, and tracked as an enquiry |
 
 ### Why not the alternatives
 
-- **A clickable design mockup (Figma).** Faster, but it cannot demonstrate the two
-  features the whole pitch rests on. A publish window that does not actually publish
-  proves nothing.
-- **WordPress.** Would be a real production option for them, but building the pitch in
-  it means fighting a booking plugin instead of writing the quote engine we want.
+- **A clickable mockup.** Cannot demonstrate the two features the pitch rests on. A
+  publish window that does not publish proves nothing.
+- **WordPress.** A real option for their production site, but building the pitch in it
+  means fighting a booking plugin instead of writing the quote engine we want.
 - **A full production build.** Much more unpaid work on a maybe, and the extra
   machinery is invisible to the audience.
-
----
 
 ## 3. Public pages
 
