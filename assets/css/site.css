@@ -237,10 +237,10 @@ h3{font-size:1.28rem}
 .shields::before,.shields::after{content:"";position:absolute;top:0;bottom:0;width:110px;z-index:2;pointer-events:none}
 .shields::before{left:0;background:linear-gradient(90deg,var(--ink),rgba(26,22,19,0))}
 .shields::after{right:0;background:linear-gradient(270deg,var(--ink),rgba(26,22,19,0))}
-.shield-track{display:flex;width:max-content;animation:march 60s linear infinite}
+.shield-track{display:flex;width:max-content;animation:march 125s linear infinite}
 .shield{display:flex;flex-direction:column;align-items:center;gap:9px;flex:0 0 auto;margin-right:46px}
-.shield svg{width:42px;height:48px;filter:drop-shadow(0 3px 5px rgba(0,0,0,.45));transition:transform .3s cubic-bezier(.22,.7,.3,1)}
-.shield:hover svg{transform:translateY(-6px) scale(1.1)}
+.shield img{width:42px;height:48px;filter:drop-shadow(0 3px 5px rgba(0,0,0,.45));transition:transform .3s cubic-bezier(.22,.7,.3,1)}
+.shield:hover img{transform:translateY(-6px) scale(1.1)}
 .shield span{font-size:.58rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#8E8277;white-space:nowrap}
 @keyframes march{to{transform:translateX(-50%)}}
 
@@ -280,6 +280,6 @@ h3{font-size:1.28rem}
 @media(prefers-reduced-motion:reduce){
   .rv{animation:none}
   .shield-track{animation:none}
-  .btn:hover,.g3 .card:hover,.shield:hover svg,.frame:hover img{transform:none}
+  .btn:hover,.g3 .card:hover,.shield:hover img,.frame:hover img{transform:none}
   *{transition-duration:.01ms!important}
 }
