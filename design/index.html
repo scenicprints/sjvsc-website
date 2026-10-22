@@ -1,0 +1,181 @@
+<title>Ripon Swiss Club</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/css/site.css">
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="hdr">
+  <div class="wrap hdr-in">
+    <a class="brand" href="index.html">
+      <svg viewBox="0 0 32 34" aria-hidden="true"><path d="M1 1h30v17c0 7.5-6.5 13-15 15.5C7.5 31 1 25.5 1 18Z" fill="#C8102E"/><path d="M13.2 6h5.6v6.2H25v5.6h-6.2V24h-5.6v-6.2H7v-5.6h6.2Z" fill="#fff"/></svg>
+      <span><b>Ripon Swiss Club</b><i>San Joaquin Valley · 1926</i></span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="schwingen.html">Schwingen</a>
+      <a href="events.html">Events</a>
+      <a href="rentals.html">Hall Rental</a>
+      <a href="membership.html">Membership</a>
+      <a href="swiss-echoes.html">Swiss Echoes</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a class="btn btn-red" href="rentals.html#check">Get a Quote</a>
+    </nav>
+    <button class="navtoggle" id="navToggle" aria-expanded="false" aria-controls="navPanel">Menu</button>
+  </div>
+  <div class="navpanel" id="navPanel" hidden>
+    <div class="wrap"><ul>
+      <li><a href="schwingen.html">Schwingen</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li><a href="rentals.html">Hall Rental</a></li>
+      <li><a href="membership.html">Membership</a></li>
+      <li><a href="swiss-echoes.html">Swiss Echoes</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul></div>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero">
+    <div class="wrap hero-in">
+      <div>
+        <span class="eyebrow">Established 1926 · Ripon, California</span>
+        <h1>San Joaquin Valley Swiss Club</h1>
+        <p>We hold Swiss wrestling tournaments, run a chorus, and rent our hall for weddings, parties and meetings.</p>
+        <div class="hero-cta">
+          <a class="btn btn-cream" href="rentals.html">Rent the hall</a>
+          <a class="btn btn-line" style="color:var(--cream);border-color:rgba(247,241,228,.45)" href="events.html">What's on</a>
+        </div>
+      </div>
+      <figure class="frame" style="margin:0">
+        <img src="assets/img/hall-sign.jpg" alt="The painted sign over the hall door reading San Joaquin Valley Swiss Club, Est. 1926, Inc. 1941" width="639" height="639">
+      </figure>
+    </div>
+    <svg class="cut" viewBox="0 0 1440 110" preserveAspectRatio="xMidYMax slice" aria-hidden="true" fill="#F7F1E4">
+      <path d="M0 110V78l90-28 60 16 65-26 70 22 70-32 75 26 70-16 75 24 75-34 86 32 76-26 88 30 80-32 88 28 96-20 76 22v116Z"/>
+      <path d="M106 60 120 28 134 60Zm4-12L120 34l10 14Z"/>
+      <path d="M574 56 588 24 602 56Z"/>
+      <path d="M1022 58 1036 26 1050 58Z"/>
+      <path d="M1286 56 1300 24 1314 56Z"/>
+    </svg>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="split">
+        <div>
+          <h2>What's on</h2>
+          <p class="lead" style="margin-top:10px">The hall runs events most months. Members are welcome at all of them.</p>
+          <div style="margin-top:22px">
+            <a class="evt" href="events.html">
+              <span class="dt"><b>15</b><span>Nov</span></span>
+              <span><h3>Fall Jass Party</h3><p>The Swiss card game. Sunday afternoon at the hall.</p><span class="meta">Sunday 15 November 2026</span></span>
+            </a>
+            <a class="evt" href="events.html">
+              <span class="dt"><b>05</b><span>Dec</span></span>
+              <span><h3>Children's Christmas Party</h3><p>For members' children and grandchildren.</p><span class="meta">Saturday 5 December 2026</span></span>
+            </a>
+            <a class="evt" href="events.html">
+              <span class="dt"><b>10</b><span>Dec</span></span>
+              <span><h3>Annual General Meeting</h3><p>Officers are elected. All members may attend.</p><span class="meta">Wednesday 10 December 2026, 7pm</span></span>
+            </a>
+            <a class="evt" href="events.html">
+              <span class="dt"><b>12</b><span>Dec</span></span>
+              <span><h3>Swiss Echoes Christmas Party</h3><p>Carols, supper and a dance.</p><span class="meta">Saturday 12 December 2026</span></span>
+            </a>
+          </div>
+          <p style="margin-top:22px"><a href="events.html"><b>See the full calendar</b></a></p>
+        </div>
+        <div>
+          <div class="chk" id="check">
+            <h3>Check a date for the hall</h3>
+            <p class="muted" style="margin-top:6px">Checked against the club's own calendar.</p>
+            <form class="fields" id="dateForm">
+              <div class="field">
+                <label for="d8">Date</label>
+                <input type="date" id="d8" value="2027-05-15" required>
+              </div>
+              <button class="btn btn-red" type="submit" style="flex:0 0 auto">Check</button>
+            </form>
+            <div class="result" id="result" role="status" aria-live="polite"></div>
+            <p class="muted" style="margin-top:14px"><a href="rentals.html">Hall rates and what's included →</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec band-white">
+    <div class="wrap">
+      <div class="g3">
+        <div class="card">
+          <h3>Schwingen</h3>
+          <p>Swiss wrestling, the national sport of Switzerland. The club holds three tournaments a year and practises Thursday evenings at the hall.</p>
+          <p style="margin-top:14px"><a href="schwingen.html"><b>About the sport →</b></a></p>
+        </div>
+        <div class="card">
+          <h3>Hall rental</h3>
+          <p>Room for about 300 at a sit-down dinner. Maple dance floor, bar, commercial kitchen and grounds outside. Members rent at a discount.</p>
+          <p style="margin-top:14px"><a href="rentals.html"><b>Rates and availability →</b></a></p>
+        </div>
+        <div class="card">
+          <h3>Membership</h3>
+          <p>702 members. Dues are $50 a year. Meetings are the second Wednesday of the month at 7pm.</p>
+          <p style="margin-top:14px"><a href="membership.html"><b>How to join →</b></a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec band-ink">
+    <div class="wrap narrow">
+      <span class="eyebrow" style="color:var(--gold)">Purpose of the club</span>
+      <p style="font-family:var(--display);font-size:clamp(1.15rem,2.3vw,1.5rem);line-height:1.5;color:var(--cream);margin-top:14px">
+        To unite and strengthen the social ties of the Swiss people, those of Swiss descent and their supporting friends; and to encourage, promote and preserve the culture and traditions of Switzerland.
+      </p>
+      <p class="muted" style="margin-top:16px;color:#9C9086">From the club's constitution, 1926.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="ftr">
+  <div class="wrap">
+    <div class="ftr-grid">
+      <div>
+        <a class="brand" href="index.html" style="margin-bottom:14px">
+          <svg viewBox="0 0 32 34" aria-hidden="true"><path d="M1 1h30v17c0 7.5-6.5 13-15 15.5C7.5 31 1 25.5 1 18Z" fill="#C8102E"/><path d="M13.2 6h5.6v6.2H25v5.6h-6.2V24h-5.6v-6.2H7v-5.6h6.2Z" fill="#fff"/></svg>
+          <span><b style="color:var(--cream)">Ripon Swiss Club</b><i>San Joaquin Valley · 1926</i></span>
+        </a>
+        <p style="font-size:.9rem;max-width:32ch">A non-profit organisation owned and run by its members since 1926.</p>
+      </div>
+      <div><h4>The hall</h4><ul>
+        <li><a href="https://maps.google.com/?q=110+N+Manley+Road+Ripon+CA+95366" target="_blank" rel="noopener">110 N. Manley Road<br>Ripon, CA 95366</a></li>
+        <li>P.O. Box 373<br>Ripon, CA 95366</li>
+      </ul></div>
+      <div><h4>Contact</h4><ul>
+        <li>(209) 495-2366</li>
+        <li>riponswissclub<br>.secretary@gmail.com</li>
+        <li><a href="https://www.facebook.com/riponswissclub" target="_blank" rel="noopener">Facebook</a> · <a href="https://instagram.com/ripon_swiss_club" target="_blank" rel="noopener">Instagram</a></li>
+      </ul></div>
+      <div><h4>Pages</h4><ul>
+        <li><a href="schwingen.html">Schwingen</a></li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="rentals.html">Hall rental</a></li>
+        <li><a href="membership.html">Membership</a></li>
+        <li><a href="swiss-echoes.html">Swiss Echoes</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul></div>
+    </div>
+    <div class="ftr-note">
+      <span>Established 1926 · Incorporated 1941 · Ripon, California</span>
+      <span>Concept design. Not the club's live website.</span>
+    </div>
+  </div>
+</footer>
+<script src="assets/js/site.js"></script>
