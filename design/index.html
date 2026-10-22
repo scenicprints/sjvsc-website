@@ -6,7 +6,6 @@
 <link rel="stylesheet" href="assets/css/site.css">
 
 <a class="skip" href="#main">Skip to content</a>
-
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <clipPath id="shc"><path d="M1.5 1.5H38.5V26C38.5 35.5 30.6 41.9 20 44.7C9.4 41.9 1.5 35.5 1.5 26Z"/></clipPath>
   <path id="st" d="M0,-3.2L0.76,-1.05L3.04,-0.99L1.24,0.4L1.88,2.59L0,1.3L-1.88,2.59L-1.24,0.4L-3.04,-0.99L-0.76,-1.05Z"/>
@@ -36,7 +35,6 @@
   <g id="c-ne"><rect width="13.4" height="46" fill="#0E7A3C"/><rect x="13.4" width="13.2" height="46" fill="#fff"/><rect x="26.6" width="13.4" height="46" fill="#D52B1E"/><path d="M7.5 4h4v4h4v4h-4v4h-4v-4h-4V8h4z" fill="#fff"/></g>
   <g id="c-sg"><rect width="40" height="46" fill="#0E7A3C"/><rect x="17" y="11" width="6" height="25" rx="1" fill="#fff"/><rect x="14.5" y="17" width="11" height="2.4" fill="#0E7A3C"/><rect x="14.5" y="25" width="11" height="2.4" fill="#0E7A3C"/></g>
 </defs></svg>
-
 <header class="hdr">
   <div class="wrap hdr-in">
     <a class="brand" href="index.html">
@@ -78,7 +76,7 @@
         <p class="rv" style="--d:.16s">We hold Swiss wrestling tournaments, run a chorus, and rent our hall for weddings, parties and meetings.</p>
         <div class="hero-cta rv" style="--d:.24s">
           <a class="btn btn-cream" href="rentals.html">Rent the hall</a>
-          <a class="btn btn-line" style="color:var(--cream);border-color:rgba(247,241,228,.45)" href="events.html">What's on</a>
+          <a class="btn btn-ghost" href="events.html">What&#8217;s on</a>
         </div>
       </div>
       <figure class="frame rv" style="margin:0;--d:.18s">
@@ -87,7 +85,7 @@
     </div>
   </section>
 
-  <section class="shields" aria-label="Arms of the Swiss cantons">
+<section class="shields" aria-label="Arms of the Swiss cantons">
     <div class="shield-track">
       <div class="shield"><svg viewBox="0 0 40 46" role="img" aria-label="Arms of Schwyz"><g clip-path="url(#shc)"><use href="#c-sz"/></g><path d="M1.5 1.5H38.5V26C38.5 35.5 30.6 41.9 20 44.7C9.4 41.9 1.5 35.5 1.5 26Z" fill="none" stroke="#1A1613" stroke-width="2.5"/></svg><span>Schwyz</span></div>
       <div class="shield"><svg viewBox="0 0 40 46" role="img" aria-label="Arms of Z&#252;rich"><g clip-path="url(#shc)"><use href="#c-zh"/></g><path d="M1.5 1.5H38.5V26C38.5 35.5 30.6 41.9 20 44.7C9.4 41.9 1.5 35.5 1.5 26Z" fill="none" stroke="#1A1613" stroke-width="2.5"/></svg><span>Z&#252;rich</span></div>
@@ -118,10 +116,11 @@
 
   <section class="sec">
     <div class="wrap">
-      <div class="ediv"><span class="rule"></span><svg viewBox="-20 -20 40 40" aria-hidden="true"><use href="#edw"/></svg><span class="rule"></span></div>
-      <h2>What's on</h2>
-      <p class="lead" style="margin-top:10px">The hall runs events most months. Members are welcome at all of them.</p>
-      <div style="margin-top:24px;max-width:840px">
+      <div class="shead">
+        <span class="eyebrow">Calendar</span>
+        <h2>What&#8217;s on</h2>
+        <a class="more" href="events.html">Full calendar &#8594;</a>
+      </div>
         <a class="evt" href="event-jass.html">
           <span class="dt"><b>15</b><span>Nov</span></span>
           <span><h3>Fall Jass Party</h3><p>The Swiss card game. Sunday afternoon at the hall.</p><span class="meta">Sunday 15 November 2026</span></span>
@@ -138,41 +137,58 @@
           <span class="dt"><b>12</b><span>Dec</span></span>
           <span><h3>Swiss Echoes Christmas Party</h3><p>Carols, supper and a dance.</p><span class="meta">Saturday 12 December 2026</span></span>
         </a>
-      </div>
-      <p style="margin-top:22px"><a href="events.html"><b>See the full calendar</b></a></p>
     </div>
   </section>
 
   <section class="sec band-white">
     <div class="wrap">
-      <div class="g3">
-        <div class="card">
+      <div class="shead">
+        <span class="eyebrow">The club</span>
+        <h2>Three reasons to come up Manley Road</h2>
+      </div>
+      <div class="tiles">
+        <a class="tile" href="schwingen.html">
           <h3>Schwingen</h3>
           <p>Swiss wrestling, the national sport of Switzerland. The club holds three tournaments a year and practises Thursday evenings at the hall.</p>
-          <p style="margin-top:14px"><a href="schwingen.html"><b>About the sport &#8594;</b></a></p>
-        </div>
-        <div class="card">
+          <span class="go">About the sport &#8594;</span>
+        </a>
+        <a class="tile" href="rentals.html">
           <h3>Hall rental</h3>
           <p>A dance floor, a bar, a kitchen and grounds outside. Members rent at a discount.</p>
-          <p style="margin-top:14px"><a href="rentals.html"><b>Rates and availability &#8594;</b></a></p>
-        </div>
-        <div class="card">
+          <span class="go">Rates and availability &#8594;</span>
+        </a>
+        <a class="tile" href="membership.html">
           <h3>Membership</h3>
           <p>Dues are $50 a year. Meetings are the second Wednesday of the month at 7pm, and anyone thinking of joining can come to one first.</p>
-          <p style="margin-top:14px"><a href="membership.html"><b>How to join &#8594;</b></a></p>
-        </div>
+          <span class="go">How to join &#8594;</span>
+        </a>
       </div>
     </div>
   </section>
 
-  <section class="sec band-ink">
-    <div class="wrap narrow">
+  <section class="sec band-cream2">
+    <div class="wrap narrow" style="text-align:center">
       <div class="ediv"><span class="rule"></span><svg viewBox="-20 -20 40 40" aria-hidden="true"><use href="#edw"/></svg><span class="rule"></span></div>
-      <span class="eyebrow" style="color:var(--gold)">Purpose of the club</span>
-      <p style="font-family:var(--display);font-size:clamp(1.15rem,2.3vw,1.5rem);line-height:1.5;color:var(--cream);margin-top:14px">
+      <span class="eyebrow" style="color:var(--red)">Purpose of the club</span>
+      <p style="font-family:var(--display);font-size:clamp(1.25rem,2.7vw,1.8rem);line-height:1.46;margin-top:16px">
         To unite and strengthen the social ties of the Swiss people, those of Swiss descent and their supporting friends; and to encourage, promote and preserve the culture and traditions of Switzerland.
       </p>
-      <p class="muted" style="margin-top:16px;color:#9C9086">From the club's constitution, 1926.</p>
+      <p class="muted" style="margin-top:18px">From the club&#8217;s constitution, 1926.</p>
+    </div>
+  </section>
+
+  <section class="sec band-red">
+    <div class="wrap">
+      <div class="shead">
+        <span class="eyebrow">Hall rental</span>
+        <h2>Pick a date and the quote builds itself</h2>
+        <a class="more" href="rentals.html">Rates &#8594;</a>
+      </div>
+      <p class="lead" style="max-width:52ch">Dates the club has taken for its own events are refused automatically, so you will know straight away whether the hall is free.</p>
+      <div class="hero-cta">
+        <a class="btn btn-cream" href="rentals.html#check">Build a quote</a>
+        <a class="btn btn-ghost" href="contact.html">Ask a question</a>
+      </div>
     </div>
   </section>
 
