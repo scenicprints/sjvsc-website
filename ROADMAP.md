@@ -1,117 +1,73 @@
-# Roadmap — San Joaquin Valley Swiss Club website
+# Roadmap — SJVSC concept site
 
 **Living document.** Updated as work proceeds. If you are picking this up on another
 machine, read this file first, then `ARCHITECTURE.md`, then `docs/current-site-audit.md`.
 
-- **Client:** San Joaquin Valley Swiss Club (SJVSC), 110 N. Manley Road, Ripon, CA
-- **Existing site:** https://sjvscriponswiss.com/ (website-builder template, to be replaced)
-- **Status:** Phase 0 — stack agreed, scaffolding next
-- **Hosting:** Cloudflare free tier, temporary subdomain (see Decisions 6–8)
+- **What this is:** an unsolicited **concept website** built on spec, to show the
+  San Joaquin Valley Swiss Club (Ripon, CA) what their site could be.
+- **Audience:** the SJVSC board. They have not asked for this and are not involved yet.
+- **If they say yes:** the concept becomes the basis for their real site.
+- **Their current site:** https://sjvscriponswiss.com/
+- **Status:** Phase 0 — planning complete, design next
 - **Last updated:** 2026-10-22
 
 ---
 
-## Why we are rebuilding
+## What success means
 
-The club turned 100 in 2026 and has 702 members, a hall worth renting, a wrestling
-programme, a 79-year-old chorus and a calendar with roughly 25 events a year. The site
-represents almost none of that. Three findings from the audit frame the whole project:
+**They say yes.** That is the only measure that matters right now.
 
-1. **Content rots in place.** On 22 Oct 2026 the homepage still led with a September
-   event and an April concert recap. Events are typed as free text in three places and
-   nothing expires them.
-2. **Hall rental is offline.** Both rental sites the page links to are dead — one 404s,
-   the other's domain no longer resolves. The club publishes no rental pricing anywhere.
-3. **Money moves by phone call.** Oktoberfest tickets are sold by ringing one of five
-   people. Dues go through Venmo and are reconciled by hand.
+Everything follows from that. This is a sales artifact, not an operations platform.
+It has to be good enough to make a volunteer board want to change something that
+currently works well enough for them.
 
-Each maps to one of the three features requested: scheduled publishing, a smart quote
-system, and an admin that non-developers can actually run.
+Three things have to land:
 
----
-
-## Goals, in priority order
-
-1. **Fill the hall.** Rental enquiries are the clearest revenue the site can generate.
-2. **Fill the seats.** Make events discoverable and, eventually, buyable.
-3. **Never look abandoned again.** Content expires itself; the homepage is always current.
-4. **Hand it over cleanly.** A board member must be able to run it without a developer.
-5. **Do the club justice.** 100 years deserves better than a template.
-
-### Measures of success
-- Rental enquiries per month (baseline: unknown, likely near zero — no pricing published)
-- Quote-to-booking conversion
-- Online ticket sales as a share of event revenue
-- Days between an event passing and it leaving the homepage (target: 0)
-- Board members who have logged into the admin and made an edit unaided (target: 3+)
+1. **It looks like a different class of thing.** Their current site is a builder
+   template. The concept should look like it was designed for a 100-year-old Swiss
+   cultural club, specifically.
+2. **It solves problems they already feel.** Not abstract improvements — the stale
+   homepage, the dead rental pages, selling Oktoberfest tickets by phone.
+3. **It feels real.** A board member should be able to log into the admin, move an
+   event, and watch the homepage change. Slideware does not do that.
 
 ---
 
-## Feature backlog
+## What this changes about the plan
 
-Legend: `[ ]` not started · `[~]` in progress · `[x]` done · **(P1)** priority tier
+Earlier drafts treated the club as a client to collect requirements from. They are
+not. Nobody is going to send us rental rates, photography, or DNS records before the
+pitch. Everything is built from what can be gathered independently plus realistic
+invention, clearly labelled.
 
-### A. Events engine — *replaces the stale-content problem*
-- [ ] **(P1)** Event records with `startsAt` / `endsAt`
-- [ ] **(P1)** **Advertising window** — `publishFrom` / `publishUntil` per event, so the
-      admin picks on a calendar exactly when an event appears and disappears
-- [ ] **(P1)** Default `publishUntil` to the day after the event, so nothing can rot
-- [ ] **(P1)** Draft → Scheduled → Published → Archived states
-- [ ] **(P1)** Homepage "what's next" generated from the DB, never hand-typed
-- [ ] **(P1)** `blocksHall` flag — club events make the date unavailable to renters
-- [ ] **(P2)** Recurring events (monthly meeting = 2nd Wednesday, 7 pm)
-- [ ] **(P2)** Featured slot with its own date window
-- [ ] **(P2)** Add-to-calendar (.ics) per event
-- [ ] **(P2)** Event detail pages with structured data for Google
-- [ ] **(P3)** Past-event galleries
+| Earlier assumption | Reality |
+|---|---|
+| Ask the board for rental rates | Invent plausible ones; the point is to demo the engine |
+| Ask who maintains it after handover | Irrelevant until they say yes |
+| Secure club ownership of accounts | Irrelevant until they say yes |
+| Get DNS records for email | No email at all; nothing is sent to anyone |
+| Commission a photo shoot | Use the six recovered photos and design around the shortage |
+| Build on a real database | A demo needs no database — see `ARCHITECTURE.md` §2 |
 
-### B. Smart quote system — *the headline feature*
-- [ ] **(P1)** Availability check against club events, holds and confirmed bookings
-- [ ] **(P1)** Guided quote builder: date → space → guests → hours → add-ons → total
-- [ ] **(P1)** Itemised estimate on screen, no "call us for pricing"
-- [ ] **(P1)** Member rate applied automatically (an existing member benefit)
-- [ ] **(P1)** Alcohol toggle drives required insurance / bartender / security line items
-- [ ] **(P1)** Enquiry lands in the admin pipeline and emails both parties
-- [ ] **(P1)** Admin-editable rate card — raise prices without a deploy (foundational,
-      not a nicety: the engine reads every number from it)
-- [ ] **(P1)** Ship with clearly marked placeholder rates so every screen works day one
-- [ ] **(P2)** Tentative holds with automatic expiry
-- [ ] **(P2)** Suggest nearby open dates when the chosen one is taken
-- [ ] **(P2)** Shareable quote link with reference number and expiry date
-- [ ] **(P3)** Convert accepted quote into contract and invoice
-- [ ] **(P3)** Online deposit payment
+Nothing is blocked. There is nobody to wait for.
 
-### C. Admin
-- [ ] **(P1)** Login with roles (Admin / Editor)
-- [ ] **(P1)** Dashboard — new enquiries, upcoming events, anything expiring
-- [ ] **(P1)** Month-view calendar: events, holds and bookings in one place
-- [ ] **(P2)** Editable page content for non-developers
-- [ ] **(P2)** Media library for photos and flyers
-- [ ] **(P2)** Audit log — who changed what
-- [ ] **(P3)** Member roster and dues status
+---
 
-### D. Public site
-- [ ] **(P1)** Flat navigation — no page hidden under "More"
-- [ ] **(P1)** Mobile-first; most of this audience arrives from Facebook on a phone
-- [ ] **(P1)** Rentals page that sells the venue: photos, capacity, what's included
-- [ ] **(P1)** Membership page with tiers, dues, deadline and benefits
-- [ ] **(P1)** Contact page that routes by topic instead of listing 14 phone numbers
-- [ ] **(P1)** Content migrated and copy-edited (see audit §6 for the error list)
-- [ ] **(P2)** About / 100-year history
-- [ ] **(P2)** Schwingen explainer — strong search traffic, genuinely interesting
-- [ ] **(P2)** Swiss Echoes page with organised video gallery and join form
-- [ ] **(P2)** Local-business structured data — matters for "event venue Ripon CA"
-- [ ] **(P2)** Newsletter signup
-- [ ] **(P3)** Caretaker vacancy as a real posting, not a line in a contact list
-- [ ] **(P3)** Shop: cookbook ($35), engraved playground bricks ($150)
-- [ ] **(P3)** Spanish translation
+## Deliverables
 
-### E. Payments — *later, and deliberately so*
-- [ ] **(P3)** Online dues with automatic receipt, alongside Venmo
-- [ ] **(P3)** Renewal reminders before the 31 March deadline
-- [ ] **(P3)** Event ticketing — replaces phoning five people for Oktoberfest
-- [ ] **(P3)** Sponsorship packages
-- [ ] **(P3)** Donations
+1. **The live demo.** A shareable link the board can open on any device. This is the
+   pitch.
+2. **A short leave-behind.** One or two pages they can keep after the meeting: what
+   it is, what it does, what happens next. Boards decide between meetings.
+
+### A tone risk worth naming now
+
+The current site was built by volunteers, and somebody in that room is probably proud
+of it. A pitch that leads with "here is everything wrong with your website" loses the
+room no matter how good the demo is.
+
+Frame everything as **what the club could do next**, never as what they got wrong. The
+audit findings are ammunition for building the right thing — they are not slides.
 
 ---
 
@@ -119,119 +75,129 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done · **(P1)** priorit
 
 | Phase | Scope | Why this order |
 |---|---|---|
-| **0. Foundation** | Repo, stack, hosting, deploy pipeline, design direction | Nothing ships without it |
-| **1. Public site** | Real content, real photos, mobile, flat nav — content still in code | Fixes the embarrassment fastest; no backend risk |
-| **2. Admin + events** | Login, events engine, advertising windows | Kills stale content permanently |
-| **3. Quote system** | Availability, quote builder, enquiry pipeline | Needs Phase 2's calendar as its source of truth |
-| **4. Payments** | Dues, tickets, deposits | Needs a board decision on fees and a bank account |
-| **5. Extras** | Members area, shop, translation | Only once the above is stable |
+| **0. Planning** | Audit, content recovery, architecture | Done |
+| **1. Design direction** | Homepage, fully designed | Fastest signal, and the thing that wins or loses the pitch |
+| **2. Public site** | Remaining pages, real content, mobile | The bulk of what they will click through |
+| **3. Demo admin** | Login, events, **advertising windows** | First of the two "it actually works" moments |
+| **4. Quote system** | Availability, quote builder, enquiry pipeline | The second, and the strongest argument |
+| **5. Pitch polish** | Demo reset, seeded story, leave-behind doc | Presenting badly wastes the build |
 
-Phase 1 is deployable on its own and worth shipping before Phase 2 exists.
+---
+
+## Backlog
+
+Legend: `[ ]` not started · `[~]` in progress · `[x]` done
+
+### Phase 1 — Design direction
+- [ ] Palette, typography, and layout system grounded in the club, not a template
+- [ ] Homepage: hero, next events, rental CTA, membership CTA, centennial
+- [ ] Mobile layout — most of this audience arrives from Facebook on a phone
+- [ ] Decide how to carry six photographs across a whole site
+
+### Phase 2 — Public site
+- [ ] Flat navigation; nothing hidden under "More"
+- [ ] Events listing and event detail
+- [ ] **Hall rental page** — the one that earns money
+- [ ] Membership: four tiers, dues, 31 March deadline, benefits
+- [ ] About / 100 years
+- [ ] Schwingen
+- [ ] Swiss Echoes
+- [ ] Contact that routes by topic instead of listing 14 phone numbers
+- [ ] Migrate content and fix the copy errors (audit §6)
+
+### Phase 3 — Demo admin
+- [ ] Login screen (demo credentials, shown on screen)
+- [ ] Dashboard
+- [ ] Event editor with **advertising windows** (`publishFrom` / `publishUntil`)
+- [ ] Month calendar: events, holds, bookings
+- [ ] **Rate card editor** — the proof that prices are not hardcoded
+- [ ] Changes visibly affect the public site
+
+### Phase 4 — Quote system
+- [ ] Availability check against the club calendar
+- [ ] Guided quote builder → itemised estimate
+- [ ] Member discount applied automatically
+- [ ] Alcohol toggle drives insurance and bartender requirements
+- [ ] Enquiry lands in the admin pipeline
+- [ ] Realistic placeholder rates, labelled as illustrative
+
+### Phase 5 — Pitch polish
+- [ ] One-click demo reset, so every showing starts clean
+- [ ] Seeded data that tells a story (a real-looking 2027 calendar)
+- [ ] Leave-behind document
+- [ ] Check it presents well on a phone and on a projector
+
+### Deliberately out of scope
+Payments, real email, member accounts, the shop, Spanish translation, real auth
+security. All are Phase 2 conversations that only happen if they say yes.
 
 ---
 
 ## Decision log
 
-Decisions are recorded here with their reasoning so they can be revisited rather than
-re-argued.
-
 | # | Date | Decision | Reasoning |
 |---|---|---|---|
-| 1 | 2026-10-22 | Rebuild rather than restyle the existing builder site | The three core features cannot be built on it |
-| 2 | 2026-10-22 | Keep the project in Git on GitHub | Work must resume on any machine |
-| 3 | 2026-10-22 | `ROADMAP.md` is the living record | One file to read first, whatever machine you are on |
-| 4 | 2026-10-22 | **Nothing operational is hardcoded** — rates, events, copy, contacts all live in the database behind admin screens | The club must run this for years without a developer. Also takes pricing off the critical path: we build against placeholders |
-| 5 | 2026-10-22 | Rate cards are versioned with `effectiveFrom`; quotes store their own line items | A price change must never rewrite a quote already sent to a renter |
-| 6 | 2026-10-22 | Must run at **$0** for now | Client constraint |
-| 7 | 2026-10-22 | **Cloudflare** (Workers/Pages + D1), not Vercel | Vercel's free tier forbids commercial use, and a hall-rental site is commercial. Cloudflare's free tier does not, and D1 never sleeps |
-| 8 | 2026-10-22 | Temporary free subdomain now; migrate `sjvscriponswiss.com` later | Club will hand over the domain in time; launch should not wait for it |
-| 9 | 2026-10-22 | Outbound email waits on **DNS records**, not on buying a domain | The club already owns `sjvscriponswiss.com`. Sending can be verified on a `mail.` subdomain without touching the live site — see Open Question 6 |
-| 10 | 2026-10-22 | **Buy nothing.** Total project cost is $0 | Hosting and database are free tiers; the domain is already owned and renewed by the club |
+| 1 | 2026-10-22 | Rebuild rather than restyle | The three core features cannot be built on a site builder |
+| 2 | 2026-10-22 | Git on GitHub | Work must resume on any machine |
+| 3 | 2026-10-22 | `ROADMAP.md` is the living record | One file to read first |
+| 4 | 2026-10-22 | **Nothing operational is hardcoded** | Demonstrates the pitch: the board could run this themselves |
+| 5 | 2026-10-22 | Rate cards versioned; quotes store their own line items | Correct for production, and costs nothing to build in now |
+| 6 | 2026-10-22 | Must run at **$0** | Spec work, unpaid, no client budget |
+| 7 | 2026-10-22 | Cloudflare Pages | Free, no commercial-use restriction, works with a private repo |
+| 8 | 2026-10-22 | **This is a concept pitch, not a commissioned build** | Reframes everything below |
+| 9 | 2026-10-22 | **No backend.** Seeded data, admin state in the browser | A demo needs no database; removes every piece of infrastructure that could fail during a presentation |
+| 10 | 2026-10-22 | Realistic invented rates, labelled illustrative | Obviously fake numbers undercut the demo; the engine is the point |
+| 11 | 2026-10-22 | Pitch frames everything as opportunity, never as criticism | The current site was built by volunteers who will be in the room |
 
 ---
 
 ## Open questions
 
-**Nothing here blocks the build.** Every operational value is admin-editable and ships
-with a marked placeholder, so development proceeds while the club gathers its answers.
-These are launch-blocking or handover-blocking instead.
+Only two, and both are ours to answer.
 
-### Needed before launch
+1. **How do we get it in front of them?** Email the President? Catch someone at an
+   event? Go through a member? The club meets the **second Wednesday of each month at
+   7pm** at the hall, and holds its **Annual General Meeting on 10 December 2026** —
+   which is the one meeting of the year where the whole board is present and making
+   decisions.
 
-1. **The rate card contents.** Base rates, whether Friday and Saturday differ, seasonal
-   variation, the member discount, included hours and the overage rate, the damage
-   deposit, add-on pricing (kitchen, bar, tables and chairs, linens, PA, cleaning), and
-   the alcohol rules — who must be insured, whether a licensed bartender or security is
-   required. *This is data entry into the admin, not development.* The club has
-   published no rental pricing anywhere since both old rental sites died, so this is
-   also the single biggest revenue unlock on the site.
+2. **How far do we build before pitching?** A finished homepage is a weak pitch; a
+   finished everything is a lot of unpaid work on a maybe. Current plan is through
+   Phase 4 — the public site plus both working features — because the features are
+   the argument and a static mockup does not make it.
 
-2. **Photography.** Six usable images recovered, which is not enough. The rentals page
-   needs a proper shoot: the empty hall, the hall set for a wedding, the kitchen, the
-   grounds, the playground, the new entrance. Club photographer, or a budget?
+### If they say yes
 
-3. **Who approves.** The President (Chris Portmann) and the rental coordinator are the
-   obvious two. Board vote, or one signature?
-
-### Needed before handover
-
-4. **Who administers it.** A single competent volunteer is a different design from
-   "three board members who rotate annually." Determines how much the admin must
-   hold the user's hand, and how much documentation to write.
-
-5. **Account ownership.** Every account — host, database, domain registrar, and later
-   Stripe — must belong to the club, not to a volunteer's personal login. The club has
-   already lost `sjvalleyswisshall.com` this way.
-
-6. **DNS access to `sjvscriponswiss.com` — ask for this early, and ask small.**
-   Two separate things, often confused:
-
-   - **DNS records only.** Three TXT records on a `mail.` subdomain unlock emailed
-     quotes to renters. Touches nothing on the live site, carries no risk, and can
-     happen at any point. *Ask for this first.*
-   - **Full handover.** Pointing the domain at the new site. Only at launch.
-
-   Who holds the registrar login today, and does the website builder manage the DNS
-   itself? Some builders restrict which records can be added, which would rule out the
-   first option. This tends to be the slowest item in any migration — start it now.
-
-### Lower priority
-
-7. **Existing data.** Is there a member list, rental enquiry history or booking
-   calendar in a spreadsheet that should be imported?
-
-8. **The Swiss Echoes relationship.** Separate officers, separate email, separate
-   membership. A section of this site, or their own site that we link to?
-
-9. **Payments, when we get there.** Stripe takes ~2.9% + 30¢ and needs a bank account
-   in the club's name. A board decision, not a technical one.
+Parked, not forgotten: real rental rates, photography, who administers it, club
+ownership of every account, the `sjvscriponswiss.com` handover, email sending,
+payments, and importing any existing member or booking data.
 
 ---
 
 ## Changelog
 
+### 2026-10-22 (fourth pass)
+- **Reframed as a concept pitch built on spec.** The club is the audience, not the
+  client, and is not involved before the pitch
+- Dissolved every open question that depended on club input; parked them under
+  "if they say yes"
+- Dropped the backend: seeded data and browser-held admin state, so nothing can fail
+  mid-presentation
+- Added the leave-behind document and demo-reset as real deliverables
+- Flagged the tone risk of pitching against volunteers' own work
+
 ### 2026-10-22 (third pass)
-- Dropped the suggestion of buying a domain for email sending. The club already owns
-  and renews `sjvscriponswiss.com`; this project should cost $0 and buy nothing
-- Established that email sending needs **DNS records, not a purchase**, and that they
-  can go on a `mail.` subdomain without disturbing the live site — so emailed quotes
-  can work well before the full domain handover
+- Dropped the suggestion of buying a domain for email; the club already owns one
+- Established that email sending needs DNS records, not a purchase
 
 ### 2026-10-22 (later)
-- Client constraints received: must be free for now, on a temporary domain, with
-  `sjvscriponswiss.com` taken over later
-- Established "nothing operational is hardcoded" as a governing principle
-  (`ARCHITECTURE.md` §1b) — rates and events are data with admin screens, not code
-- Pricing moved off the critical path; it is now launch-blocking data entry, not a
-  build blocker
-- Stack revised to Cloudflare Workers/Pages + D1, replacing Vercel + Postgres, after
-  finding Vercel's free tier forbids commercial use and Supabase's free tier sleeps
-- Flagged outbound email as the one genuine cost of staying free
+- Client constraints received: free, temporary domain
+- Established "nothing operational is hardcoded" (`ARCHITECTURE.md` §1b)
+- Stack revised to Cloudflare after finding Vercel's free tier forbids commercial use
 
 ### 2026-10-22
 - Audited all eight pages of the existing site; recorded content, contacts and copy
   errors in `docs/current-site-audit.md`
 - Confirmed both hall rental sites are dead (404 and DNS failure)
-- Recovered six photographs from the old CDN; rotated, resized and recompressed
-- Drafted feature backlog, phases and architecture
-- Repo initialised
+- Recovered six photographs from the old CDN
+- Drafted feature backlog, phases and architecture; repo initialised
