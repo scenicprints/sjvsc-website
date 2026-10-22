@@ -14,7 +14,8 @@ Their current site: https://sjvscriponswiss.com/
 
 | File | What's in it |
 |---|---|
-| **[ROADMAP.md](ROADMAP.md)** | The living plan: what success means, phases, backlog, decisions. **Read this first.** |
+| **[HANDOFF.md](HANDOFF.md)** | **Picking this up on another machine: setup, push credentials, and the rules this project runs on. Start here.** |
+| [ROADMAP.md](ROADMAP.md) | The living plan: what success means, phases, backlog, decisions. **Read this first.** |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Page map, data model, how the quote engine works |
 | [docs/current-site-audit.md](docs/current-site-audit.md) | Everything on the old site: content, contacts, copy errors, what's broken |
 | [docs/image-prompts.md](docs/image-prompts.md) | Prompts for generated artwork |
