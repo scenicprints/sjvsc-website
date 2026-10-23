@@ -28,20 +28,22 @@
 .adm h1{font-family:var(--display);font-size:clamp(1.65rem,4vw,2.05rem);font-weight:600;
   line-height:1.2;margin:0 0 22px}
 
-/* the status line: the one thing worth reading before anything is clicked */
-.astate{background:var(--white);border:1px solid var(--line);border-left:6px solid var(--ok);
-  border-radius:5px;padding:20px 22px;margin-bottom:24px;
-  display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap}
-.astate.warn{border-left-color:var(--gold)}
-.astate.none{border-left-color:var(--red);background:#FFF6F5;border-color:#F0C9C4}
-.astate p{margin:0;max-width:52ch;line-height:1.5;font-weight:600}
+[hidden]{display:none !important}
 
 .abtn{display:inline-block;background:var(--white);color:var(--ink);border:2px solid var(--ink);
   font-weight:600;font-size:1.0625rem;padding:14px 21px;border-radius:5px;text-decoration:none;
-  white-space:nowrap;cursor:pointer}
+  white-space:nowrap;cursor:pointer;font-family:var(--ui)}
 .abtn:hover{background:var(--cream-2)}
-.astate.warn .abtn,.astate.none .abtn{background:var(--red);border-color:var(--red);color:#fff}
-.astate.warn .abtn:hover,.astate.none .abtn:hover{background:var(--red-dark);border-color:var(--red-dark)}
+.abtn.solid{background:var(--red);border-color:var(--red);color:#fff}
+.abtn.solid:hover{background:var(--red-dark);border-color:var(--red-dark)}
+.abtn.danger{border-color:var(--red);color:var(--red)}
+.abtn.danger:hover{background:#FFF1EF}
+.abtn.danger.solid{color:#fff}
+
+.aback{display:inline-block;background:none;border:0;padding:0;margin-bottom:14px;
+  font:inherit;font-weight:600;color:var(--red);cursor:pointer;text-decoration:none}
+.aback:hover{text-decoration:underline}
+.alead{max-width:62ch;color:var(--ink-2);line-height:1.6;margin:0 0 22px}
 
 /* one row per thing that can be changed. Rows stack, so adding a second
    one later moves nothing that is already here. */
@@ -66,5 +68,61 @@
   .aic svg{width:30px;height:30px}
   .ago{margin-left:0;width:100%;order:3;padding-top:4px}
   .arow{flex-wrap:wrap}
-  .astate .abtn{width:100%;text-align:center}
+}
+
+/* the list of events */
+.elist{list-style:none;margin:24px 0 0;padding:0}
+.eitem{display:flex;align-items:center;gap:20px;background:var(--white);
+  border:2px solid var(--line);border-radius:6px;padding:18px 20px;margin-bottom:12px}
+.ewhen{flex:0 0 62px;text-align:center;border-right:1px solid var(--line);padding-right:16px}
+.ewhen b{display:block;font-family:var(--display);font-size:1.6rem;font-weight:700;line-height:1}
+.ewhen i{display:block;font-style:normal;font-size:.72rem;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-soft);margin-top:4px}
+.ebody{min-width:0;flex:1}
+.ebody>b{display:block;font-family:var(--display);font-size:1.26rem;font-weight:600;line-height:1.25}
+.enote{display:block;color:var(--ink-2);font-size:.97rem;margin-top:3px}
+.estand{display:inline-block;margin-top:9px;font-size:.84rem;font-weight:600;
+  border-radius:4px;padding:6px 10px}
+.estand.live{background:#E6F3EC;color:#17603C}
+.estand.soon{background:var(--cream-2);color:var(--ink-2)}
+.estand.done{background:#F1EFEC;color:var(--ink-soft)}
+.eitem .abtn{flex:0 0 auto;padding:12px 18px}
+.eempty{background:var(--white);border:2px dashed var(--line);border-radius:6px;
+  padding:28px 22px;color:var(--ink-2);text-align:center}
+
+/* the form */
+.field{margin-bottom:20px}
+/* site.css styles .field label as a small uppercase caption for the quote
+   form. Too small and too shouty here, so every property is restated. */
+.field label{display:block;font-size:1.0625rem;font-weight:600;letter-spacing:normal;
+  text-transform:none;color:var(--ink);margin-bottom:7px}
+.opt{font-weight:400;color:var(--ink-soft);font-size:.92rem;text-transform:none;
+  letter-spacing:normal}
+.field input{width:100%;font:inherit;font-family:var(--ui);padding:14px 14px;
+  border:2px solid var(--line);border-radius:5px;background:var(--white);color:var(--ink)}
+.field input:focus{outline:none;border-color:var(--ink)}
+.field input.bad{border-color:var(--red);background:#FFF6F5}
+.hint{margin:7px 0 0;font-size:.92rem;color:var(--ink-soft)}
+.err{margin:7px 0 0;font-size:.95rem;font-weight:600;color:var(--red)}
+.pair{border:0;padding:0;margin:0 0 8px}
+.pair legend{font-family:var(--display);font-size:1.2rem;font-weight:600;padding:0;
+  margin:0 0 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}
+.pair legend{grid-column:1/-1}
+.eactions{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px;
+  padding-top:22px;border-top:1px solid var(--line)}
+.eactions .danger{margin-left:auto}
+.confirm{margin-top:20px;background:#FFF6F5;border:2px solid #F0C9C4;border-radius:6px;
+  padding:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.confirm p{margin:0 14px 0 0;font-weight:600}
+
+@media(max-width:620px){
+  .pair{grid-template-columns:1fr}
+  .eitem{flex-wrap:wrap;gap:14px}
+  .ewhen{flex:0 0 auto;border-right:0;border-bottom:0;padding-right:0;display:flex;
+    align-items:baseline;gap:7px;text-align:left}
+  .ewhen i{margin-top:0}
+  .eitem .abtn{width:100%;text-align:center}
+  .eactions .danger{margin-left:0;width:100%;text-align:center}
+  .eactions .abtn{width:100%;text-align:center}
 }
