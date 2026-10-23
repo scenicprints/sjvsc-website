@@ -79,32 +79,73 @@
     });
   }
 
-  /* ---- details: the club writes its own headings --------------------- */
+  /* ---- details: the club writes its own headings ---------------------
 
-  function addRow(label, value) {
+     One heading can say more than one thing, so a heading is a group and
+     each thing it says is a line in it. The plus adds a line to the same
+     heading; the button at the bottom adds a heading. The heading box sits
+     in the group's first line, so removing that line hands the box to the
+     line that becomes first. */
+
+  function addLine(group, value) {
     var row = document.createElement('div');
     row.className = 'drow';
     row.innerHTML =
-      '<input type="text" class="dlabel" list="commonlabels" placeholder="Where" ' +
-      'aria-label="Heading" autocomplete="off">' +
+      '<span class="dspacer"></span>' +
       '<input type="text" class="dvalue" placeholder="110 N. Manley Road, Ripon" ' +
       'aria-label="What it says" autocomplete="off">' +
+      '<button class="abtn small dadd" type="button" ' +
+      'aria-label="Add another line under this heading">+</button>' +
       '<button class="abtn small drem" type="button">Remove</button>';
-    row.querySelector('.dlabel').value = label || '';
     row.querySelector('.dvalue').value = value || '';
-    row.querySelector('.drem').addEventListener('click', function () {
-      row.remove();
-      if (!drows.children.length) addRow('', '');
+    row.querySelector('.dadd').addEventListener('click', function () {
+      addLine(group, '').querySelector('.dvalue').focus();
     });
-    drows.appendChild(row);
+    row.querySelector('.drem').addEventListener('click', function () {
+      var label = group.querySelector('.dlabel');
+      var first = group.querySelector('.drow') === row;
+      row.remove();
+      var next = group.querySelector('.drow');
+      if (!next) {                                  // the heading went with it
+        group.remove();
+        if (!drows.querySelector('.dgroup')) addGroup('', ['']);
+        return;
+      }
+      if (first) next.replaceChild(label, next.querySelector('.dspacer'));
+    });
+    group.appendChild(row);
+    if (group.querySelector('.drow') === row) {     // the heading box lives here
+      row.replaceChild(group.querySelector('.dlabel'), row.querySelector('.dspacer'));
+    }
     return row;
   }
 
+  function addGroup(label, values) {
+    var group = document.createElement('div');
+    group.className = 'dgroup';
+    var box = document.createElement('input');
+    box.type = 'text';
+    box.className = 'dlabel';
+    box.setAttribute('list', 'commonlabels');
+    box.placeholder = 'Where';
+    box.setAttribute('aria-label', 'Heading');
+    box.autocomplete = 'off';
+    box.value = label || '';
+    group.appendChild(box);                      // picked up by the first line
+    drows.appendChild(group);
+    (values && values.length ? values : ['']).forEach(function (v) { addLine(group, v); });
+    return group;
+  }
+
   function readRows() {
-    return [].slice.call(drows.querySelectorAll('.drow')).map(function (r) {
-      return { label: r.querySelector('.dlabel').value.trim(),
-               value: r.querySelector('.dvalue').value.trim() };
-    }).filter(function (d) { return d.label || d.value; });   // blank rows are ignored
+    return [].slice.call(drows.querySelectorAll('.dgroup')).map(function (g) {
+      return {
+        label: g.querySelector('.dlabel').value.trim(),
+        values: [].slice.call(g.querySelectorAll('.dvalue')).map(function (i) {
+          return i.value.trim();
+        }).filter(function (v) { return v; })
+      };
+    }).filter(function (d) { return d.label || d.values.length; });   // blanks ignored
   }
 
   /* ---- attachments --------------------------------------------------- */
@@ -220,8 +261,12 @@
 
     drows.innerHTML = '';
     var details = (e && e.details) || [];
-    if (details.length) details.forEach(function (d) { addRow(d.label, d.value); });
-    else { addRow('', ''); addRow('', ''); addRow('', ''); }
+    if (details.length) {
+      details.forEach(function (d) {
+        /* events saved before a heading could say more than one thing */
+        addGroup(d.label, d.values || (d.value ? [d.value] : ['']));
+      });
+    } else addGroup('', ['']);          // one heading, one line, and that is all
 
     attachments = (e && e.attachments) ? e.attachments.slice() : [];
     document.getElementById('f-attachfiles').value = '';
@@ -280,7 +325,7 @@
   });
 
   document.getElementById('addrow').addEventListener('click', function () {
-    addRow('', '').querySelector('.dlabel').focus();
+    addGroup('', ['']).querySelector('.dlabel').focus();
   });
   document.getElementById('addbtn').addEventListener('click', function () { open(null); });
   document.getElementById('cancelbtn').addEventListener('click', function () { show('list'); });
