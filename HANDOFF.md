@@ -147,7 +147,10 @@ before, the day of, and the day after — setting up, the event, clearing away �
 `SJVSC.blocks(date)` on the events store is the whole rule. It reads the event's own
 day, not its advertising window, so an event that has stopped showing still holds its
 dates until it has passed. The refusal says only that the day is not available and
-never why, and it offers the nearest open days of the same weekday.
+never why, and it offers the nearest open days of the same weekday. The month
+calendar above the quote form is the same rule drawn out: green is free, red is
+not, cream is past, and clicking a free day fills the date in. It opens on the
+month the form is set to and will not go back past the current one.
 
 **The rate card.** `assets/js/rates-data.js` holds four lists the club writes itself:
 kinds of day, things to rent, extras and rules. The price grid is spaces x days, so
@@ -172,6 +175,9 @@ else — `rentals.html` has empty tables and an empty space list that `quote.js`
 - `site.css` styles `.field label` as a small uppercase caption for the quote form.
   `admin.css` restates every one of those properties; drop one and the admin labels go
   back to shouting.
+- `.cal` was already taken by the 2027 grid on `events.html`. The rental calendar is
+  `.rcal`. Grep `site.css` for a class name before adding one; the first collision
+  rendered the new calendar as a four-column card with the legend on top of it.
 - Watch CSS specificity when toggling with `display`. `.swmap svg{display:block}` beat
   `.swnarrow{display:none}` and rendered both maps at once; `.abody>span{display:block}`
   beat `.atag{display:inline-block}`. Scope the toggle to match.

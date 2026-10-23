@@ -125,6 +125,95 @@
     return out.sort(function (a, b) { return a - b; });
   }
 
+  /* ---- the calendar -------------------------------------------------- */
+
+  function iso(d) {
+    return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) +
+      '-' + ('0' + d.getDate()).slice(-2);
+  }
+
+  var grid = el('calGrid');
+  var shown = null;            // the first of the month on screen
+
+  function drawMonth() {
+    if (!grid) return;
+    var now = D.today();
+    var first = new Date(shown.getFullYear(), shown.getMonth(), 1);
+    el('calTitle').textContent = D.MONTH[first.getMonth()] + ' ' + first.getFullYear();
+
+    /* a month never starts on a Sunday by itself, so pad back to one */
+    var cur = new Date(first);
+    cur.setDate(1 - first.getDay());
+    var end = new Date(first.getFullYear(), first.getMonth() + 1, 0);
+
+    var cells = [];
+    while (cur <= end || cur.getDay() !== 0) {
+      cells.push(new Date(cur));
+      cur.setDate(cur.getDate() + 1);
+      if (cells.length > 41) break;
+    }
+
+    grid.innerHTML = '';
+    cells.forEach(function (d) {
+      var out = d.getMonth() !== first.getMonth();
+      var past = d < now;
+      var shut = !past && !!taken(d);
+      var cell;
+
+      if (out) {
+        cell = document.createElement('span');
+        cell.className = 'rcal-cell rcal-out';
+      } else if (past || shut) {
+        cell = document.createElement('span');
+        cell.className = 'rcal-cell ' + (past ? 'rcal-past' : 'rcal-shut');
+        cell.setAttribute('aria-label', D.fullDate(iso(d)) +
+          (past ? ', past' : ', not available'));
+      } else {
+        cell = document.createElement('button');
+        cell.type = 'button';
+        cell.className = 'rcal-cell rcal-open';
+        cell.setAttribute('aria-label', D.fullDate(iso(d)) + ', available');
+        cell.addEventListener('click', function () {
+          el('qDate').value = iso(d);
+          [].forEach.call(grid.querySelectorAll('.rcal-on'), function (n) {
+            n.classList.remove('rcal-on');
+          });
+          cell.classList.add('rcal-on');
+          el('qDate').focus();
+        });
+      }
+
+      cell.appendChild(document.createTextNode(d.getDate()));
+      if (!out && iso(d) === el('qDate').value) cell.classList.add('rcal-on');
+      grid.appendChild(cell);
+    });
+
+    /* nothing before this month is bookable, so there is nowhere to go back to */
+    el('calPrev').disabled =
+      first <= new Date(now.getFullYear(), now.getMonth(), 1);
+  }
+
+  function step(by) {
+    shown = new Date(shown.getFullYear(), shown.getMonth() + by, 1);
+    drawMonth();
+  }
+
+  if (grid) {
+    var start = el('qDate').value ? new Date(el('qDate').value + 'T12:00:00') : D.today();
+    if (start < D.today()) start = D.today();
+    shown = new Date(start.getFullYear(), start.getMonth(), 1);
+    el('calPrev').addEventListener('click', function () { step(-1); });
+    el('calNext').addEventListener('click', function () { step(1); });
+    el('qDate').addEventListener('change', function () {
+      var v = el('qDate').value;
+      if (!v) return;
+      var d = new Date(v + 'T12:00:00');
+      shown = new Date(d.getFullYear(), d.getMonth(), 1);
+      drawMonth();
+    });
+    drawMonth();
+  }
+
   drawSpaces();
   drawExtraBoxes();
   drawMemberLabel();

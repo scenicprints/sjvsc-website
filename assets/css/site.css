@@ -351,3 +351,47 @@ h3{font-size:1.28rem}
   .swmap .swnarrow{display:block}
   .swmap{margin:0 -6px}
 }
+
+/* ------------------------------------------------------------------ */
+/* Hall rental calendar. Which days are free, at a glance, next to the */
+/* form that quotes them.                                             */
+
+.rcal{padding:22px 24px 20px}
+.rcal-top{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.rcal-top h3{flex:1 1 auto;text-align:center;font-size:1.3rem;margin:0}
+.rcal-arrow{flex:0 0 auto;width:46px;height:46px;font-size:1.1rem;line-height:1;
+  background:var(--white);border:1px solid var(--line);color:var(--ink);
+  font-family:var(--ui);cursor:pointer}
+.rcal-arrow:hover:not(:disabled){background:var(--cream-2);border-color:var(--ink)}
+.rcal-arrow:disabled{color:var(--line);cursor:default}
+
+.rcal-days,.rcal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.rcal-days{margin-bottom:5px}
+.rcal-days span{text-align:center;font-size:.7rem;font-weight:700;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--ink-soft);padding-bottom:4px}
+
+.rcal-cell{display:flex;align-items:center;justify-content:center;
+  min-height:52px;font-family:var(--ui);font-size:1rem;
+  font-weight:600;font-variant-numeric:tabular-nums;border:1px solid var(--line);
+  background:var(--white);color:var(--ink);padding:0}
+.rcal-out{border-color:transparent;background:none}
+.rcal-past{color:var(--line);background:var(--cream);border-color:var(--cream-2)}
+.rcal-shut{background:#FBEAEC;border-color:#E8BFC5;color:#8A1226}
+.rcal-open{cursor:pointer;background:#EAF3EA;border-color:#BBD5BB;color:#1F4722}
+.rcal-open:hover{background:#D8E9D8;border-color:#2E6B33}
+.rcal-on{outline:3px solid var(--ink);outline-offset:-3px}
+
+.rcal-key{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-wrap:wrap;
+  gap:10px 22px;font-size:.88rem;color:var(--ink-2)}
+.rcal-key li{display:flex;align-items:center;gap:8px}
+.rcal-key .rcal-sw{width:17px;height:17px;flex:0 0 auto;border:1px solid var(--line)}
+.rcal-key .rcal-sw-open{background:#EAF3EA;border-color:#BBD5BB}
+.rcal-key .rcal-sw-shut{background:#FBEAEC;border-color:#E8BFC5}
+.rcal-key .rcal-sw-past{background:var(--cream);border-color:var(--cream-2)}
+
+@media(max-width:560px){
+  .rcal{padding:18px 15px 16px}
+  .rcal-days,.rcal-grid{gap:3px}
+  .rcal-cell{min-height:44px;font-size:.92rem}
+  .rcal-days span{font-size:.62rem;letter-spacing:.06em}
+}

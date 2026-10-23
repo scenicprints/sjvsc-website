@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=29de3a62">
+<link rel="stylesheet" href="assets/css/site.css?v=d321342a">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -98,7 +98,25 @@
       <div class="callout" style="margin-top:20px;max-width:56ch"><b>Placeholder rates.</b> The club sets these in the admin.</div>
 
       <div class="split" style="margin-top:30px">
-        <form id="quoteForm" class="card">
+        <div>
+        <div class="card rcal">
+          <div class="rcal-top">
+            <button class="rcal-arrow" type="button" id="calPrev" aria-label="The month before">&#8592;</button>
+            <h3 id="calTitle" aria-live="polite"></h3>
+            <button class="rcal-arrow" type="button" id="calNext" aria-label="The month after">&#8594;</button>
+          </div>
+          <div class="rcal-days" aria-hidden="true">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+          </div>
+          <div class="rcal-grid" id="calGrid"></div>
+          <ul class="rcal-key">
+            <li><span class="rcal-sw rcal-sw-open"></span>Available</li>
+            <li><span class="rcal-sw rcal-sw-shut"></span>Not available</li>
+            <li><span class="rcal-sw rcal-sw-past"></span>Past</li>
+          </ul>
+        </div>
+
+          <form id="quoteForm" class="card" style="margin-top:22px">
           <h3>Your event</h3>
           <div class="fields" style="margin-top:16px">
             <div class="field">
@@ -131,7 +149,8 @@
           </div>
 
           <button class="btn btn-red" type="submit" style="margin-top:22px;width:100%">Build quote</button>
-        </form>
+          </form>
+        </div>
 
         <div id="quoteOut" aria-live="polite"></div>
       </div>
@@ -182,6 +201,6 @@
 <script src="assets/js/site.js?v=e0f33d5e"></script>
 <script src="assets/js/events-data.js?v=1260a6eb"></script>
 <script src="assets/js/rates-data.js?v=21473dd7"></script>
-<script src="assets/js/quote.js?v=822463b4"></script>
+<script src="assets/js/quote.js?v=ea707205"></script>
 </body>
 </html>
