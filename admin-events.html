@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="assets/css/site.css?v=b6aba66e">
-<link rel="stylesheet" href="assets/css/admin.css?v=4fc68324">
+<link rel="stylesheet" href="assets/css/admin.css?v=1cf033a5">
 </head>
 <body class="adm">
 <a class="skip" href="#main">Skip to content</a>
@@ -88,66 +88,43 @@
             <p class="err" id="e-date" hidden>Choose the day it happens</p>
           </div>
           <div class="field">
-            <label for="f-where">Where <span class="opt">optional</span></label>
-            <input type="text" id="f-where" placeholder="110 N. Manley Road, Ripon" autocomplete="off">
-          </div>
-          <div class="field">
-            <label for="f-time">Starts <span class="opt">optional</span></label>
+            <label for="f-time">Time <span class="opt">optional</span></label>
             <input type="text" id="f-time" placeholder="7pm" autocomplete="off">
+            <p class="hint">Shows beside the date on the calendar.</p>
           </div>
-          <div class="field">
-            <label for="f-endtime">Ends <span class="opt">optional</span></label>
-            <input type="text" id="f-endtime" placeholder="10pm" autocomplete="off">
-          </div>
-          <div class="field">
-            <label for="f-who">Who may attend <span class="opt">optional</span></label>
-            <input type="text" id="f-who" autocomplete="off">
-          </div>
-          <div class="field">
-            <label for="f-price">Admission <span class="opt">optional</span></label>
-            <input type="text" id="f-price" placeholder="$20, under 15 free" autocomplete="off">
-          </div>
-          <div class="field">
-            <label for="f-tickets">Tickets from <span class="opt">optional</span></label>
-            <input type="text" id="f-tickets" autocomplete="off">
-            <p class="hint">If they are sold in advance rather than at the door.</p>
-          </div>
-          <div class="field">
-            <label for="f-signup">Sign up by <span class="opt">optional</span></label>
-            <input type="date" id="f-signup">
-          </div>
-          <div class="field">
-            <label for="f-food">Food and drink <span class="opt">optional</span></label>
-            <input type="text" id="f-food" autocomplete="off">
-          </div>
-          <div class="field">
-            <label for="f-bring">What to bring <span class="opt">optional</span></label>
-            <input type="text" id="f-bring" autocomplete="off">
-          </div>
-          <div class="field">
-            <label for="f-parking">Parking <span class="opt">optional</span></label>
-            <input type="text" id="f-parking" autocomplete="off">
-          </div>
-          <div class="field">
-            <label for="f-moreinfo">More information <span class="opt">optional</span></label>
-            <input type="text" id="f-moreinfo" placeholder="https://" autocomplete="off">
-          </div>
-          <div class="field">
-            <label for="f-contactname">Who to ask <span class="opt">optional</span></label>
-            <input type="text" id="f-contactname" autocomplete="off">
-          </div>
-          <div class="field">
-            <label for="f-contactphone">Their telephone <span class="opt">optional</span></label>
-            <input type="text" id="f-contactphone" autocomplete="off">
-          </div>
+
           <div class="field wide">
-            <label for="f-contactemail">Their email <span class="opt">optional</span></label>
-            <input type="text" id="f-contactemail" autocomplete="off">
+            <label id="detailshead">Anything else <span class="opt">optional</span></label>
+            <p class="hint" style="margin:0 0 12px">Write your own heading on the left and
+              what it says on the right. Click in a heading to see the usual ones.</p>
+            <datalist id="commonlabels">
+              <option value="Where"></option>
+              <option value="Starts"></option>
+              <option value="Ends"></option>
+              <option value="Who may attend"></option>
+              <option value="Admission"></option>
+              <option value="Tickets from"></option>
+              <option value="Sign up by"></option>
+              <option value="Food and drink"></option>
+              <option value="What to bring"></option>
+              <option value="Dress"></option>
+              <option value="Parking"></option>
+              <option value="Hosted by"></option>
+              <option value="Who to ask"></option>
+              <option value="Telephone"></option>
+              <option value="Email"></option>
+              <option value="More information"></option>
+            </datalist>
+            <div id="drows" role="group" aria-labelledby="detailshead"></div>
+            <button class="abtn small" type="button" id="addrow">+ Add another</button>
           </div>
+
           <div class="field wide">
-            <label for="f-attach">Attachments <span class="opt">optional</span></label>
-            <textarea id="f-attach" rows="2"></textarea>
-            <p class="hint">One on each line &#8212; minutes, a flyer, a form to fill in.</p>
+            <label for="f-attachfiles">Attachments <span class="opt">optional</span></label>
+            <input type="file" id="f-attachfiles" multiple>
+            <p class="hint">Minutes, a flyer, a form to fill in. You can choose several at once.</p>
+            <p class="err" id="e-attach" hidden></p>
+            <ul class="filelist" id="filelist"></ul>
           </div>
         </fieldset>
 
@@ -178,7 +155,7 @@
   </div>
 </main>
 
-<script src="assets/js/events-data.js?v=e327e41b"></script>
-<script src="assets/js/admin-events.js?v=3b12c8cd"></script>
+<script src="assets/js/events-data.js?v=5e6f44a4"></script>
+<script src="assets/js/admin-events.js?v=6e28678a"></script>
 </body>
 </html>

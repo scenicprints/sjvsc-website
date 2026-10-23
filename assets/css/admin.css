@@ -137,3 +137,28 @@
 .field input[type=file]:focus{outline:none;border-color:var(--ink)}
 .imgprev{margin-top:14px;display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
 .imgprev img{display:block;width:230px;height:auto;border:1px solid var(--line);border-radius:5px}
+
+/* details the club writes itself: a heading, what it says, and a way out */
+.abtn.small{font-size:.95rem;padding:10px 15px;border-width:2px}
+.drow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr) auto;gap:10px;
+  margin-bottom:10px;align-items:start}
+.drow .dlabel,.drow .dvalue{width:100%;font:inherit;font-family:var(--ui);padding:12px 13px;
+  border:2px solid var(--line);border-radius:5px;background:var(--white);color:var(--ink)}
+.drow .dlabel{font-weight:600}
+.drow .dlabel:focus,.drow .dvalue:focus{outline:none;border-color:var(--ink)}
+#addrow{margin-top:4px}
+
+/* chosen files */
+.filelist{list-style:none;margin:14px 0 0;padding:0}
+.filelist li{display:flex;align-items:center;gap:14px;background:var(--white);
+  border:2px solid var(--line);border-radius:5px;padding:12px 14px;margin-bottom:8px}
+.filelist .fname{font-weight:600;min-width:0;overflow-wrap:anywhere}
+.filelist .fsize{color:var(--ink-soft);font-size:.92rem;white-space:nowrap}
+.filelist li .abtn{margin-left:auto;flex:0 0 auto}
+
+@media(max-width:620px){
+  .drow{grid-template-columns:1fr}
+  .drow .drem{width:100%;text-align:center}
+  .filelist li{flex-wrap:wrap}
+  .filelist li .abtn{margin-left:0;width:100%;text-align:center}
+}

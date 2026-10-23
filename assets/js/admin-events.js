@@ -8,32 +8,40 @@
 (function () {
   var D = window.SJVSC;
   var events = D.all();
-  function save() { D.save(events); }
 
   var listview = document.getElementById('listview');
   var formview = document.getElementById('formview');
   var list = document.getElementById('elist');
   var form = document.getElementById('eform');
   var confirmBox = document.getElementById('confirm');
+  var drows = document.getElementById('drows');
+  var filelist = document.getElementById('filelist');
   var editing = null;
 
-  /* every field on the form; only title and date have to be filled in */
-  var NAMES = ['title', 'note', 'desc', 'agenda', 'image', 'date', 'time', 'endtime',
-               'where', 'who', 'price', 'tickets', 'signup', 'food', 'bring', 'parking',
-               'moreinfo', 'contactname', 'contactphone', 'contactemail', 'attach', 'from'];
+  /* the plain fields; details rows and attachments are their own thing */
+  var NAMES = ['title', 'note', 'desc', 'agenda', 'image', 'date', 'time', 'from'];
   var MUST = ['title', 'date'];
+  var ERRS = ['title', 'date', 'image', 'attach'];
   var F = {};
   NAMES.forEach(function (k) { F[k] = document.getElementById('f-' + k); });
 
+  var attachments = [];
+
+  var at = D.at, today = D.today;
+  var dayName = D.fullDate;
+  function pretty(s) { return s ? D.pretty(s) : ''; }
   function iso(d) {
     return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2)
       + '-' + ('0' + d.getDate()).slice(-2);
   }
   function plusDay(s) { var d = at(s); d.setDate(d.getDate() + 1); return iso(d); }
+  function size(n) {
+    return n < 1024 ? n + ' bytes'
+      : n < 1048576 ? Math.round(n / 1024) + ' KB'
+      : (n / 1048576).toFixed(1) + ' MB';
+  }
 
-  var at = D.at, today = D.today;
-  function pretty(s) { return s ? D.pretty(s) : ''; }
-  var dayName = D.fullDate;
+  /* ---- the list ----------------------------------------------------- */
 
   function standing(e) {
     var now = today();
@@ -64,89 +72,89 @@
       li.querySelector('.ewhen b').textContent = at(e.date).getDate();
       li.querySelector('.ewhen i').textContent = D.MONTH[at(e.date).getMonth()].slice(0, 3);
       li.querySelector('.ebody b').textContent = e.title;
-      li.querySelector('.enote').textContent =
-        dayName(e.date) + (e.time ? ', ' + e.time : '');
+      li.querySelector('.enote').textContent = dayName(e.date) + (e.time ? ', ' + e.time : '');
       li.querySelector('.estand').textContent = s.text;
       li.querySelector('button').addEventListener('click', function () { open(e); });
       list.appendChild(li);
     });
   }
 
-  function show(which) {
-    listview.hidden = which !== 'list';
-    formview.hidden = which !== 'form';
-    window.scrollTo(0, 0);
+  /* ---- details: the club writes its own headings --------------------- */
+
+  function addRow(label, value) {
+    var row = document.createElement('div');
+    row.className = 'drow';
+    row.innerHTML =
+      '<input type="text" class="dlabel" list="commonlabels" placeholder="Where" ' +
+      'aria-label="Heading" autocomplete="off">' +
+      '<input type="text" class="dvalue" placeholder="110 N. Manley Road, Ripon" ' +
+      'aria-label="What it says" autocomplete="off">' +
+      '<button class="abtn small drem" type="button">Remove</button>';
+    row.querySelector('.dlabel').value = label || '';
+    row.querySelector('.dvalue').value = value || '';
+    row.querySelector('.drem').addEventListener('click', function () {
+      row.remove();
+      if (!drows.children.length) addRow('', '');
+    });
+    drows.appendChild(row);
+    return row;
   }
 
-  var ERRS = ['title', 'date', 'image'];
-  function clearErrors() {
-    ERRS.forEach(function (k) {
-      document.getElementById('e-' + k).hidden = true;
-      F[k].classList.remove('bad');
+  function readRows() {
+    return [].slice.call(drows.querySelectorAll('.drow')).map(function (r) {
+      return { label: r.querySelector('.dlabel').value.trim(),
+               value: r.querySelector('.dvalue').value.trim() };
+    }).filter(function (d) { return d.label || d.value; });   // blank rows are ignored
+  }
+
+  /* ---- attachments --------------------------------------------------- */
+
+  var MAX_FILE = 400 * 1024;
+
+  function drawFiles() {
+    filelist.innerHTML = '';
+    attachments.forEach(function (f, i) {
+      var li = document.createElement('li');
+      li.innerHTML = '<span class="fname"></span><span class="fsize"></span>' +
+        '<button class="abtn small" type="button">Remove</button>';
+      li.querySelector('.fname').textContent = f.name;
+      li.querySelector('.fsize').textContent = size(f.size);
+      li.querySelector('button').addEventListener('click', function () {
+        attachments.splice(i, 1);
+        drawFiles();
+      });
+      filelist.appendChild(li);
     });
   }
 
-  function open(e) {
-    editing = e;
-    clearErrors();
-    confirmBox.hidden = true;
-    document.getElementById('formhead').textContent = e ? 'Change this event' : 'Add an event';
-    document.getElementById('removebtn').hidden = !e;
-    NAMES.forEach(function (k) { F[k].value = (e && e[k]) ? e[k] : ''; });
-    document.getElementById('f-imagefile').value = '';
-    showPicture(e && e.image ? e.image : '');
-    show('form');
-    F.title.focus();
+  function attachError(msg) {
+    var el = document.getElementById('e-attach');
+    el.textContent = msg;
+    el.hidden = false;
   }
 
-  function fail(k) {
-    document.getElementById('e-' + k).hidden = false;
-    F[k].classList.add('bad');
-  }
-
-  form.addEventListener('submit', function (ev) {
-    ev.preventDefault();
-    clearErrors();
-    var ok = true;
-    MUST.forEach(function (k) {
-      if (!F[k].value.trim()) { fail(k); ok = false; }
+  document.getElementById('f-attachfiles').addEventListener('change', function (ev) {
+    document.getElementById('e-attach').hidden = true;
+    var files = [].slice.call(ev.target.files || []);
+    var toobig = files.filter(function (f) { return f.size > MAX_FILE; });
+    files.filter(function (f) { return f.size <= MAX_FILE; }).forEach(function (f) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        attachments.push({ name: f.name, size: f.size, type: f.type, data: reader.result });
+        drawFiles();
+      };
+      reader.readAsDataURL(f);
     });
-    if (!ok) { document.querySelector('.bad').focus(); return; }
-
-    var e = editing;
-    if (!e) {
-      e = { id: 'e' + Date.now() };
-      events.push(e);
+    if (toobig.length) {
+      attachError(toobig.map(function (f) { return f.name; }).join(', ')
+        + (toobig.length === 1 ? ' is' : ' are') + ' larger than ' + size(MAX_FILE)
+        + '. This demo keeps files in the browser, which has little room.');
     }
-    NAMES.forEach(function (k) { e[k] = F[k].value.trim(); });
-    delete e.papers; delete e.contact;          // fields that used to exist
-    if (!e.from) e.from = iso(today());
-    e.until = plusDay(e.date);                  // off the website the day after
-
-    if (!D.save(events)) {
-      fail('image');
-      document.getElementById('e-image').textContent =
-        'There is no room left to keep that picture. Choose a smaller one.';
-      return;
-    }
-    render();
-    show('list');
+    ev.target.value = '';
   });
 
-  ERRS.forEach(function (k) {
-    F[k].addEventListener('input', function () {
-      document.getElementById('e-' + k).hidden = true;
-      F[k].classList.remove('bad');
-    });
-  });
+  /* ---- the picture ---------------------------------------------------- */
 
-  /* choosing the day fills the advertising window in, so nobody has to */
-  F.date.addEventListener('change', function () {
-    if (F.date.value && !F.from.value) F.from.value = iso(today());
-  });
-
-  /* A picture is read here and shrunk before it is kept, because the whole
-     list has to fit in the browser's small store. */
   var MAX = 1000, QUALITY = 0.72;
   var prev = document.getElementById('imgprev');
   var prevImg = document.getElementById('imgprevimg');
@@ -184,8 +192,96 @@
     document.getElementById('f-imagefile').value = '';
   });
 
-  document.getElementById('addbtn').addEventListener('click', function () { open(null); });
+  /* ---- opening and saving --------------------------------------------- */
 
+  function show(which) {
+    listview.hidden = which !== 'list';
+    formview.hidden = which !== 'form';
+    window.scrollTo(0, 0);
+  }
+
+  function clearErrors() {
+    ERRS.forEach(function (k) {
+      document.getElementById('e-' + k).hidden = true;
+      if (F[k]) F[k].classList.remove('bad');
+    });
+  }
+
+  function open(e) {
+    editing = e;
+    clearErrors();
+    confirmBox.hidden = true;
+    document.getElementById('formhead').textContent = e ? 'Change this event' : 'Add an event';
+    document.getElementById('removebtn').hidden = !e;
+
+    NAMES.forEach(function (k) { F[k].value = (e && e[k]) ? e[k] : ''; });
+    document.getElementById('f-imagefile').value = '';
+    showPicture(e && e.image ? e.image : '');
+
+    drows.innerHTML = '';
+    var details = (e && e.details) || [];
+    if (details.length) details.forEach(function (d) { addRow(d.label, d.value); });
+    else { addRow('', ''); addRow('', ''); addRow('', ''); }
+
+    attachments = (e && e.attachments) ? e.attachments.slice() : [];
+    document.getElementById('f-attachfiles').value = '';
+    drawFiles();
+
+    show('form');
+    F.title.focus();
+  }
+
+  function fail(k) {
+    document.getElementById('e-' + k).hidden = false;
+    if (F[k]) F[k].classList.add('bad');
+  }
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    clearErrors();
+    var ok = true;
+    MUST.forEach(function (k) {
+      if (!F[k].value.trim()) { fail(k); ok = false; }
+    });
+    if (!ok) { document.querySelector('.bad').focus(); return; }
+
+    var e = editing;
+    if (!e) {
+      e = { id: 'e' + Date.now() };
+      events.push(e);
+    }
+    NAMES.forEach(function (k) { e[k] = F[k].value.trim(); });
+    e.details = readRows();
+    e.attachments = attachments.slice();
+    if (!e.from) e.from = iso(today());
+    e.until = plusDay(e.date);                  // off the website the day after
+
+    if (!D.save(events)) {
+      attachError('There is no room left to keep all of this. '
+        + 'Remove a file, or choose a smaller picture.');
+      return;
+    }
+    render();
+    show('list');
+  });
+
+  ERRS.forEach(function (k) {
+    if (F[k]) {
+      F[k].addEventListener('input', function () {
+        document.getElementById('e-' + k).hidden = true;
+        F[k].classList.remove('bad');
+      });
+    }
+  });
+
+  /* choosing the day fills the advertising window in, so nobody has to */
+  F.date.addEventListener('change', function () {
+    if (F.date.value && !F.from.value) F.from.value = iso(today());
+  });
+
+  document.getElementById('addrow').addEventListener('click', function () {
+    addRow('', '').querySelector('.dlabel').focus();
+  });
   document.getElementById('addbtn').addEventListener('click', function () { open(null); });
   document.getElementById('cancelbtn').addEventListener('click', function () { show('list'); });
   document.getElementById('backbtn').addEventListener('click', function () { show('list'); });
@@ -199,7 +295,7 @@
   });
   document.getElementById('reallyremove').addEventListener('click', function () {
     events = events.filter(function (x) { return x !== editing; });
-    save();
+    D.save(events);
     render();
     show('list');
   });
