@@ -287,8 +287,7 @@ h3{font-size:1.28rem}
 /* social icons */
 .ftr .social{display:flex;gap:10px;align-items:center;margin-top:3px}
 .ftr .social a{display:grid;place-items:center;width:38px;height:38px;
-  border:1px solid var(--line-dark);color:#B4A99E;
-  transition:color .22s,border-color .22s,background .22s}
-.ftr .social a:hover{color:var(--cream);border-color:var(--cream);
-  background:rgba(247,241,228,.08);text-decoration:none}
+  border:1px solid var(--line-dark);color:#fff;
+  transition:border-color .22s,background .22s}
+.ftr .social a:hover{border-color:#fff;background:rgba(255,255,255,.14);text-decoration:none}
 .ftr .social svg{width:19px;height:19px;display:block}
