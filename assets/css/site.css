@@ -46,7 +46,7 @@ p,ul,ol,table,figure{margin:0}
 .navpanel{background:var(--ink);border-top:1px solid var(--line-dark)}
 .navpanel ul{list-style:none;padding:6px 0 16px;display:grid}
 .navpanel a{display:block;padding:11px 0;text-decoration:none;color:var(--cream);font-weight:500;border-bottom:1px solid var(--line-dark)}
-@media(max-width:1060px){.nav{display:none}.navtoggle{display:block}}
+@media(max-width:760px){.nav{display:none}.navtoggle{display:block}}
 
 /* buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;font-family:var(--ui);
