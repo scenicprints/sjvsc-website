@@ -89,3 +89,24 @@
   });
   mark(0); edges();
 })();
+
+/* The index readout. One line, filled from whichever destination you are on.
+   Without script the names are still plain links; the line simply stays empty. */
+(function () {
+  var ix = document.getElementById('dx'), ro = document.getElementById('dxr');
+  if (!ix || !ro) return;
+  var out = ro.querySelector('.dxd');
+
+  function show(e) {
+    var a = e.target.closest && e.target.closest('.dxi');
+    if (!a) return;
+    out.textContent = a.getAttribute('data-note') || '';
+    ro.classList.add('on');
+  }
+  function clear() { out.textContent = ''; ro.classList.remove('on'); }
+
+  ix.addEventListener('mouseover', show);
+  ix.addEventListener('focusin', show);
+  ix.addEventListener('mouseleave', clear);
+  ix.addEventListener('focusout', clear);
+})();

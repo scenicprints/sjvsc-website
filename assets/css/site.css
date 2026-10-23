@@ -302,23 +302,28 @@ h3{font-size:1.28rem}
 .navpanel .panel-social a:hover{border-color:#fff;background:rgba(255,255,255,.12)}
 .panel-social svg{width:18px;height:18px;display:block}
 
-/* the way into the rest of the site: equal-weight cards, hairline grid */
-.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(222px,1fr));
-  gap:1px;background:var(--line);border:1px solid var(--line)}
-.dcard{background:var(--white);text-decoration:none;color:inherit;display:flex;flex-direction:column;
-  transition:background .22s}
-.dcard:hover{background:var(--cream)}
-.dmedia{display:block;height:118px;overflow:hidden;background:var(--red)}
-.dmedia img{width:100%;height:100%;object-fit:cover;display:block}
-.dmedia.cross{background-color:var(--red);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46'%3E%3Cpath d='M20 12h6v8h8v6h-8v8h-6v-8h-8v-6h8z' fill='%23fff' fill-opacity='.11'/%3E%3C/svg%3E")}
-.dbody{padding:15px 17px 19px;display:flex;flex-direction:column;gap:5px;flex:1}
-.dbody b{font-family:var(--display);font-size:1.04rem;font-weight:700;line-height:1.25;letter-spacing:-.015em}
-.dcard:hover .dbody b{color:var(--red)}
-.dbody span{font-size:.85rem;color:var(--ink-2);line-height:1.5}
+/* the way into the rest of the site: a ruled index, and one readout line */
+.shead .count{margin-left:auto;font-size:.78rem;letter-spacing:.09em;color:var(--ink-soft);
+  font-variant-numeric:tabular-nums}
+.dx{columns:5 190px;column-gap:34px;column-rule:1px solid var(--line)}
+.dxi{display:flex;align-items:center;gap:12px;min-height:40px;text-decoration:none;color:inherit;
+  border-bottom:1px solid var(--line);break-inside:avoid;transition:border-color .18s;outline:none}
+.dxn{flex:0 0 auto;font-size:.69rem;color:#BDB7AD;font-variant-numeric:tabular-nums;
+  transition:color .18s}
+.dxt{font-family:var(--display);font-size:1rem;font-weight:600;line-height:1.25;
+  letter-spacing:-.01em;white-space:nowrap;transition:color .18s}
+.dxi:hover,.dxi:focus-visible{border-bottom-color:var(--red)}
+.dxi:hover .dxt,.dxi:focus-visible .dxt,
+.dxi:hover .dxn,.dxi:focus-visible .dxn{color:var(--red)}
+.dxr{display:flex;align-items:baseline;justify-content:space-between;gap:20px;
+  border-top:1px solid var(--ink);margin-top:18px;padding-top:13px}
+.dxd{font-size:.88rem;color:var(--ink-2);min-height:1.3em}
+.dxa{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--red);opacity:0;transition:opacity .18s;white-space:nowrap}
+.dxr.on .dxa{opacity:1}
 @media(max-width:560px){
-  .dgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .dmedia{height:84px}
-  .dbody{padding:12px 13px 15px}
-  .dbody b{font-size:.94rem}
-  .dbody span{font-size:.79rem}
+  .dx{columns:2;column-gap:18px}
+  .dxi{min-height:36px;gap:9px}
+  .dxt{font-size:.9rem}
+  .dxr{display:none}
 }
