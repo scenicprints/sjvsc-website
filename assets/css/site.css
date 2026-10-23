@@ -320,3 +320,34 @@ h3{font-size:1.28rem}
   .dxi{min-height:36px;gap:9px}
   .dxt{font-size:.9rem}
 }
+
+/* the West Coast map: states projected to a static path, no map library */
+.swmap{margin:0}
+.swmap svg{display:block;width:100%;height:auto;max-height:84vh;margin-inline:auto}
+.swland path{fill:var(--cream-2);stroke:var(--line);stroke-width:1.5;
+  stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.swc{cursor:pointer}
+.swlead{stroke:#C2B092;stroke-width:1.6;vector-effect:non-scaling-stroke;
+  transition:stroke .18s}
+.swpin{fill:var(--red);transition:fill .18s}
+.swc-home .swpin{fill:var(--ink)}
+.swc text{font-family:var(--ui);fill:var(--ink)}
+.swn{font-family:var(--display);font-size:25px;font-weight:600;letter-spacing:-.01em}
+.swt{font-size:18px;fill:var(--ink-soft)}
+.swnum{display:none;font-size:36px;font-weight:700;fill:var(--red)}
+.swc-home .swnum{fill:var(--ink)}
+.swc a{text-decoration:none}
+.swc:hover .swlead{stroke:var(--red)}
+.swc:hover .swpin{fill:var(--red-deep)}
+.swc:hover .swn,.swc a:focus-visible .swn{fill:var(--red)}
+.swc a:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.swlist{padding-left:1.3em}
+.swlist li{margin-bottom:6px}
+
+/* No room for leader labels on a phone. The pins carry numbers and the
+   list below carries the names, in the same order. */
+@media(max-width:760px){
+  .swlab,.swlead{display:none}
+  .swnum{display:block}
+  .swpin{r:13}
+}
