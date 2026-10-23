@@ -265,7 +265,7 @@ h3{font-size:1.28rem}
 
 /* footer */
 .ftr{background:var(--ink);color:#B4A99E;padding-block:56px 30px}
-.ftr-grid{display:grid;grid-template-columns:1.1fr .85fr 1.5fr .85fr;gap:34px}
+.ftr-grid{display:grid;grid-template-columns:1.2fr .9fr 1.4fr;gap:34px}
 .ftr h4{font-family:var(--ui);font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:15px}
 .ftr ul{list-style:none;padding:0;display:grid;gap:8px;font-size:.92rem}
 .ftr a{color:#B4A99E;text-decoration:none}
@@ -284,10 +284,20 @@ h3{font-size:1.28rem}
   *{transition-duration:.01ms!important}
 }
 
-/* social links: a small white mark with the name beside it */
-.ftr .social{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center}
-.ftr .social a{display:inline-flex;align-items:center;gap:8px;line-height:1.4}
-.ftr .social svg{width:15px;height:15px;flex:0 0 auto;color:#fff}
-.ftr .social a:hover svg{color:#fff}
 /* break the address at the dot or the @, never mid-word */
 .ftr .email{font-size:.86rem;overflow-wrap:break-word}
+
+/* social marks in the header, beside the nav */
+.nav .nav-social{display:inline-flex;align-items:center;gap:13px;margin-left:10px}
+.nav .nav-social a{padding:0;color:#fff;display:grid;place-items:center;width:26px;height:26px;
+  opacity:.88;transition:opacity .2s}
+.nav .nav-social a::after{content:none}
+.nav .nav-social a:hover{opacity:1}
+.nav .nav-social svg{width:17px;height:17px;display:block}
+
+/* and in the mobile panel, so they survive on a phone */
+.panel-social{display:flex;align-items:center;gap:14px;padding-top:18px}
+.navpanel .panel-social a{display:grid;place-items:center;width:38px;height:38px;padding:0;
+  color:#fff;border:1px solid var(--line-dark);border-bottom:1px solid var(--line-dark)}
+.navpanel .panel-social a:hover{border-color:#fff;background:rgba(255,255,255,.12)}
+.panel-social svg{width:18px;height:18px;display:block}
