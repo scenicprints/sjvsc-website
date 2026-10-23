@@ -242,6 +242,10 @@ Next, in the order it was being approached:
 
 `ROADMAP.md` has the full backlog and the decision log.
 
+**`sjvalleyswisshall.com`** is the club's hall rental page, the one the printed
+yard sign and its QR code point at. This site replaces it. It is not a competing
+site to work around and does not need raising again.
+
 ## Context
 
 This is a **concept pitch built on spec**. The club has not asked for it and is not
