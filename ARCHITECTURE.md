@@ -201,17 +201,37 @@ watch the event appear or vanish. That single interaction makes the argument.
 
 ## 5. Data model
 
-Seeded as typed files; identical shape to what a production database would hold.
+### What is actually built
+
+One list, in `assets/js/events-data.js`, written by the admin screen and read by the
+public pages. Kept in `localStorage` under `sjvsc.events.v1`; it falls back to the seed
+in that file when storage is empty or blocked.
 
 ```
-Event ────────── id, slug, title, description, images[], flyerUrl
-                 startsAt, endsAt, allDay, location
-                 publishFrom, publishUntil          ← advertising window
-                 featureFrom, featureUntil          ← homepage slot
-                 status (draft|scheduled|published|archived)
-                 blocksHall  ← ties into rental availability
-                 ticketed, priceTiers[]
+Event ───── id          'jass-fall', or 'e' + timestamp for a new one
+            title       required
+            note        the one line shown on the home page and the calendar
+            desc        description
+            agenda      free text, one item per line
+            image       a data URL - resized to 1000px wide, JPEG, in the browser
+            date        'YYYY-MM-DD', required
+            time        '7pm'; shown beside the date on the calendar
+            link        the event's own page, where one exists
+            from        advertising window opens
+            until       advertising window closes - computed as the day after `date`
+            details     [{ label, value }]  the club writes its own headings
+            attachments [{ name, size, type, data }]  data URLs, 400KB each at most
+```
 
+`details` is deliberately not a fixed set of fields. Sixteen common headings are
+offered as suggestions, but Oktoberfest needs "Tickets from", the Schwingfest needs
+"Admission" and the AGM needs neither, so no fixed list fits all three.
+
+An event is visible when `from <= today <= until`. That is the whole staleness fix.
+
+### What a production version would add
+
+```
 RentalInquiry ── id, ref, contactName, email, phone
                  eventDate, eventType, guestCount, spaces[], hours
                  alcohol, isMember, addOns[]
@@ -231,9 +251,11 @@ RateCard ─────── id, space, dayType (weekday|friday|saturday|sunda
 
 AddOn ────────── id, label, description, price, unit, requiresAlcohol
 
-Page ─────────── slug, title, body
 BoardMember ──── role, name, phone, email, sortOrder
 ```
+
+Attachments and images are data URLs only because a static demo has nowhere to put a
+file. With a backend they become ordinary uploads and the 400KB cap disappears.
 
 ---
 
@@ -301,12 +323,24 @@ the club would replace.
 
 ```
 /
-├── README.md                    start here
-├── ROADMAP.md                   living plan, backlog, decisions
-├── ARCHITECTURE.md              this file
-├── docs/
-│   └── current-site-audit.md    everything on the old site, preserved
+├── index.html + 27 other *.html   the public pages, plus the two admin screens
 ├── assets/
-│   └── img/                     photographs recovered from the old CDN
-└── (app code — added in Phase 1)
+│   ├── css/site.css               the public design system
+│   ├── css/admin.css              the admin side, larger and plainer
+│   ├── js/events-data.js          the event list - admin writes, public pages read
+│   ├── js/site.js                 nav, scroll-to-top, timeline, public event lists
+│   ├── js/admin.js                admin home
+│   ├── js/admin-events.js         the events screen
+│   ├── js/quote.js                hall rental quote engine
+│   ├── img/                       23 of the club's photographs
+│   └── img/arms/                  26 cantonal arms (public domain)
+├── tools/
+│   ├── stamp-assets.py            run after any CSS or JS change
+│   └── make-artifact-index.py     generates a gitignored artifact-shaped index
+├── docs/current-site-audit.md     everything the old site said
+├── README.md · ROADMAP.md · ARCHITECTURE.md · HANDOFF.md
 ```
+
+Every stylesheet and script reference carries a hash of the file, because Pages caches
+assets for ten minutes and a page served new HTML with an old script throws on load.
+`tools/stamp-assets.py` maintains them.

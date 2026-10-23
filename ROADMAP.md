@@ -105,14 +105,21 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] Swiss Echoes
 - [x] Contact that routes by topic instead of listing 14 phone numbers
 - [x] Migrate content and fix the copy errors (audit §6)
+- [x] Eleven further pages built from their own content and photographs
+- [x] The home page index — fifteen destinations in ruled columns
+- [x] The West Coast map on other-swiss-clubs.html
 
 ### Phase 3 — Demo admin
-- [ ] Login screen (demo credentials, shown on screen)
-- [ ] Dashboard
-- [ ] Event editor with **advertising windows** (`publishFrom` / `publishUntil`)
+- [ ] Login screen (a simple code for the demo; email and password later)
+- [x] Admin home — one row per thing that can be edited
+- [x] Event editor with **advertising windows** (`from` / `until`)
+- [x] Details the club writes itself: its own headings, not a fixed set
+- [x] Picture upload, resized in the browser; multi-file attachments
+- [x] Changes visibly affect the public site (home page and calendar)
+- [ ] Event pages render the data — six hand-written placeholder pages remain
+- [ ] The 2027 calendar on events.html is still markup
 - [ ] Month calendar: events, holds, bookings
 - [ ] **Rate card editor** — the proof that prices are not hardcoded
-- [ ] Changes visibly affect the public site
 
 ### Phase 4 — Quote system
 - [ ] Availability check against the club calendar
@@ -179,6 +186,33 @@ payments, and importing any existing member or booking data.
 ---
 
 ## Changelog
+
+### 2026-10-23
+
+- **Top navigation fixed at four items** — Calendar, Hall Rental, Membership, Contact.
+  Everything else is reached from the home page index.
+- **The home page index.** Fifteen destinations, numbered, in ruled columns sized by
+  column width so the count adapts to the space: five columns of three at page width,
+  two on a phone, about a fifth of the height of the photo-card grid it replaced.
+  Several directions were drawn and rejected first - a shattering Swiss cross, an
+  expanding strip, a split-flap departure board, a rotating drum. The brief that
+  settled it was Dieter Rams.
+- **The West Coast map.** California, Oregon and Washington projected to Mercator from
+  US Census data, simplified to 212 points and baked into the page as a static path -
+  no map library, no tiles, no key. Seven pins with leader lines out to each club's
+  name, six of them linking to that club's own site. A second arrangement for the
+  phone keeps the lines and the names rather than dropping them.
+- **The cookbook is Chuchichäschtli Chochbuech**, the Innerschweiz spelling, which is
+  what their own "Kitchen Kupboard Kookbook" was reaching for.
+- **The admin, begun.** Home page, then the events screen: list, add, change, remove,
+  with the advertising window that takes an event off the site by itself. Details are
+  rows the club writes - its own headings, sixteen common ones suggested. A picture is
+  uploaded and resized in the browser; attachments take several files at once.
+- **The public pages read the admin's events.** One list in events-data.js, written by
+  the admin screen and read by the home page and the calendar.
+- **Assets are stamped with a content hash.** Pages caches CSS and JS for ten minutes,
+  so new HTML could be served with an old script - which broke the events screen once.
+  tools/stamp-assets.py now makes that impossible.
 
 ### 2026-10-22 (fifth pass)
 - **The site is live and public** at https://scenicprints.github.io/sjvsc-website/

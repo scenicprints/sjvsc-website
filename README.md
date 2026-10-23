@@ -37,17 +37,27 @@ Plain HTML, CSS and JavaScript. No build step, no dependencies, no backend. Serv
 GitHub Pages from the root of `main`, so a push is a deploy.
 
 ```
-index.html, *.html     the fourteen pages
-assets/css/site.css    the whole design system
-assets/js/site.js      navigation, scroll, timeline
-assets/js/quote.js     the hall rental quote engine
-assets/img/            seven photographs: six from the old site, one supplied
-docs/                  research and notes
+index.html, *.html        the public pages
+admin.html                admin home
+admin-events.html         the events screen
+assets/css/site.css       the public design system
+assets/css/admin.css      the admin side, larger and plainer
+assets/js/events-data.js  the event list: admin writes it, public pages read it
+assets/js/site.js         navigation, scroll, timeline, public event lists
+assets/js/admin*.js       the admin screens
+assets/js/quote.js        the hall rental quote engine
+assets/img/               23 of the club's photographs, and 26 cantonal arms
+tools/stamp-assets.py     run after any CSS or JS change
+docs/                     research and notes
 ```
 
-Rates, events and page copy are written as data rather than baked into the markup,
-standing in for the admin screens a real build would have. Figures on the rentals page
-are placeholders; the club sets the real ones.
+Events live in one list that the admin screen writes and the public pages read, so a
+change in the admin is the change a visitor sees. Rental rates are written as data at
+the top of `quote.js`, standing in for the rate card editor a real build would have.
+Figures on the rentals page are placeholders; the club sets the real ones.
+
+The admin is at [/admin.html](https://scenicprints.github.io/sjvsc-website/admin.html).
+It is not linked from the public site and has no sign-in yet.
 
 ## Running it locally
 

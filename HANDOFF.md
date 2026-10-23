@@ -2,9 +2,8 @@
 
 **Live:** https://scenicprints.github.io/sjvsc-website/
 **Repo:** https://github.com/scenicprints/sjvsc-website (public)
-**Artifact mirror:** https://claude.ai/artifact/AaotMvHL1hmNDFnqzW56bR — private to the
-owner, kept in sync by hand. GitHub Pages is the one that matters; do not create a
-second artifact.
+**Admin:** https://scenicprints.github.io/sjvsc-website/admin.html — not linked from
+the public site, `noindex`, and not behind a sign-in yet.
 
 ## Setup
 
@@ -32,111 +31,177 @@ helper, and `git push` works from then on.
 
 No `gh`? Make a fine-grained token at github.com/settings/tokens with
 **Contents: read and write** on this repository, and use it as the password when git
-prompts. Tokens can only be created in the web interface, not from the command line.
+prompts.
 
 **A push to `main` is a deploy.** GitHub Pages serves the root of `main`; changes are
 live in about a minute.
 
+### After changing any CSS or JavaScript
+
+```bash
+python tools/stamp-assets.py
+```
+
+Pages serves assets with `Cache-Control: max-age=600`. For ten minutes after a push a
+visitor can be handed the new HTML with the old script, and when the two disagree the
+page throws on load. This already happened once: a script looking for a form field the
+new HTML had dropped took the whole events screen down. The tool puts a hash of each
+file into its URL so a page can only ask for the version it was built against. Run it
+before committing and commit what it changes.
+
 ## Where things are
 
 ```
-index.html, *.html        the 14 pages, at the repository root
-assets/css/site.css       the whole design system
-assets/js/site.js         navigation, scroll-to-top, the timeline
-assets/js/quote.js        the hall rental quote engine; rates are at the top
-assets/img/arms/          26 cantonal arms (public domain, Wikimedia)
-assets/img/               7 photographs (6 recovered, 1 supplied)
-docs/current-site-audit.md  everything the old site said — the source of truth
-tools/                    one script, see below
-ROADMAP.md                plan, decisions, what is left
-ARCHITECTURE.md           page map, data model, how the quote engine works
+index.html + 27 other *.html   the pages, at the repository root
+admin.html                     admin home — one row per thing that can be edited
+admin-events.html              the events screen: list, and the add/change form
+assets/css/site.css            the public design system
+assets/css/admin.css           the admin side, deliberately larger and plainer
+assets/js/events-data.js       THE event list — admin writes it, public pages read it
+assets/js/site.js              nav, scroll-to-top, timeline, public event lists
+assets/js/admin.js             the admin home (only the date is live)
+assets/js/admin-events.js      the events screen
+assets/js/quote.js             hall rental quote engine; rates at the top
+assets/img/                    23 photographs of theirs
+assets/img/arms/               26 cantonal arms (public domain, Wikimedia)
+docs/current-site-audit.md     everything the old site said — the source of truth
+tools/stamp-assets.py          run after any CSS/JS change (see above)
+tools/make-artifact-index.py   generates a gitignored artifact-shaped index
+ROADMAP.md                     plan, decisions, what is left
+ARCHITECTURE.md                page map, data model, how the pieces fit
 ```
 
-## Rules this project runs on
+## How the client works, which matters more than the code
 
-These were all learned the hard way. Breaking them is how the work gets rejected.
+1. **Do not build anything that was not explicitly asked for.** Brainstorming gets
+   words. Questions get answers. Building without being told to has gone badly every
+   single time it has happened.
+2. **One thing at a time.** When the subject is events, do not touch hall rental,
+   even to add a card that mentions it.
+3. **Mock up in the chat first.** Visual ideas described in prose get rejected;
+   the same idea drawn gets engaged with. Draw it, agree it, then build it.
+4. **Prose gets skimmed.** Several paragraphs of options will be read as noise.
+   Short, specific, with a recommendation.
+5. **Verify on the live site, not locally.** The answer to "it is broken" is usually
+   measurement, not argument — but check before saying so.
+
+## Rules the site runs on
 
 1. **Never invent a fact about the club.** Everything verifiable lives in
-   `docs/current-site-audit.md`. If a claim is not in there, it does not go on the
-   site. Earlier drafts invented a capacity, a maple floor, a stage, a commercial
-   range, a curfew and a dairy-farming origin story. All were removed.
-2. **Write plainly.** State what a thing is, when it happens and what it costs.
-   No sentence fragments for rhythm, no em-dash asides, no lists of three for
-   cadence, no evocative scene-setting. "Practice is Thursday at 6pm", not
-   "Thursday evenings, in a ring of sawdust".
-3. **Show, do not tell.** Nothing on a public page explains how the site works.
-   A note reading "this page stays current because each event carries dates" was
-   removed for this reason.
-4. **Placeholders are deliberate.** Rental figures are illustrative and stand in for
-   an admin rate card. Event detail pages are intentionally empty labelled blocks,
-   to show what the admin would control. Do not fill them with invented content.
-5. **The design is graphic-led on purpose.** Only six photographs exist — the club's
-   own Instagram is flyers, not photos. Type, flat colour, heraldry and layout carry
-   the pages. Do not restructure around imagery that is not there.
-6. **No build step.** Do not add a framework, a bundler or dependencies.
-7. **Keep `prefers-reduced-motion` working.** Every animation has an off switch.
+   `docs/current-site-audit.md`. Earlier drafts invented a capacity, a maple floor, a
+   stage, a commercial range, a curfew and a dairy-farming origin story. All removed.
+2. **Stay close to their own wording.** An earlier pass rewrote their sentences into
+   a different voice and had to be redone against the originals. Some creative liberty
+   is fine; a rewrite is not.
+3. **Standing pages carry no dates.** The page says what a thing is; the calendar says
+   when it next happens. Recurring patterns ("the last Saturday in July") may stay.
+   Their current site reads "due 31 July 2021" precisely because pages carry dates.
+4. **Write plainly.** No sentence fragments for rhythm, no lists of three for cadence,
+   no scene-setting.
+5. **Show, do not tell.** Nothing on a public page explains how the site works.
+6. **No build step.** No framework, no bundler, no dependencies.
+7. **Mobile is a scaled replica of desktop.** Chrome may differ — a hamburger is fine —
+   but content layouts should be the same thing, rearranged, not a different thing.
+8. **Keep `prefers-reduced-motion` working.**
+
+## The top navigation is fixed
+
+**Calendar, Hall Rental, Membership, Contact.** Four items. Everything else is reached
+from the index on the home page. Do not add a fifth.
+
+## Two pieces worth understanding before touching them
+
+**The home page index.** Fifteen destinations in ruled columns, sized by column *width*
+rather than count, so the browser fits as many as there is room for — five of three
+rows at page width, two columns on a phone. Numbered 01–15. It replaced a grid of photo
+cards. It has no readout, no descriptions and no images by explicit instruction.
+
+**The events data.** `assets/js/events-data.js` holds one list. `admin-events.html`
+writes it; `index.html` and `events.html` read it. An event shows only while today sits
+inside its advertising window (`from`…`until`), and `until` is computed as the day after
+the event — that is the mechanism that stops the site going stale. Edits live in
+`localStorage`, so they are per-browser; the real version would write to the club's
+account behind the same screens. The rows already in the markup are the no-script
+fallback.
+
+## Implementation notes
+
+- `index.html` is a standalone document because Pages serves it directly.
+- Inside the timeline's scroll container, `scroll-snap`, CSS `scroll-behavior` and
+  `scrollTo({behavior:'smooth'})` all fail, and `requestAnimationFrame` does not run in
+  a minimised window. The timeline eases by hand with a timer that guarantees it lands.
+- Dates are formatted from explicit month and weekday arrays, not
+  `toLocaleDateString` — one engine returns "Saturday, 7 November" with a comma.
+- `site.css` styles `.field label` as a small uppercase caption for the quote form.
+  `admin.css` restates every one of those properties; drop one and the admin labels go
+  back to shouting.
+- Watch CSS specificity when toggling with `display`. `.swmap svg{display:block}` beat
+  `.swnarrow{display:none}` and rendered both maps at once; `.abody>span{display:block}`
+  beat `.atag{display:inline-block}`. Scope the toggle to match.
 
 ## Verified facts worth not re-deriving
 
-- The Venmo handle **@Ripon-Swiss-Club** is real. The profile resolves and its
-  `og:title` reads "Cathy Quinn | @Ripon-Swiss-Club" — the club's own membership
-  officer, which corroborates both the handle and her role. `assets/img/venmo-qr.svg`
-  encodes `https://venmo.com/u/Ripon-Swiss-Club`, decoded independently to confirm it.
-  It opens the profile and does not pre-fill an amount.
-- The club's **membership page on their own site currently renders empty** — 32 KB of
-  shell with no dues, no Venmo, no late fee. `docs/current-site-audit.md` is presently
-  a better record of their membership terms than their website is.
-
-## Two implementation notes
-
-- `index.html` is a standalone document, because GitHub Pages serves it directly.
-  The Claude artifact viewer needs the same content without the outer document, so
-  `python tools/make-artifact-index.py` generates `artifact-index.html` for that.
-  It is gitignored.
-- Inside the timeline's scroll container, `scroll-snap`, CSS `scroll-behavior` and
-  `scrollTo({behavior:'smooth'})` all fail, and `requestAnimationFrame` does not run
-  at all in a minimised window. The timeline therefore eases by hand with a timer
-  that guarantees it lands. If you test in a headless or background browser and an
-  animation "does nothing", suspect this before suspecting the code.
+- The Venmo handle **@Ripon-Swiss-Club** is real; `assets/img/venmo-qr.svg` encodes
+  `https://venmo.com/u/Ripon-Swiss-Club`, decoded independently to confirm.
+- Their **membership page renders empty** — 32 KB of shell with no dues.
+  `docs/current-site-audit.md` is a better record of their terms than their site is.
+- The cookbook is **Chuchichäschtli Chochbuech** — the Innerschweiz spelling, which is
+  what their own gloss "Kitchen Kupboard Kookbook" was reaching for. Their site spells
+  it four different half-Germanised ways. The index shows "Chuchichäschtli" alone.
+- The six West Coast club URLs on `other-swiss-clubs.html` were **given by the client**
+  and differ from the links on the club's own page. Use the ones in the file.
+- The map's state outlines are US Census boundary data, projected to Mercator and
+  simplified to 212 points by a throwaway script, then baked into the page. There is no
+  map library and nothing is fetched at runtime.
 
 ## Do not reintroduce
 
-All of this was written, shown to the client and explicitly rejected. Some of it is
-sourced from `docs/current-site-audit.md`, so rule 1 will not stop you putting it
-back. This list will.
+All of this was written, shown to the client and explicitly rejected.
 
 | Removed | Why |
 |---|---|
-| The 2026 building work — new entrance, dance floor refinished, kitchen remodelled, new playground | Rejected outright, in every location, more than once. It is in the audit because the old site said it. It does not go on the new one |
-| Anything about a security guard at a rental | Cut from the rate card, the quote engine and the house rules |
-| Member count (702) and chorus voice count (32) | Both would need constant updating |
-| "The club in numbers", "At a glance", "Words you'll hear", "Fundraising" (cookbook and bricks), Schwingen's "What it is" | All removed as filler or stale |
-| A "what's included" list or house rules on the rentals page | The previous ones were invented. They are now deliberate empty placeholders |
-| Any note explaining how the site works, e.g. "how this page stays current" | See rule 3 |
-| The alphorn photograph (`alphorns.jpg`, deleted) | Generic alpine stock from the old site. The chorus has a real photograph of itself now |
-| Capacity figures, "maple" floor, a stage, a commercial range, caterers, a 1am curfew | Invented, removed |
-| "Visitors thinking of joining are welcome to come to a meeting" | Plausible, but the club never says it. Invented |
-| Life membership eligibility, and whether life or spousal members vote | Their site does not state it. The table says so rather than guessing |
+| The 2026 building work — new entrance, dance floor, kitchen, playground | Rejected outright, more than once |
+| Anything about a security guard at a rental | Cut from the rate card and the quote engine |
+| Member count (702), chorus voice count (32) | Would need constant updating |
+| "The club in numbers", "At a glance", "Words you'll hear", "Fundraising" | Filler |
+| Any note explaining how the site works | See rule 5 |
+| The alphorn photograph | Generic alpine stock from the old site |
+| Capacity figures, "maple" floor, a stage, a commercial range, a 1am curfew | Invented |
+| "Visitors thinking of joining are welcome to come to a meeting" | Never stated by the club |
+| Travel-poster illustration as an art direction | Rejected. `docs/image-prompts.md` still argues for it; ignore that |
+| A fifth item in the top navigation, including "Get a Quote" | Four items, fixed |
+| Photo cards, descriptions or a hover readout in the home page index | Each removed by name |
+| "Papers and minutes" as an event field | Meaningless outside the AGM; Attachments covers it |
 
-Two phrasings the client rejected by name: the hero subline "We hold Swiss wrestling
-tournaments, run a chorus, and rent our hall…" and the heading "Three reasons to come
-up Manley Road". The calendar heading reads **"What's going on"**, not "What's on".
+Two phrasings rejected by name: the hero subline "We hold Swiss wrestling tournaments,
+run a chorus, and rent our hall…" and the heading "Three reasons to come up Manley
+Road". The calendar heading reads **"What's going on"**.
 
-## What is next
+## Where the work stopped
 
-The public site is done. Not started:
+Done: the public site; the home page index; the West Coast map; the admin home; the
+events screen (add, change, remove, custom detail rows, picture upload, multi-file
+attachments); the public pages reading the event data.
 
-1. **Admin demo** — login, event editor with advertising windows
-   (`publishFrom` / `publishUntil`), rate card editor, master calendar.
-2. **A flat Schwingen emblem** to sit alongside the cantonal arms — the one piece of
-   generated artwork that would match. See `docs/image-prompts.md`.
+Next, in the order it was being approached:
+
+1. **The event pages still do not render the data.** `event-agm.html` and its five
+   siblings are hand-written pages of grey placeholder blocks. One page reading an id
+   from the URL would replace all six and close the loop — the admin collects every
+   field those pages have a slot for, and none of it reaches them.
+2. **The 2027 calendar on `events.html` is still markup.** Annual dates nobody can
+   edit, which will go stale exactly the way the old site did.
+3. **No sign-in.** Agreed shape: board members, email and password eventually, a simple
+   code for the demo, built so the real thing swaps in behind the same screens. Nothing
+   private may sit behind a demo-grade gate.
+4. **Hall rental rates** — the second thing the admin should own. Not started, and
+   explicitly not to be started while events is the subject.
 
 `ROADMAP.md` has the full backlog and the decision log.
 
 ## Context
 
 This is a **concept pitch built on spec**. The club has not asked for it and is not
-involved. The audience is their board. The repository is public, which means
-`ROADMAP.md` and `docs/current-site-audit.md` — which contain pitch strategy and a
-blunt assessment of their current site — are public too. That was a deliberate
-trade for free hosting.
+involved. The audience is their board. The repository is public, which means this file
+and `docs/current-site-audit.md` — which contain pitch strategy and a blunt assessment
+of their current site — are public too. That was a deliberate trade for free hosting.
