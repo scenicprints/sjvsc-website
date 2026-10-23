@@ -34,9 +34,7 @@
   display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap}
 .astate.warn{border-left-color:var(--gold)}
 .astate.none{border-left-color:var(--red);background:#FFF6F5;border-color:#F0C9C4}
-.astate p{margin:0;max-width:50ch;line-height:1.5}
-.astate b{font-weight:600}
-.astate .sub{display:block;margin-top:5px;font-size:1rem;color:var(--ink-2)}
+.astate p{margin:0;max-width:52ch;line-height:1.5;font-weight:600}
 
 .abtn{display:inline-block;background:var(--white);color:var(--ink);border:2px solid var(--ink);
   font-weight:600;font-size:1.0625rem;padding:14px 21px;border-radius:5px;text-decoration:none;
@@ -57,8 +55,6 @@
 .abody b{display:block;font-family:var(--display);font-size:1.4rem;font-weight:600;
   line-height:1.2;margin-bottom:7px}
 .abody>span{display:block;color:var(--ink-2);line-height:1.5}
-.abody .atag{display:inline-block;margin-top:12px;font-size:.84rem;font-weight:600;
-  color:var(--ink-soft);background:var(--cream-2);border-radius:4px;padding:7px 10px}
 .ago{margin-left:auto;flex:0 0 auto;font-weight:600;color:var(--red);white-space:nowrap}
 .arow:hover .ago{text-decoration:underline}
 

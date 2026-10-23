@@ -29,23 +29,16 @@
 
   var box = document.getElementById('astate');
   if (!box) return;
-  var head = document.getElementById('astate-h');
-  var sub = document.getElementById('astate-sub');
+  var msg = document.getElementById('astate-msg');
   var act = document.getElementById('astate-act');
-  var count = document.getElementById('acount');
 
   var showing = EVENTS.filter(function (e) { return at(e.from) <= now && now <= at(e.until); });
   var ahead = showing.filter(function (e) { return at(e.date) >= now; })
                      .sort(function (a, b) { return at(a.date) - at(b.date); });
 
-  var n = showing.length;
-  var plural = n === 1 ? 'event' : 'events';
-  if (count) count.textContent = n + ' showing now';
-
-  if (n === 0) {
+  if (!showing.length) {
     box.className = 'astate none';
-    head.textContent = 'Nothing is showing on the website right now.';
-    sub.textContent = 'Visitors see an empty calendar until an event is added.';
+    msg.textContent = 'Nothing is showing on the website right now.';
     act.textContent = 'Add an event';
     return;
   }
@@ -53,19 +46,19 @@
   // the furthest-out thing still advertised: when it goes, the site is bare
   var last = showing.map(function (e) { return at(e.until); })
                     .sort(function (a, b) { return b - a; })[0];
-  var runway = Math.round((last - now) / DAY);
 
-  head.textContent = 'The website is showing ' + n + ' ' + plural + '.';
-
-  if (runway <= WARN_DAYS) {
+  if (Math.round((last - now) / DAY) <= WARN_DAYS) {
     box.className = 'astate warn';
-    sub.textContent = 'After ' + longDate(last) + ' there will be nothing left to show.';
+    msg.textContent = 'After ' + longDate(last) + ' there will be nothing left to show.';
+    act.textContent = 'Add an event';
+  } else if (!ahead.length) {
+    box.className = 'astate warn';
+    msg.textContent = 'No event still has a date to come.';
     act.textContent = 'Add an event';
   } else {
     box.className = 'astate';
-    sub.textContent = ahead.length
-      ? 'The next one is the ' + ahead[0].title + ' on ' + longDate(at(ahead[0].date)) + '.'
-      : 'None of them has a date still to come.';
+    msg.textContent = 'The next event is the ' + ahead[0].title
+      + ' on ' + longDate(at(ahead[0].date)) + '.';
     act.textContent = 'View the website';
   }
 })();
