@@ -59,3 +59,15 @@ python -m http.server 8000
 
 Then open http://localhost:8000. Opening `index.html` straight from disk mostly works,
 but a server is closer to how it is hosted.
+
+## After changing any CSS or JavaScript
+
+```bash
+python tools/stamp-assets.py
+```
+
+GitHub Pages serves assets with `Cache-Control: max-age=600`, so for ten minutes after a
+push a visitor can be handed the new HTML with the old script. When the two disagree the
+page breaks on load. The tool puts a hash of each file into its URL, so a page can only
+ask for the file it was built against. Run it before committing, and commit what it
+changes.
