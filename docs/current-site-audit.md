@@ -206,7 +206,7 @@ Pulled from the old CDN, EXIF-rotated, resized and recompressed into `assets/img
 | `hall-sign.jpg` | Carved "San Joaquin Valley Swiss Club" sign, Est. 1926 / Inc. 1941 | Hero, about page |
 | `hall-dancefloor.jpg` | Refinished dance floor, bar, Swiss cantonal crests, string lights | Rentals hero |
 | `hall-banquet.jpg` | Full banquet seating, several hundred guests | Rentals — capacity proof |
-| `hall-entrance.jpg` | Hall entrance | Rentals gallery |
+| `hall-entrance.jpg` | ~~Hall entrance~~ Actually a screenshot of their "Hall for Rent" yard sign. Removed from the site | Was in the rentals gallery |
 | `schwingen-kids.jpg` | Two boys in Schwingen breeches in the sawdust ring | Schwingen page |
 | ~~`alphorns.jpg`~~ | Alphorn players, Bernese Alps | Deleted — generic stock, not the club |
 
