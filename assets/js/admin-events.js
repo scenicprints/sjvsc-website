@@ -18,8 +18,9 @@
   var editing = null;
 
   /* every field on the form; only title and date have to be filled in */
-  var NAMES = ['title', 'note', 'desc', 'agenda', 'papers', 'image', 'date', 'time',
-               'where', 'who', 'contact', 'price', 'attach', 'from', 'until'];
+  var NAMES = ['title', 'note', 'desc', 'agenda', 'image', 'date', 'time', 'endtime',
+               'where', 'who', 'price', 'tickets', 'signup', 'food', 'bring', 'parking',
+               'moreinfo', 'contactname', 'contactphone', 'contactemail', 'attach', 'from'];
   var MUST = ['title', 'date'];
   var F = {};
   NAMES.forEach(function (k) { F[k] = document.getElementById('f-' + k); });
@@ -77,7 +78,7 @@
     window.scrollTo(0, 0);
   }
 
-  var ERRS = ['title', 'date', 'until'];
+  var ERRS = ['title', 'date', 'image'];
   function clearErrors() {
     ERRS.forEach(function (k) {
       document.getElementById('e-' + k).hidden = true;
@@ -92,6 +93,8 @@
     document.getElementById('formhead').textContent = e ? 'Change this event' : 'Add an event';
     document.getElementById('removebtn').hidden = !e;
     NAMES.forEach(function (k) { F[k].value = (e && e[k]) ? e[k] : ''; });
+    document.getElementById('f-imagefile').value = '';
+    showPicture(e && e.image ? e.image : '');
     show('form');
     F.title.focus();
   }
@@ -108,9 +111,6 @@
     MUST.forEach(function (k) {
       if (!F[k].value.trim()) { fail(k); ok = false; }
     });
-    if (F.from.value && F.until.value && F.until.value <= F.from.value) {
-      fail('until'); ok = false;
-    }
     if (!ok) { document.querySelector('.bad').focus(); return; }
 
     var e = editing;
@@ -119,10 +119,16 @@
       events.push(e);
     }
     NAMES.forEach(function (k) { e[k] = F[k].value.trim(); });
-    // left blank, the advertising window still has to mean something
+    delete e.papers; delete e.contact;          // fields that used to exist
     if (!e.from) e.from = iso(today());
-    if (!e.until) e.until = plusDay(e.date);
-    save();
+    e.until = plusDay(e.date);                  // off the website the day after
+
+    if (!D.save(events)) {
+      fail('image');
+      document.getElementById('e-image').textContent =
+        'There is no room left to keep that picture. Choose a smaller one.';
+      return;
+    }
     render();
     show('list');
   });
@@ -136,10 +142,49 @@
 
   /* choosing the day fills the advertising window in, so nobody has to */
   F.date.addEventListener('change', function () {
-    if (!F.date.value) return;
-    if (!F.from.value) F.from.value = iso(today());
-    if (!F.until.value) F.until.value = plusDay(F.date.value);
+    if (F.date.value && !F.from.value) F.from.value = iso(today());
   });
+
+  /* A picture is read here and shrunk before it is kept, because the whole
+     list has to fit in the browser's small store. */
+  var MAX = 1000, QUALITY = 0.72;
+  var prev = document.getElementById('imgprev');
+  var prevImg = document.getElementById('imgprevimg');
+
+  function showPicture(src) {
+    F.image.value = src || '';
+    prevImg.src = src || '';
+    prev.hidden = !src;
+  }
+
+  document.getElementById('f-imagefile').addEventListener('change', function (ev) {
+    var file = ev.target.files && ev.target.files[0];
+    if (!file) return;
+    document.getElementById('e-image').hidden = true;
+    var reader = new FileReader();
+    reader.onerror = function () { document.getElementById('e-image').hidden = false; };
+    reader.onload = function () {
+      var img = new Image();
+      img.onerror = function () { document.getElementById('e-image').hidden = false; };
+      img.onload = function () {
+        var w = img.width, h = img.height;
+        if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+        var c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        showPicture(c.toDataURL('image/jpeg', QUALITY));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById('imgclear').addEventListener('click', function () {
+    showPicture('');
+    document.getElementById('f-imagefile').value = '';
+  });
+
+  document.getElementById('addbtn').addEventListener('click', function () { open(null); });
 
   document.getElementById('addbtn').addEventListener('click', function () { open(null); });
   document.getElementById('cancelbtn').addEventListener('click', function () { show('list'); });

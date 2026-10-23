@@ -67,14 +67,16 @@
             <p class="hint">One item on each line.</p>
           </div>
           <div class="field">
-            <label for="f-papers">Papers and minutes <span class="opt">optional</span></label>
-            <textarea id="f-papers" rows="2"></textarea>
-            <p class="hint">One on each line. Put the web address after the name if there is one.</p>
-          </div>
-          <div class="field">
-            <label for="f-image">Event image <span class="opt">optional</span></label>
-            <input type="text" id="f-image" placeholder="assets/img/hall-interior.jpg" autocomplete="off">
-            <p class="hint">The name of a picture already on the website.</p>
+            <label for="f-imagefile">Picture <span class="opt">optional</span></label>
+            <input type="file" id="f-imagefile" accept="image/*">
+            <input type="hidden" id="f-image">
+            <p class="hint">A photograph from your computer or phone. It is made smaller
+              before it is kept.</p>
+            <p class="err" id="e-image" hidden>That file could not be read as a picture</p>
+            <div class="imgprev" id="imgprev" hidden>
+              <img id="imgprevimg" alt="The picture chosen for this event">
+              <button class="abtn" type="button" id="imgclear">Remove this picture</button>
+            </div>
           </div>
         </fieldset>
 
@@ -86,44 +88,76 @@
             <p class="err" id="e-date" hidden>Choose the day it happens</p>
           </div>
           <div class="field">
-            <label for="f-time">Time <span class="opt">optional</span></label>
+            <label for="f-where">Where <span class="opt">optional</span></label>
+            <input type="text" id="f-where" placeholder="110 N. Manley Road, Ripon" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="f-time">Starts <span class="opt">optional</span></label>
             <input type="text" id="f-time" placeholder="7pm" autocomplete="off">
           </div>
           <div class="field">
-            <label for="f-where">Where <span class="opt">optional</span></label>
-            <input type="text" id="f-where" autocomplete="off">
+            <label for="f-endtime">Ends <span class="opt">optional</span></label>
+            <input type="text" id="f-endtime" placeholder="10pm" autocomplete="off">
           </div>
           <div class="field">
             <label for="f-who">Who may attend <span class="opt">optional</span></label>
             <input type="text" id="f-who" autocomplete="off">
           </div>
           <div class="field">
-            <label for="f-contact">Contact <span class="opt">optional</span></label>
-            <input type="text" id="f-contact" autocomplete="off">
+            <label for="f-price">Admission <span class="opt">optional</span></label>
+            <input type="text" id="f-price" placeholder="$20, under 15 free" autocomplete="off">
           </div>
           <div class="field">
-            <label for="f-price">Price <span class="opt">optional</span></label>
-            <input type="text" id="f-price" autocomplete="off">
+            <label for="f-tickets">Tickets from <span class="opt">optional</span></label>
+            <input type="text" id="f-tickets" autocomplete="off">
+            <p class="hint">If they are sold in advance rather than at the door.</p>
+          </div>
+          <div class="field">
+            <label for="f-signup">Sign up by <span class="opt">optional</span></label>
+            <input type="date" id="f-signup">
+          </div>
+          <div class="field">
+            <label for="f-food">Food and drink <span class="opt">optional</span></label>
+            <input type="text" id="f-food" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="f-bring">What to bring <span class="opt">optional</span></label>
+            <input type="text" id="f-bring" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="f-parking">Parking <span class="opt">optional</span></label>
+            <input type="text" id="f-parking" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="f-moreinfo">More information <span class="opt">optional</span></label>
+            <input type="text" id="f-moreinfo" placeholder="https://" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="f-contactname">Who to ask <span class="opt">optional</span></label>
+            <input type="text" id="f-contactname" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="f-contactphone">Their telephone <span class="opt">optional</span></label>
+            <input type="text" id="f-contactphone" autocomplete="off">
+          </div>
+          <div class="field wide">
+            <label for="f-contactemail">Their email <span class="opt">optional</span></label>
+            <input type="text" id="f-contactemail" autocomplete="off">
           </div>
           <div class="field wide">
             <label for="f-attach">Attachments <span class="opt">optional</span></label>
             <textarea id="f-attach" rows="2"></textarea>
-            <p class="hint">One on each line.</p>
+            <p class="hint">One on each line &#8212; minutes, a flyer, a form to fill in.</p>
           </div>
         </fieldset>
 
         <fieldset class="pair">
           <legend>When it is advertised on the website</legend>
           <p class="hint wide" style="margin:-4px 0 14px">Filled in for you when you choose
-            the day. Once the advertising stops, the event comes off the website on its own.</p>
+            the day. It comes off the website by itself the day after the event.</p>
           <div class="field">
             <label for="f-from">Start showing it</label>
             <input type="date" id="f-from">
-          </div>
-          <div class="field">
-            <label for="f-until">Stop showing it</label>
-            <input type="date" id="f-until">
-            <p class="err" id="e-until" hidden>This must be after the day it starts showing</p>
           </div>
         </fieldset>
 

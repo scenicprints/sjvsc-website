@@ -130,3 +130,10 @@
   .eactions .danger{margin-left:0;width:100%;text-align:center}
   .eactions .abtn{width:100%;text-align:center}
 }
+
+/* picture upload */
+.field input[type=file]{width:100%;font:inherit;font-family:var(--ui);padding:12px;
+  border:2px dashed var(--line);border-radius:5px;background:var(--white);cursor:pointer}
+.field input[type=file]:focus{outline:none;border-color:var(--ink)}
+.imgprev{margin-top:14px;display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.imgprev img{display:block;width:230px;height:auto;border:1px solid var(--line);border-radius:5px}
