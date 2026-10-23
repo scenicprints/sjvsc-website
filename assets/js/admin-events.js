@@ -1,42 +1,14 @@
-/* The events screen.
+/* The events screen. The list itself lives in events-data.js, which the
+   public pages read too, so a change here is the change they see.
 
    Edits are kept in this browser only — nothing is sent anywhere and no
    other visitor sees them. That is the right trade for a demo; the real
-   version writes to the club's own account behind the same screens.
-
-   The public pages still carry their events as markup, so saving here does
-   not change them yet. Wiring those to this data is the next piece. */
+   version writes to the club's account behind the same screens. */
 
 (function () {
-  var KEY = 'sjvsc.events.v1';
-
-  var SEED = [
-    { id: 'jass-fall', title: 'Fall Jass Party',
-      note: 'The Swiss card game. Sunday afternoon at the hall.',
-      date: '2026-11-15', time: '', from: '2026-09-20', until: '2026-11-16' },
-    { id: 'childrens-christmas', title: "Children's Christmas Party",
-      note: "For members' children and grandchildren.",
-      date: '2026-12-05', time: '', from: '2026-10-10', until: '2026-12-06' },
-    { id: 'agm', title: 'Annual General Meeting',
-      note: 'Officers are elected. All members may attend.',
-      date: '2026-12-10', time: '7pm', from: '2026-10-15', until: '2026-12-11' },
-    { id: 'echoes-christmas', title: 'Swiss Echoes Christmas Party',
-      note: 'Carols, supper and a dance.',
-      date: '2026-12-12', time: '', from: '2026-10-17', until: '2026-12-13' }
-  ];
-
-  function load() {
-    try {
-      var raw = localStorage.getItem(KEY);
-      if (raw) return JSON.parse(raw);
-    } catch (e) { /* private window, blocked storage: fall back to the seed */ }
-    return SEED.slice();
-  }
-  function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(events)); } catch (e) {}
-  }
-
-  var events = load();
+  var D = window.SJVSC;
+  var events = D.all();
+  function save() { D.save(events); }
 
   var listview = document.getElementById('listview');
   var formview = document.getElementById('formview');
@@ -51,16 +23,9 @@
     from: document.getElementById('f-from'), until: document.getElementById('f-until')
   };
 
-  function at(s) { var p = (s || '').split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
-  function today() { var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
-  function pretty(s) {
-    if (!s) return '';
-    return at(s).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-  }
-  function dayName(s) {
-    return at(s).toLocaleDateString('en-GB',
-      { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  }
+  var at = D.at, today = D.today;
+  function pretty(s) { return s ? D.pretty(s) : ''; }
+  var dayName = D.fullDate;
 
   function standing(e) {
     var now = today();
@@ -89,8 +54,7 @@
         '<span class="estand ' + s.cls + '"></span></span>' +
         '<button class="abtn" type="button">Change</button>';
       li.querySelector('.ewhen b').textContent = at(e.date).getDate();
-      li.querySelector('.ewhen i').textContent =
-        at(e.date).toLocaleDateString('en-GB', { month: 'short' });
+      li.querySelector('.ewhen i').textContent = D.MONTH[at(e.date).getMonth()].slice(0, 3);
       li.querySelector('.ebody b').textContent = e.title;
       li.querySelector('.enote').textContent =
         dayName(e.date) + (e.time ? ', ' + e.time : '');

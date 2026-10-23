@@ -89,3 +89,12 @@
   });
   mark(0); edges();
 })();
+
+/* The two public event lists are drawn from the shared event data, so what
+   the admin saves is what a visitor sees. The markup already in the page is
+   the same list rendered — it stands in when there is no script. */
+(function () {
+  if (!window.SJVSC) return;
+  window.SJVSC.render(document.getElementById('whatson'), 5);
+  window.SJVSC.render(document.getElementById('upcoming'));
+})();
