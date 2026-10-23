@@ -208,7 +208,7 @@ Pulled from the old CDN, EXIF-rotated, resized and recompressed into `assets/img
 | `hall-banquet.jpg` | Full banquet seating, several hundred guests | Rentals — capacity proof |
 | `hall-entrance.jpg` | Hall entrance | Rentals gallery |
 | `schwingen-kids.jpg` | Two boys in Schwingen breeches in the sawdust ring | Schwingen page |
-| `alphorns.jpg` | Alphorn players with Swiss flag, Bernese Alps | About / culture |
+| ~~`alphorns.jpg`~~ | Alphorn players, Bernese Alps | Deleted — generic stock, not the club |
 
 Six usable photographs total. **This is not enough** — the rentals page in particular
 needs a proper shoot. See Open Questions.

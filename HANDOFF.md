@@ -102,6 +102,7 @@ back. This list will.
 | "The club in numbers", "At a glance", "Words you'll hear", "Fundraising" (cookbook and bricks), Schwingen's "What it is" | All removed as filler or stale |
 | A "what's included" list or house rules on the rentals page | The previous ones were invented. They are now deliberate empty placeholders |
 | Any note explaining how the site works, e.g. "how this page stays current" | See rule 3 |
+| The alphorn photograph (`alphorns.jpg`, deleted) | Generic alpine stock from the old site. The chorus has a real photograph of itself now |
 | Capacity figures, "maple" floor, a stage, a commercial range, caterers, a 1am curfew | Invented, removed |
 
 Two phrasings the client rejected by name: the hero subline "We hold Swiss wrestling
