@@ -41,7 +41,7 @@ index.html, *.html     the fourteen pages
 assets/css/site.css    the whole design system
 assets/js/site.js      navigation, scroll, timeline
 assets/js/quote.js     the hall rental quote engine
-assets/img/            six photographs recovered from the old site
+assets/img/            seven photographs: six from the old site, one supplied
 docs/                  research and notes
 ```
 

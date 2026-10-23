@@ -90,7 +90,7 @@ backend, nothing to install.
 | | `assets/js/quote.js` — the hall rental quote engine |
 | Data | In the markup, and in one table at the top of `quote.js`, standing in for the admin screens a real build would have |
 | Heraldry | Twenty-six public-domain cantonal arms from Wikimedia Commons |
-| Photography | Six images recovered from the old site's CDN |
+| Photography | Seven images: six recovered from the old site, one supplied by the client |
 | Hosting | **GitHub Pages**, from the root of `main` |
 
 **Running cost: $0.** A push to `main` is a deploy, live in about a minute.
@@ -104,7 +104,7 @@ that cannot break during a presentation, cannot need updating in a year, and can
 stop someone picking this up on a different machine.
 
 The constraint that settled it: the club's own Instagram is event flyers rather than
-photographs, so only six photographs exist. A site that cannot lean on imagery has to
+photographs, so the library is seven images. A site that cannot lean on imagery has to
 be carried by type, colour, flat shape and heraldry — and none of that needs a
 framework.
 

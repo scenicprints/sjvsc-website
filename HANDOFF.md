@@ -45,7 +45,7 @@ assets/css/site.css       the whole design system
 assets/js/site.js         navigation, scroll-to-top, the timeline
 assets/js/quote.js        the hall rental quote engine; rates are at the top
 assets/img/arms/          26 cantonal arms (public domain, Wikimedia)
-assets/img/               6 photographs recovered from the old site
+assets/img/               7 photographs (6 recovered, 1 supplied)
 docs/current-site-audit.md  everything the old site said — the source of truth
 tools/                    one script, see below
 ROADMAP.md                plan, decisions, what is left
