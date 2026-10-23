@@ -119,7 +119,7 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 - [ ] Event pages render the data — six hand-written placeholder pages remain
 - [ ] The 2027 calendar on events.html is still markup
 - [ ] Month calendar: events, holds, bookings
-- [ ] **Rate card editor** — the proof that prices are not hardcoded
+- [x] **Rate card editor** — the proof that prices are not hardcoded
 
 ### Phase 4 — Quote system
 - [ ] Availability check against the club calendar
@@ -127,7 +127,7 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 - [ ] Member discount applied automatically
 - [ ] Alcohol toggle drives insurance and bartender requirements
 - [ ] Enquiry lands in the admin pipeline
-- [ ] Realistic placeholder rates, labelled as illustrative
+- [x] Realistic placeholder rates, labelled as illustrative
 
 ### Phase 5 — Pitch polish
 - [ ] One-click demo reset, so every showing starts clean

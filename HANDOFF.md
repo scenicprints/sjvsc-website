@@ -55,13 +55,16 @@ before committing and commit what it changes.
 index.html + 27 other *.html   the pages, at the repository root
 admin.html                     admin home — one row per thing that can be edited
 admin-events.html              the events screen: list, and the add/change form
+admin-rentals.html             the hall rental screen: the whole rate card
 assets/css/site.css            the public design system
 assets/css/admin.css           the admin side, deliberately larger and plainer
 assets/js/events-data.js       THE event list — admin writes it, public pages read it
+assets/js/rates-data.js        THE rate card — admin writes it, rentals.html reads it
 assets/js/site.js              nav, scroll-to-top, timeline, public event lists
 assets/js/admin.js             the admin home (only the date is live)
 assets/js/admin-events.js      the events screen
-assets/js/quote.js             hall rental quote engine; rates at the top
+assets/js/admin-rentals.js     the hall rental screen
+assets/js/quote.js             draws the rate card and prices a date from it
 assets/img/                    23 photographs of theirs
 assets/img/arms/               26 cantonal arms (public domain, Wikimedia)
 docs/current-site-audit.md     everything the old site said — the source of truth
@@ -124,6 +127,16 @@ the event — that is the mechanism that stops the site going stale. Edits live 
 account behind the same screens. The rows already in the markup are the no-script
 fallback.
 
+**The rate card.** `assets/js/rates-data.js` holds four lists the club writes itself:
+kinds of day, things to rent, extras and rules. The price grid is spaces x days, so
+adding a column widens it. Three things carry a meaning the engine reads: a kind of day
+carries the weekdays it covers, which is how a date finds its column; an extra carries
+`when` (the renter ticks it, always, or when alcohol is served); a rule carries `does`
+(only printed, hours included, each hour after that, members take off). A rule set to
+only printed appears on the rate card and in the estimate and changes no arithmetic,
+which is where the two deposits live. Nothing about the card is hardcoded anywhere
+else — `rentals.html` has empty tables and an empty space list that `quote.js` fills.
+
 ## Implementation notes
 
 - `index.html` is a standalone document because Pages serves it directly.
@@ -180,8 +193,9 @@ Road". The calendar heading reads **"What's going on"**.
 ## Where the work stopped
 
 Done: the public site; the home page index; the West Coast map; the admin home; the
-events screen (add, change, remove, custom detail rows, picture upload, multi-file
-attachments); the public pages reading the event data.
+events screen (add, change, remove, custom detail rows with more than one line each,
+picture upload, multi-file attachments); the public pages reading the event data; the
+hall rental screen and the rate card, quote form and estimate reading it.
 
 Next, in the order it was being approached:
 
@@ -194,8 +208,9 @@ Next, in the order it was being approached:
 3. **No sign-in.** Agreed shape: board members, email and password eventually, a simple
    code for the demo, built so the real thing swaps in behind the same screens. Nothing
    private may sit behind a demo-grade gate.
-4. **Hall rental rates** — the second thing the admin should own. Not started, and
-   explicitly not to be started while events is the subject.
+4. **The club calendar inside the quote engine.** `quote.js` still holds the nine
+   dates it refuses a booking on. That list should come off the event data, not sit
+   in the engine.
 
 `ROADMAP.md` has the full backlog and the decision log.
 

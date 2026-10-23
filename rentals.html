@@ -113,11 +113,7 @@
           <div class="fields">
             <div class="field">
               <label for="qSpace">Space</label>
-              <select id="qSpace">
-                <option value="hall" selected>Hall only</option>
-                <option value="both">Hall and grounds</option>
-                <option value="grounds">Grounds only</option>
-              </select>
+              <select id="qSpace"></select>
             </div>
             <div class="field">
               <label for="qHours">Hours</label>
@@ -126,17 +122,12 @@
           </div>
 
           <h4 style="margin-top:22px;font-family:var(--ui);font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft)">Extras</h4>
-          <div style="margin-top:10px;display:grid;gap:9px;font-size:.94rem">
-            <label><input type="checkbox" id="q_kitchen" checked> Commercial kitchen</label>
-            <label><input type="checkbox" id="q_linens"> Linens</label>
-            <label><input type="checkbox" id="q_av"> Sound system and projector</label>
-            <label><input type="checkbox" id="q_cleaning" checked> End-of-night cleaning</label>
-          </div>
+          <div id="qExtras" style="margin-top:10px;display:grid;gap:9px;font-size:.94rem"></div>
 
           <h4 style="margin-top:22px;font-family:var(--ui);font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft)">Also</h4>
           <div style="margin-top:10px;display:grid;gap:9px;font-size:.94rem">
             <label><input type="checkbox" id="qAlcohol" checked> Alcohol will be served</label>
-            <label><input type="checkbox" id="qMember"> I am a club member</label>
+            <label><input type="checkbox" id="qMember"> <span id="qMemberLabel">I am a club member</span></label>
           </div>
 
           <button class="btn btn-red" type="submit" style="margin-top:22px;width:100%">Build quote</button>
@@ -150,31 +141,14 @@
   <section class="sec band-cream2">
     <div class="wrap">
       <div class="shead" id="rates"><span class="eyebrow">Prices</span><h2>Rate card</h2></div>
-      <p class="lead" style="margin-top:10px">Eight hours included. Additional hours are $150 each. Members take 25% off.</p>
+      <p class="lead" style="margin-top:10px" id="rateLead"></p>
       <div class="scroll">
-        <table class="tbl">
+        <table class="tbl" id="rateTable">
           <caption>Placeholder rates.</caption>
-          <thead><tr><th>Space</th><th class="num">Saturday</th><th class="num">Friday / Sunday</th><th class="num">Weekday</th></tr></thead>
-          <tbody>
-            <tr><td>Hall only</td><td class="num">$1,800</td><td class="num">$1,400</td><td class="num">$900</td></tr>
-            <tr><td>Hall and grounds</td><td class="num">$2,200</td><td class="num">$1,750</td><td class="num">$1,200</td></tr>
-            <tr><td>Grounds only</td><td class="num">$700</td><td class="num">$600</td><td class="num">$450</td></tr>
-          </tbody>
         </table>
       </div>
       <div class="scroll">
-        <table class="tbl" style="margin-top:26px">
-          <thead><tr><th>Extra</th><th class="num">Price</th></tr></thead>
-          <tbody>
-            <tr><td>Commercial kitchen</td><td class="num">$250</td></tr>
-            <tr><td>Linens</td><td class="num">$200</td></tr>
-            <tr><td>Sound system and projector</td><td class="num">$150</td></tr>
-            <tr><td>End-of-night cleaning</td><td class="num">$300</td></tr>
-            <tr><td>Licensed bartender <span class="muted">(required with alcohol)</span></td><td class="num">$240</td></tr>
-            <tr><td>Booking deposit <span class="muted">(credited against the total)</span></td><td class="num">$500</td></tr>
-            <tr><td>Damage deposit <span class="muted">(refundable)</span></td><td class="num">$500</td></tr>
-          </tbody>
-        </table>
+        <table class="tbl" id="extraTable" style="margin-top:26px"></table>
       </div>
     </div>
   </section>
@@ -206,6 +180,7 @@
   </div>
 </footer>
 <script src="assets/js/site.js?v=e0f33d5e"></script>
-<script src="assets/js/quote.js?v=dba74d41"></script>
+<script src="assets/js/rates-data.js?v=139af49e"></script>
+<script src="assets/js/quote.js?v=5f116d01"></script>
 </body>
 </html>

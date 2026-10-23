@@ -167,3 +167,62 @@
   .filelist li{flex-wrap:wrap}
   .filelist li .abtn{margin-left:0;width:100%;text-align:center}
 }
+
+/* ------------------------------------------------------------------ */
+/* Hall rental. Four lists the club writes itself, and a price grid    */
+/* drawn from two of them, so a new column widens the grid rather than */
+/* needing a new rule here.                                            */
+
+.rsec{border:0;padding:22px 0 0;margin:22px 0 0;border-top:1px solid var(--line)}
+.rsec:first-of-type{border-top:0;padding-top:0;margin-top:0}
+.rsec legend{font-family:var(--display);font-size:1.2rem;font-weight:600;padding:0;margin:0}
+
+.rrow{display:grid;gap:10px;margin-bottom:10px;align-items:center}
+.rrow input[type=text],.rrow select{width:100%;font:inherit;font-family:var(--ui);
+  padding:12px 13px;border:2px solid var(--line);border-radius:5px;
+  background:var(--white);color:var(--ink)}
+.rrow input[type=text]:focus,.rrow select:focus{outline:none;border-color:var(--ink)}
+.rrow .rname{font-weight:600}
+.rrow .rprice{text-align:right;font-variant-numeric:tabular-nums}
+
+/* a kind of day: its name, the days it covers, and a way out */
+.rday{grid-template-columns:minmax(0,1fr) auto auto}
+.rticks{display:flex;flex-wrap:wrap;gap:4px}
+.rtick{display:flex;align-items:center;gap:5px;background:var(--white);
+  border:2px solid var(--line);border-radius:5px;padding:9px 10px;cursor:pointer;
+  font-size:.92rem;font-weight:600;white-space:nowrap}
+.rtick:hover{border-color:var(--ink)}
+.rtick input{width:19px;height:19px;margin:0;accent-color:var(--red);cursor:pointer}
+.rtick:focus-within{border-color:var(--ink)}
+
+/* the grid: one name column, one column per kind of day, one button */
+.gridscroll{overflow-x:auto;margin-bottom:10px}
+.rgrid{grid-template-columns:minmax(150px,1.2fr) repeat(var(--cols,3),minmax(96px,1fr)) auto;
+  min-width:min-content}
+.rhead{margin-bottom:6px}
+.rcolname{font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-soft);padding:0 2px;overflow-wrap:anywhere}
+
+/* extras and rules: name, number, what it does, and a way out */
+.rpair{grid-template-columns:minmax(0,1fr) 124px minmax(0,230px) auto}
+
+.warn{margin:12px 0 0;font-size:.95rem;font-weight:600;color:var(--ink);
+  background:#FDF6E3;border:2px solid var(--gold);border-radius:5px;padding:12px 14px}
+.saved{margin:18px 0 0;font-size:1rem;font-weight:600;color:var(--ok);
+  background:#F0F8F3;border:2px solid var(--ok);border-radius:5px;padding:14px 16px}
+
+.aactions{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px;
+  padding-top:22px;border-top:1px solid var(--line)}
+.aactions .danger{margin-left:auto}
+
+@media(max-width:760px){
+  .rpair{grid-template-columns:minmax(0,1fr) 110px}
+  .rpair select{grid-column:1/-1}
+  .rpair .abtn{grid-column:1/-1;width:100%;text-align:center}
+  .rday{grid-template-columns:1fr}
+  .rday .abtn{width:100%;text-align:center}
+  .rticks{justify-content:space-between}
+  .rtick{flex:1 1 auto;justify-content:center}
+  .aactions .danger{margin-left:0}
+  .aactions .abtn{width:100%;text-align:center}
+}
