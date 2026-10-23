@@ -284,10 +284,10 @@ h3{font-size:1.28rem}
   *{transition-duration:.01ms!important}
 }
 
-/* social icons */
-.ftr .social{display:flex;gap:10px;align-items:center;margin-top:3px}
-.ftr .social a{display:grid;place-items:center;width:38px;height:38px;
-  border:1px solid var(--line-dark);color:#fff;
-  transition:border-color .22s,background .22s}
-.ftr .social a:hover{border-color:#fff;background:rgba(255,255,255,.14);text-decoration:none}
-.ftr .social svg{width:19px;height:19px;display:block}
+/* social links: a small white mark with the name beside it */
+.ftr .social{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center}
+.ftr .social a{display:inline-flex;align-items:center;gap:8px;line-height:1.4}
+.ftr .social svg{width:15px;height:15px;flex:0 0 auto;color:#fff}
+.ftr .social a:hover svg{color:#fff}
+/* break the address at the dot or the @, never mid-word */
+.ftr .email{overflow-wrap:break-word}
