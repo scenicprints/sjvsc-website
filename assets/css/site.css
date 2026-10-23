@@ -302,7 +302,7 @@ h3{font-size:1.28rem}
 .navpanel .panel-social a:hover{border-color:#fff;background:rgba(255,255,255,.12)}
 .panel-social svg{width:18px;height:18px;display:block}
 
-/* the way into the rest of the site: a ruled index, and one readout line */
+/* the way into the rest of the site: a ruled index */
 .shead .count{margin-left:auto;font-size:.78rem;letter-spacing:.09em;color:var(--ink-soft);
   font-variant-numeric:tabular-nums}
 .dx{columns:5 190px;column-gap:34px;column-rule:1px solid var(--line)}
@@ -315,15 +315,8 @@ h3{font-size:1.28rem}
 .dxi:hover,.dxi:focus-visible{border-bottom-color:var(--red)}
 .dxi:hover .dxt,.dxi:focus-visible .dxt,
 .dxi:hover .dxn,.dxi:focus-visible .dxn{color:var(--red)}
-.dxr{display:flex;align-items:baseline;justify-content:space-between;gap:20px;
-  border-top:1px solid var(--ink);margin-top:18px;padding-top:13px}
-.dxd{font-size:.88rem;color:var(--ink-2);min-height:1.3em}
-.dxa{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--red);opacity:0;transition:opacity .18s;white-space:nowrap}
-.dxr.on .dxa{opacity:1}
 @media(max-width:560px){
   .dx{columns:2;column-gap:18px}
   .dxi{min-height:36px;gap:9px}
   .dxt{font-size:.9rem}
-  .dxr{display:none}
 }
