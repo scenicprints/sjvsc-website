@@ -202,6 +202,9 @@
 .rhead{margin-bottom:6px}
 .rcolname{font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
   color:var(--ink-soft);padding:0 2px;overflow-wrap:anywhere}
+.rcoldays{display:block;margin-top:3px;font-style:normal;font-weight:600;
+  font-size:.78rem;letter-spacing:.02em;text-transform:none;color:var(--ink-2)}
+.rcoldays.rdead{color:var(--red)}
 
 /* extras and rules: name, number, what it does, and a way out */
 .rpair{grid-template-columns:minmax(0,1fr) 124px minmax(0,230px) auto}

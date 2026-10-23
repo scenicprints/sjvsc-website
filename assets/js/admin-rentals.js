@@ -87,9 +87,21 @@
         box.addEventListener('change', function () {
           d.covers = d.covers || [];
           var at = d.covers.indexOf(n);
-          if (box.checked && at < 0) d.covers.push(n);
-          if (!box.checked && at > -1) d.covers.splice(at, 1);
-          warnDays();
+          if (!box.checked) {
+            if (at > -1) d.covers.splice(at, 1);
+          } else {
+            /* A weekday belongs to one kind of day. Without this, a row can
+               hold prices nothing will ever charge, because an earlier row
+               already claimed the day. */
+            card.days.forEach(function (other) {
+              if (other === d) return;
+              var k = (other.covers || []).indexOf(n);
+              if (k > -1) other.covers.splice(k, 1);
+            });
+            if (at < 0) d.covers.push(n);
+          }
+          drawDays();
+          drawGrid();
         });
         wrap.appendChild(box);
         wrap.appendChild(document.createTextNode(label));
@@ -133,6 +145,14 @@
     card.days.forEach(function (d) {
       var h = el('span', 'rcolname');
       h.textContent = d.name || 'Untitled';
+      /* the days this column charges for, so the link to the list above is
+         visible without scrolling back to it */
+      var on = (d.covers || []).slice().sort(function (a, b) { return a - b; })
+        .map(function (n) { return DAYNAMES[n]; });
+      var sub = el('i', 'rcoldays');
+      sub.textContent = on.length ? on.join(' ') : 'No days, so nothing uses this';
+      if (!on.length) sub.className += ' rdead';
+      h.appendChild(sub);
       head.appendChild(h);
     });
     head.appendChild(el('span'));

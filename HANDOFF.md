@@ -137,7 +137,9 @@ never why, and it offers the nearest open days of the same weekday.
 **The rate card.** `assets/js/rates-data.js` holds four lists the club writes itself:
 kinds of day, things to rent, extras and rules. The price grid is spaces x days, so
 adding a column widens it. Three things carry a meaning the engine reads: a kind of day
-carries the weekdays it covers, which is how a date finds its column; an extra carries
+carries the weekdays it covers, which is how a date finds its column, and a
+weekday belongs to exactly one of them — ticking it on one row takes it off the
+others, because otherwise a row can hold prices nothing will ever charge; an extra carries
 `when` (the renter ticks it, always, or when alcohol is served); a rule carries `does`
 (only printed, hours included, each hour after that, members take off). A rule set to
 only printed appears on the rate card and in the estimate and changes no arithmetic,
