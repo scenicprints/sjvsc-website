@@ -76,6 +76,17 @@ These were all learned the hard way. Breaking them is how the work gets rejected
 6. **No build step.** Do not add a framework, a bundler or dependencies.
 7. **Keep `prefers-reduced-motion` working.** Every animation has an off switch.
 
+## Verified facts worth not re-deriving
+
+- The Venmo handle **@Ripon-Swiss-Club** is real. The profile resolves and its
+  `og:title` reads "Cathy Quinn | @Ripon-Swiss-Club" — the club's own membership
+  officer, which corroborates both the handle and her role. `assets/img/venmo-qr.svg`
+  encodes `https://venmo.com/u/Ripon-Swiss-Club`, decoded independently to confirm it.
+  It opens the profile and does not pre-fill an amount.
+- The club's **membership page on their own site currently renders empty** — 32 KB of
+  shell with no dues, no Venmo, no late fee. `docs/current-site-audit.md` is presently
+  a better record of their membership terms than their website is.
+
 ## Two implementation notes
 
 - `index.html` is a standalone document, because GitHub Pages serves it directly.
@@ -104,6 +115,8 @@ back. This list will.
 | Any note explaining how the site works, e.g. "how this page stays current" | See rule 3 |
 | The alphorn photograph (`alphorns.jpg`, deleted) | Generic alpine stock from the old site. The chorus has a real photograph of itself now |
 | Capacity figures, "maple" floor, a stage, a commercial range, caterers, a 1am curfew | Invented, removed |
+| "Visitors thinking of joining are welcome to come to a meeting" | Plausible, but the club never says it. Invented |
+| Life membership eligibility, and whether life or spousal members vote | Their site does not state it. The table says so rather than guessing |
 
 Two phrasings the client rejected by name: the hero subline "We hold Swiss wrestling
 tournaments, run a chorus, and rent our hall…" and the heading "Three reasons to come
