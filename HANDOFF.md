@@ -36,6 +36,21 @@ prompts.
 **A push to `main` is a deploy.** GitHub Pages serves the root of `main`; changes are
 live in about a minute.
 
+### A push is live, but a refresh may not show it
+
+Pages serves HTML with `Cache-Control: max-age=600` and there is no way to change
+that header on Pages. For up to ten minutes after a push, a plain refresh can hand
+somebody the old page, which then asks for the old stamped script and looks exactly
+like the change did not deploy. Ctrl+Shift+R is the answer in the moment. The three
+admin pages carry a `no-cache` meta so they always revalidate; the public pages do
+not, because they are the ones that benefit from being cached.
+
+Before saying something is not live, check what the server is actually sending:
+
+```bash
+curl -sS https://scenicprints.github.io/sjvsc-website/admin-rentals.html | grep -o 'admin-rentals.js[^"]*'
+```
+
 ### After changing any CSS or JavaScript
 
 ```bash

@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
+<!-- Pages serves HTML with max-age=600, so a board member pressing refresh can be
+     handed yesterday's admin screen. These pages are not public; always revalidate. -->
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
 <title>Hall rental &#183; Website admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -85,7 +88,7 @@
   </div>
 </main>
 
-<script src="assets/js/rates-data.js?v=139af49e"></script>
+<script src="assets/js/rates-data.js?v=21473dd7"></script>
 <script src="assets/js/admin-rentals.js?v=441ed82e"></script>
 </body>
 </html>

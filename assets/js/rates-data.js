@@ -46,6 +46,21 @@ window.SJVSC_RATES = (function () {
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
+  /* A weekday belongs to one kind of day. The screen keeps it that way as
+     you tick, but a card saved before that rule existed can still hold an
+     overlap, and the second row of it would quietly never be used. */
+  function tidy(c) {
+    var seen = {};
+    c.days.forEach(function (d) {
+      d.covers = (d.covers || []).filter(function (n) {
+        if (seen[n]) return false;
+        seen[n] = true;
+        return true;
+      });
+    });
+    return c;
+  }
+
   function card() {
     var c;
     try {
@@ -53,7 +68,7 @@ window.SJVSC_RATES = (function () {
       c = raw ? JSON.parse(raw) : null;
     } catch (e) { c = null; }          // private window, blocked storage
     if (!c || !c.spaces || !c.days) c = clone(SEED);
-    return c;
+    return tidy(c);
   }
 
   function save(c) {
