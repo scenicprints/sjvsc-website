@@ -265,7 +265,7 @@ h3{font-size:1.28rem}
 
 /* footer */
 .ftr{background:var(--ink);color:#B4A99E;padding-block:56px 30px}
-.ftr-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:36px}
+.ftr-grid{display:grid;grid-template-columns:1.1fr .85fr 1.5fr .85fr;gap:34px}
 .ftr h4{font-family:var(--ui);font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:15px}
 .ftr ul{list-style:none;padding:0;display:grid;gap:8px;font-size:.92rem}
 .ftr a{color:#B4A99E;text-decoration:none}
@@ -290,4 +290,4 @@ h3{font-size:1.28rem}
 .ftr .social svg{width:15px;height:15px;flex:0 0 auto;color:#fff}
 .ftr .social a:hover svg{color:#fff}
 /* break the address at the dot or the @, never mid-word */
-.ftr .email{overflow-wrap:break-word}
+.ftr .email{font-size:.86rem;overflow-wrap:break-word}
