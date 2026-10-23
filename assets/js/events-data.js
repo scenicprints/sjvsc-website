@@ -67,6 +67,20 @@ window.SJVSC = (function () {
     return all().filter(function (e) { return at(e.from) <= now && now <= at(e.until); });
   }
 
+  /* The hall is tied up the day before an event, the day of it, and the day
+     after: setting up, the event, and clearing away. This reads the event's
+     own day, not its advertising window, so an event that has stopped showing
+     on the site still holds its dates until it has passed. */
+  function blocks(date) {
+    var want = date instanceof Date ? date : at(date);
+    var list = all();
+    for (var i = 0; i < list.length; i++) {
+      var gap = Math.round((at(list[i].date) - want) / 86400000);
+      if (gap >= -1 && gap <= 1) return list[i];
+    }
+    return null;
+  }
+
   /* Spelled out rather than left to the browser's formatter, which varies
      by engine — one of them puts a comma after the weekday. */
   var WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -113,7 +127,7 @@ window.SJVSC = (function () {
     });
   }
 
-  return { all: all, save: save, showing: showing, render: render, at: at,
+  return { all: all, save: save, showing: showing, blocks: blocks, render: render, at: at,
            today: today, pretty: pretty, fullDate: fullDate, longDate: longDate,
            MONTH: MONTH, KEY: KEY };
 })();

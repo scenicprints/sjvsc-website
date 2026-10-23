@@ -10,18 +10,10 @@
   var card = R.card();
   var money = R.money;
 
-  /* The club's own calendar still lives here; the rate card does not own it. */
-  var CLUB = {
-    '2027-02-07': 'the Jass Party',
-    '2027-02-20': 'the Almond Blossom Parade and Dance',
-    '2027-03-13': 'the Schwinger Dinner and Dance',
-    '2027-04-10': 'the Swiss Echoes Spring Concert',
-    '2027-06-05': 'the Spring Schwingfest',
-    '2027-07-24': "the Members' BBQ and Buebe Schwingfest",
-    '2027-09-04': 'the Championship Schwingfest',
-    '2027-10-02': 'Oktoberfest',
-    '2027-12-04': "the Children's Christmas Party"
-  };
+  /* Availability comes off the events the club already enters. An event ties
+     the hall up the day before, the day of, and the day after. */
+  var D = window.SJVSC;
+  function taken(date) { return D.blocks(date); }
 
   function el(id) { return document.getElementById(id); }
   function esc(s) {
@@ -119,17 +111,18 @@
 
   /* ---- the quote ----------------------------------------------------- */
 
+  /* The nearest open days of the same weekday, so somebody asking for a
+     Friday is offered Fridays. */
   function nearestOpen(v) {
     var base = new Date(v + 'T12:00:00'), out = [];
-    for (var i = 1; i <= 21 && out.length < 2; i++) {
-      [-1, 1].forEach(function (dir) {
+    for (var i = 7; i <= 70 && out.length < 2; i += 7) {
+      [1, -1].forEach(function (dir) {
         if (out.length >= 2) return;
         var t = new Date(base); t.setDate(base.getDate() + dir * i);
-        var iso = t.toISOString().slice(0, 10);
-        if (!CLUB[iso] && t.getDay() === 6) out.push(t);
+        if (t >= D.today() && !taken(t)) out.push(t);
       });
     }
-    return out;
+    return out.sort(function (a, b) { return a - b; });
   }
 
   drawSpaces();
@@ -150,14 +143,13 @@
     var pretty = d.toLocaleDateString('en-US',
       { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-    if (CLUB[v]) {
+    if (taken(d)) {
       var alts = nearestOpen(v).map(function (t) {
         return t.toLocaleDateString('en-US', { day: 'numeric', month: 'long' });
       });
       out.innerHTML = '<div class="result taken" style="display:block">' +
-        '<b>' + pretty + ' is not available.</b> The club has ' + CLUB[v] + ' that day, ' +
-        'so the hall is in use.' +
-        (alts.length ? ' The nearest open Saturdays are ' + alts.join(' and ') + '.' : '') +
+        '<b>' + pretty + ' is not available.</b>' +
+        (alts.length ? ' The nearest open ones are ' + alts.join(' and ') + '.' : '') +
         '</div>';
       out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       return;

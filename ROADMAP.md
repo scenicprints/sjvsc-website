@@ -122,7 +122,7 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] **Rate card editor** — the proof that prices are not hardcoded
 
 ### Phase 4 — Quote system
-- [ ] Availability check against the club calendar
+- [x] Availability check against the club calendar
 - [ ] Guided quote builder → itemised estimate
 - [ ] Member discount applied automatically
 - [ ] Alcohol toggle drives insurance and bartender requirements

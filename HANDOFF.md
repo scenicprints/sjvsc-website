@@ -127,6 +127,13 @@ the event — that is the mechanism that stops the site going stale. Edits live 
 account behind the same screens. The rows already in the markup are the no-script
 fallback.
 
+**Availability.** There is no availability list. An event ties the hall up the day
+before, the day of, and the day after — setting up, the event, clearing away — and
+`SJVSC.blocks(date)` on the events store is the whole rule. It reads the event's own
+day, not its advertising window, so an event that has stopped showing still holds its
+dates until it has passed. The refusal says only that the day is not available and
+never why, and it offers the nearest open days of the same weekday.
+
 **The rate card.** `assets/js/rates-data.js` holds four lists the club writes itself:
 kinds of day, things to rent, extras and rules. The price grid is spaces x days, so
 adding a column widens it. Three things carry a meaning the engine reads: a kind of day
@@ -195,7 +202,8 @@ Road". The calendar heading reads **"What's going on"**.
 Done: the public site; the home page index; the West Coast map; the admin home; the
 events screen (add, change, remove, custom detail rows with more than one line each,
 picture upload, multi-file attachments); the public pages reading the event data; the
-hall rental screen and the rate card, quote form and estimate reading it.
+hall rental screen and the rate card, quote form and estimate reading it; rental
+availability coming off the events.
 
 Next, in the order it was being approached:
 
@@ -208,9 +216,6 @@ Next, in the order it was being approached:
 3. **No sign-in.** Agreed shape: board members, email and password eventually, a simple
    code for the demo, built so the real thing swaps in behind the same screens. Nothing
    private may sit behind a demo-grade gate.
-4. **The club calendar inside the quote engine.** `quote.js` still holds the nine
-   dates it refuses a booking on. That list should come off the event data, not sit
-   in the engine.
 
 `ROADMAP.md` has the full backlog and the decision log.
 
