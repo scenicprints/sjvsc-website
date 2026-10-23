@@ -33,9 +33,6 @@
     <section id="listview">
       <a class="aback" href="admin.html">&#8592; Back</a>
       <h1>Events</h1>
-      <p class="alead">Each event has the day it happens, and the dates it is advertised
-        on the website between. Once the advertising finishes, the event takes itself
-        off the website.</p>
       <button class="abtn solid" type="button" id="addbtn">Add an event</button>
       <ul class="elist" id="elist"></ul>
     </section>
@@ -44,21 +41,45 @@
       <button class="aback" type="button" id="backbtn">&#8592; Back to events</button>
       <h1 id="formhead">Change this event</h1>
 
-      <form id="eform" novalidate>
-        <div class="field">
-          <label for="f-title">Name of the event</label>
-          <input type="text" id="f-title" autocomplete="off">
-          <p class="err" id="e-title" hidden>Give the event a name</p>
-        </div>
+      <p class="alead">Only the name and the day are needed. Anything you leave
+        empty is simply left off the event&#8217;s page.</p>
 
-        <div class="field">
-          <label for="f-note">One line about it</label>
-          <input type="text" id="f-note" autocomplete="off">
-          <p class="hint">This is the sentence that shows under the name on the website.</p>
-        </div>
+      <form id="eform" novalidate>
+        <fieldset class="pair one">
+          <legend>The event</legend>
+          <div class="field">
+            <label for="f-title">Name of the event</label>
+            <input type="text" id="f-title" autocomplete="off">
+            <p class="err" id="e-title" hidden>Give the event a name</p>
+          </div>
+          <div class="field">
+            <label for="f-note">One line for the calendar <span class="opt">optional</span></label>
+            <input type="text" id="f-note" autocomplete="off">
+            <p class="hint">Shows under the name on the home page and the calendar.</p>
+          </div>
+          <div class="field">
+            <label for="f-desc">Description <span class="opt">optional</span></label>
+            <textarea id="f-desc" rows="4"></textarea>
+          </div>
+          <div class="field">
+            <label for="f-agenda">Agenda <span class="opt">optional</span></label>
+            <textarea id="f-agenda" rows="4"></textarea>
+            <p class="hint">One item on each line.</p>
+          </div>
+          <div class="field">
+            <label for="f-papers">Papers and minutes <span class="opt">optional</span></label>
+            <textarea id="f-papers" rows="2"></textarea>
+            <p class="hint">One on each line. Put the web address after the name if there is one.</p>
+          </div>
+          <div class="field">
+            <label for="f-image">Event image <span class="opt">optional</span></label>
+            <input type="text" id="f-image" placeholder="assets/img/hall-interior.jpg" autocomplete="off">
+            <p class="hint">The name of a picture already on the website.</p>
+          </div>
+        </fieldset>
 
         <fieldset class="pair">
-          <legend>When it happens</legend>
+          <legend>Details</legend>
           <div class="field">
             <label for="f-date">Day</label>
             <input type="date" id="f-date">
@@ -68,14 +89,36 @@
             <label for="f-time">Time <span class="opt">optional</span></label>
             <input type="text" id="f-time" placeholder="7pm" autocomplete="off">
           </div>
+          <div class="field">
+            <label for="f-where">Where <span class="opt">optional</span></label>
+            <input type="text" id="f-where" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="f-who">Who may attend <span class="opt">optional</span></label>
+            <input type="text" id="f-who" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="f-contact">Contact <span class="opt">optional</span></label>
+            <input type="text" id="f-contact" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="f-price">Price <span class="opt">optional</span></label>
+            <input type="text" id="f-price" autocomplete="off">
+          </div>
+          <div class="field wide">
+            <label for="f-attach">Attachments <span class="opt">optional</span></label>
+            <textarea id="f-attach" rows="2"></textarea>
+            <p class="hint">One on each line.</p>
+          </div>
         </fieldset>
 
         <fieldset class="pair">
           <legend>When it is advertised on the website</legend>
+          <p class="hint wide" style="margin:-4px 0 14px">Filled in for you when you choose
+            the day. Once the advertising stops, the event comes off the website on its own.</p>
           <div class="field">
             <label for="f-from">Start showing it</label>
             <input type="date" id="f-from">
-            <p class="err" id="e-from" hidden>Choose when it starts showing</p>
           </div>
           <div class="field">
             <label for="f-until">Stop showing it</label>

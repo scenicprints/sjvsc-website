@@ -17,11 +17,18 @@
   var confirmBox = document.getElementById('confirm');
   var editing = null;
 
-  var F = {
-    title: document.getElementById('f-title'), note: document.getElementById('f-note'),
-    date: document.getElementById('f-date'), time: document.getElementById('f-time'),
-    from: document.getElementById('f-from'), until: document.getElementById('f-until')
-  };
+  /* every field on the form; only title and date have to be filled in */
+  var NAMES = ['title', 'note', 'desc', 'agenda', 'papers', 'image', 'date', 'time',
+               'where', 'who', 'contact', 'price', 'attach', 'from', 'until'];
+  var MUST = ['title', 'date'];
+  var F = {};
+  NAMES.forEach(function (k) { F[k] = document.getElementById('f-' + k); });
+
+  function iso(d) {
+    return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2)
+      + '-' + ('0' + d.getDate()).slice(-2);
+  }
+  function plusDay(s) { var d = at(s); d.setDate(d.getDate() + 1); return iso(d); }
 
   var at = D.at, today = D.today;
   function pretty(s) { return s ? D.pretty(s) : ''; }
@@ -70,8 +77,9 @@
     window.scrollTo(0, 0);
   }
 
+  var ERRS = ['title', 'date', 'until'];
   function clearErrors() {
-    ['title', 'date', 'from', 'until'].forEach(function (k) {
+    ERRS.forEach(function (k) {
       document.getElementById('e-' + k).hidden = true;
       F[k].classList.remove('bad');
     });
@@ -83,12 +91,7 @@
     confirmBox.hidden = true;
     document.getElementById('formhead').textContent = e ? 'Change this event' : 'Add an event';
     document.getElementById('removebtn').hidden = !e;
-    F.title.value = e ? e.title : '';
-    F.note.value = e ? e.note : '';
-    F.date.value = e ? e.date : '';
-    F.time.value = e ? e.time : '';
-    F.from.value = e ? e.from : '';
-    F.until.value = e ? e.until : '';
+    NAMES.forEach(function (k) { F[k].value = (e && e[k]) ? e[k] : ''; });
     show('form');
     F.title.focus();
   }
@@ -102,10 +105,10 @@
     ev.preventDefault();
     clearErrors();
     var ok = true;
-    if (!F.title.value.trim()) { fail('title'); ok = false; }
-    if (!F.date.value) { fail('date'); ok = false; }
-    if (!F.from.value) { fail('from'); ok = false; }
-    if (!F.until.value || (F.from.value && F.until.value <= F.from.value)) {
+    MUST.forEach(function (k) {
+      if (!F[k].value.trim()) { fail(k); ok = false; }
+    });
+    if (F.from.value && F.until.value && F.until.value <= F.from.value) {
       fail('until'); ok = false;
     }
     if (!ok) { document.querySelector('.bad').focus(); return; }
@@ -115,22 +118,27 @@
       e = { id: 'e' + Date.now() };
       events.push(e);
     }
-    e.title = F.title.value.trim();
-    e.note = F.note.value.trim();
-    e.date = F.date.value;
-    e.time = F.time.value.trim();
-    e.from = F.from.value;
-    e.until = F.until.value;
+    NAMES.forEach(function (k) { e[k] = F[k].value.trim(); });
+    // left blank, the advertising window still has to mean something
+    if (!e.from) e.from = iso(today());
+    if (!e.until) e.until = plusDay(e.date);
     save();
     render();
     show('list');
   });
 
-  ['title', 'date', 'from', 'until'].forEach(function (k) {
+  ERRS.forEach(function (k) {
     F[k].addEventListener('input', function () {
       document.getElementById('e-' + k).hidden = true;
       F[k].classList.remove('bad');
     });
+  });
+
+  /* choosing the day fills the advertising window in, so nobody has to */
+  F.date.addEventListener('change', function () {
+    if (!F.date.value) return;
+    if (!F.from.value) F.from.value = iso(today());
+    if (!F.until.value) F.until.value = plusDay(F.date.value);
   });
 
   document.getElementById('addbtn').addEventListener('click', function () { open(null); });
