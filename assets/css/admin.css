@@ -276,3 +276,32 @@
   .gmove{grid-column:1;flex-direction:row}
   .gitem .danger{grid-column:2;align-self:end}
 }
+
+/* ------------------------------------------------------------------ */
+/* The way in. Locks from the <head>, so the admin is never on screen  */
+/* for a frame before the code is given.                               */
+
+html.locked .adm > *:not(.gate){display:none !important}
+.gate{position:fixed;inset:0;z-index:300;background:var(--cream);
+  display:flex;align-items:center;justify-content:center;
+  padding:max(24px,env(safe-area-inset-top,0px)) 20px}
+.gate-box{width:100%;max-width:420px;background:var(--white);border:2px solid var(--line);
+  border-radius:8px;padding:34px 30px;display:flex;flex-direction:column}
+.gate-mark{width:40px;height:43px;display:block;margin:0 auto 18px}
+.gate-box h1{font-family:var(--display);font-size:1.7rem;font-weight:600;line-height:1.15;
+  margin:0 0 8px;text-align:center}
+.gate-box > p{margin:0 0 24px;text-align:center;color:var(--ink-2);line-height:1.5}
+.gate-box label{font-size:.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-soft);margin-bottom:7px}
+.gate-box input{font:inherit;font-family:var(--ui);font-size:1.25rem;letter-spacing:.14em;
+  padding:15px 16px;border:2px solid var(--line);border-radius:5px;background:var(--white);
+  color:var(--ink);text-align:center}
+.gate-box input:focus{outline:none;border-color:var(--ink)}
+.gate-no{margin:12px 0 0;font-size:.95rem;font-weight:600;color:var(--red);text-align:center}
+.gate-box .abtn{margin-top:22px;width:100%;text-align:center}
+.gate-out{margin-top:18px;text-align:center;font-size:.92rem;font-weight:600;color:var(--red)}
+
+@media(max-width:480px){
+  .gate-box{padding:28px 22px}
+  .gate-box h1{font-size:1.45rem}
+}

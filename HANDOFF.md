@@ -3,10 +3,20 @@
 **Live:** https://scenicprints.github.io/sjvsc-website/
 **Repo:** https://github.com/scenicprints/sjvsc-website (public)
 **Admin:** https://scenicprints.github.io/sjvsc-website/admin.html — `noindex`, and not
-behind a sign-in yet. There is now one way in from the public site: a quiet
-**Website admin** link in the home page footer, beside the concept-design note. It is
-on `index.html` only, and the top navigation stays at four items. Until the sign-in
-exists, that link hands an open editor to anyone who finds it.
+behind a sign-in yet. One way in from the public site: a quiet **Website
+admin** link in the home page footer, beside the concept-design note, on `index.html`
+only. The top navigation stays at four items.
+
+**The code is `ripon1926`**, the `CODE` line at the top of `assets/js/admin-gate.js`
+and nowhere else. The gate loads from the `<head>` of all four admin pages and puts
+`locked` on `<html>` before anything paints, so the admin is never on screen for a
+frame. Being in is `sessionStorage`, so it is per tab and Sign out clears it. A deep
+link to an inner admin page asks for the code too.
+
+It is a gate, not security: the code is in a file anybody can read. That is what the
+plan asked for, and it holds because nothing behind it is private, only events, hall
+rates and photographs already on the public site. The real thing is board members with
+an email and a password, swapped in behind this same screen.
 
 ## Setup
 
@@ -382,9 +392,9 @@ Next, in the order it was being approached:
    field those pages have a slot for, and none of it reaches them.
 2. **The 2027 calendar on `events.html` is still markup.** Annual dates nobody can
    edit, which will go stale exactly the way the old site did.
-3. **No sign-in.** Agreed shape: board members, email and password eventually, a simple
-   code for the demo, built so the real thing swaps in behind the same screens. Nothing
-   private may sit behind a demo-grade gate.
+3. **Real sign-in.** The demo code is in. What is left is board members with an email
+   and a password, behind the same screen. Nothing private may sit behind the code
+   until that exists.
 
 `ROADMAP.md` has the full backlog and the decision log.
 
