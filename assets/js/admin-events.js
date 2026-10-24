@@ -19,7 +19,7 @@
   var editing = null;
 
   /* the plain fields; details rows and attachments are their own thing */
-  var NAMES = ['title', 'note', 'desc', 'agenda', 'image', 'date', 'time', 'from'];
+  var NAMES = ['title', 'note', 'page', 'desc', 'agenda', 'image', 'date', 'time', 'from'];
   var MUST = ['title', 'date'];
   var ERRS = ['title', 'date', 'image', 'attach'];
   var F = {};

@@ -127,7 +127,79 @@ window.SJVSC = (function () {
     });
   }
 
-  return { all: all, save: save, showing: showing, blocks: blocks, render: render, at: at,
+  /* An event can be tied to one of the standing pages. That page carries it
+     while it is being advertised, and carries every tied event at once, so a
+     page with three in their window shows three. */
+  function onPage(id) {
+    return showing().filter(function (e) { return e.page === id; });
+  }
+
+  function box(e) {
+    var when = fullDate(e.date) + (e.time ? ', ' + e.time : '');
+    var wrap = document.createElement('article');
+    wrap.className = 'ebox';
+
+    var head = document.createElement('div');
+    head.className = 'ebox-head';
+    var h = document.createElement('h3');
+    h.textContent = e.title;
+    var w = document.createElement('p');
+    w.className = 'ebox-when';
+    w.textContent = when;
+    head.appendChild(h);
+    head.appendChild(w);
+    wrap.appendChild(head);
+
+    if (e.note) {
+      var n = document.createElement('p');
+      n.className = 'ebox-note';
+      n.textContent = e.note;
+      wrap.appendChild(n);
+    }
+
+    var details = (e.details || []).filter(function (d) {
+      return d.label && (d.values || []).length;
+    });
+    if (details.length) {
+      var dl = document.createElement('dl');
+      dl.className = 'ebox-rows';
+      details.forEach(function (d) {
+        var dt = document.createElement('dt');
+        dt.textContent = d.label;
+        dl.appendChild(dt);
+        var dd = document.createElement('dd');
+        d.values.forEach(function (v, i) {
+          if (i) dd.appendChild(document.createElement('br'));
+          dd.appendChild(document.createTextNode(v));
+        });
+        dl.appendChild(dd);
+      });
+      wrap.appendChild(dl);
+    }
+
+    return wrap;
+  }
+
+  /* Pages carry an empty container and say which tie they are. Nothing is
+     drawn when nothing is on, so the page reads as it did before. */
+  function renderPages() {
+    [].forEach.call(document.querySelectorAll('[data-eventpage]'), function (el) {
+      var list = onPage(el.getAttribute('data-eventpage'));
+      el.innerHTML = '';
+      if (!list.length) return;
+      list.forEach(function (e) { el.appendChild(box(e)); });
+      el.hidden = false;
+    });
+  }
+
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', renderPages);
+    } else renderPages();
+  }
+
+  return { all: all, save: save, showing: showing, blocks: blocks, onPage: onPage,
+           renderPages: renderPages, render: render, at: at,
            today: today, pretty: pretty, fullDate: fullDate, longDate: longDate,
            MONTH: MONTH, KEY: KEY };
 })();

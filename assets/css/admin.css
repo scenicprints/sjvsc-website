@@ -98,10 +98,10 @@
   text-transform:none;color:var(--ink);margin-bottom:7px}
 .opt{font-weight:400;color:var(--ink-soft);font-size:.92rem;text-transform:none;
   letter-spacing:normal}
-.field input,.field textarea{width:100%;font:inherit;font-family:var(--ui);padding:14px;
+.field input,.field textarea,.field select{width:100%;font:inherit;font-family:var(--ui);padding:14px;
   border:2px solid var(--line);border-radius:5px;background:var(--white);color:var(--ink)}
 .field textarea{line-height:1.5;resize:vertical;min-height:72px}
-.field input:focus,.field textarea:focus{outline:none;border-color:var(--ink)}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--ink)}
 .field input.bad,.field textarea.bad{border-color:var(--red);background:#FFF6F5}
 .hint{margin:7px 0 0;font-size:.92rem;color:var(--ink-soft)}
 .err{margin:7px 0 0;font-size:.95rem;font-weight:600;color:var(--red)}

@@ -74,6 +74,7 @@ admin-rentals.html             the hall rental screen: the whole rate card
 assets/css/site.css            the public design system
 assets/css/admin.css           the admin side, deliberately larger and plainer
 assets/js/events-data.js       THE event list — admin writes it, public pages read it
+                               and draws the details boxes on the eight tied pages
 assets/js/rates-data.js        THE rate card — admin writes it, rentals.html reads it
 assets/js/site.js              nav, scroll-to-top, timeline, public event lists
 assets/js/admin.js             the admin home (only the date is live)
@@ -141,6 +142,24 @@ the event — that is the mechanism that stops the site going stale. Edits live 
 `localStorage`, so they are per-browser; the real version would write to the club's
 account behind the same screens. The rows already in the markup are the no-script
 fallback.
+
+**Page ties.** An event can name one of eight standing pages in `Show it on a page`,
+and that page carries it while it is inside its advertising window. A page carries
+every tied event at once, so three in their windows means three boxes. The page holds
+an empty `<div class="epage" data-eventpage="...">` under its header and loads
+`events-data.js`, which fills every such container on load and leaves it `hidden` when
+nothing is on, so a page with no event reads exactly as it did before.
+
+| Value | Page |
+|---|---|
+| `schwingers` | `schwingers-club.html` |
+| `echoes` | `swiss-echoes.html` |
+| `camp` | `kids-swiss-camp.html` |
+| `schwingfests` | `event-schwingfest.html` |
+| `bbq` | `members-bbq.html` |
+| `oktoberfest` | `event-oktoberfest.html` |
+| `jass` | `event-jass.html` |
+| `almond` | `almond-blossom.html` |
 
 **Availability.** There is no availability list. An event ties the hall up the day
 before, the day of, and the day after — setting up, the event, clearing away — and
