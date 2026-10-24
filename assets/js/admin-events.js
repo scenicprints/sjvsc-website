@@ -19,7 +19,8 @@
   var editing = null;
 
   /* the plain fields; details rows and attachments are their own thing */
-  var NAMES = ['title', 'note', 'page', 'desc', 'agenda', 'image', 'date', 'time', 'from'];
+  var NAMES = ['title', 'note', 'page', 'desc', 'agenda', 'image', 'date', 'time', 'from',
+               'tickfrom', 'tickto', 'tickprice', 'ticksource', 'tickwho', 'tickcontact'];
   var MUST = ['title', 'date'];
   var ERRS = ['title', 'date', 'image', 'attach'];
   var F = {};
@@ -272,6 +273,8 @@
     document.getElementById('f-attachfiles').value = '';
     drawFiles();
 
+    showTicketPerson();
+
     show('form');
     F.title.focus();
   }
@@ -323,6 +326,14 @@
   F.date.addEventListener('change', function () {
     if (F.date.value && !F.from.value) F.from.value = iso(today());
   });
+
+  /* who to ask only matters when somebody is selling them */
+  function showTicketPerson() {
+    var on = F.ticksource.value === 'person';
+    document.getElementById('tickperson').hidden = !on;
+    document.getElementById('tickperson2').hidden = !on;
+  }
+  F.ticksource.addEventListener('change', showTicketPerson);
 
   document.getElementById('addrow').addEventListener('click', function () {
     addGroup('', ['']).querySelector('.dlabel').focus();

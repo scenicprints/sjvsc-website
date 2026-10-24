@@ -148,6 +148,40 @@
         </fieldset>
 
         <fieldset class="pair">
+          <legend>Tickets</legend>
+          <p class="hint wide" style="margin:-4px 0 14px">Leave the price empty if there
+            are no tickets. The event carries them only between the two days below.</p>
+          <div class="field">
+            <label for="f-tickfrom">On sale from <span class="opt">optional</span></label>
+            <input type="date" id="f-tickfrom">
+          </div>
+          <div class="field">
+            <label for="f-tickto">On sale until <span class="opt">optional</span></label>
+            <input type="date" id="f-tickto">
+          </div>
+          <div class="field">
+            <label for="f-tickprice">Price <span class="opt">optional</span></label>
+            <input type="text" id="f-tickprice" placeholder="$15" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="f-ticksource">Where to get one <span class="opt">optional</span></label>
+            <select id="f-ticksource">
+              <option value="">Not said</option>
+              <option value="entry">Upon entry</option>
+              <option value="person">From someone</option>
+            </select>
+          </div>
+          <div class="field" id="tickperson" hidden>
+            <label for="f-tickwho">Who to ask</label>
+            <input type="text" id="f-tickwho" placeholder="Hans Brunner" autocomplete="off">
+          </div>
+          <div class="field" id="tickperson2" hidden>
+            <label for="f-tickcontact">How to reach them</label>
+            <input type="text" id="f-tickcontact" placeholder="(209) 555-0143" autocomplete="off">
+          </div>
+        </fieldset>
+
+        <fieldset class="pair">
           <legend>When it is advertised on the website</legend>
           <p class="hint wide" style="margin:-4px 0 14px">Filled in for you when you choose
             the day. It comes off the website by itself the day after the event.</p>
@@ -174,7 +208,7 @@
   </div>
 </main>
 
-<script src="assets/js/events-data.js?v=e3e67749"></script>
-<script src="assets/js/admin-events.js?v=8a35c6d1"></script>
+<script src="assets/js/events-data.js?v=91bface7"></script>
+<script src="assets/js/admin-events.js?v=754eec23"></script>
 </body>
 </html>

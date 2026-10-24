@@ -134,6 +134,28 @@ window.SJVSC = (function () {
     return showing().filter(function (e) { return e.page === id; });
   }
 
+  /* Tickets show only while they are on sale. No dates means they show for as
+     long as the event itself is advertised. Nothing shows when there is neither
+     a price nor somewhere to get one. */
+  function tickets(e) {
+    var price = (e.tickprice || '').trim();
+    var source = e.ticksource || '';
+    if (!price && !source) return null;
+
+    var now = today();
+    if (e.tickfrom && now < at(e.tickfrom)) return null;
+    if (e.tickto && now > at(e.tickto)) return null;
+
+    var where = '';
+    if (source === 'entry') where = 'Upon entry';
+    else if (source === 'person') {
+      var who = (e.tickwho || '').trim();
+      var how = (e.tickcontact || '').trim();
+      where = who && how ? who + ', ' + how : (who || how);
+    }
+    return { price: price, where: where };
+  }
+
   /* The details box a tied page carries. It is the page's own Details card,
      in the page's own card and row styling, so it reads as part of the page
      rather than as something bolted on top of it. */
@@ -153,23 +175,32 @@ window.SJVSC = (function () {
     var details = (e.details || []).filter(function (d) {
       return d.label && (d.values || []).length;
     });
-    if (!details.length) return card;
+    var t = tickets(e);
+    if (!details.length && !t) return card;
 
     var ul = document.createElement('ul');
     ul.className = 'rows';
-    details.forEach(function (d) {
+
+    function row(label, lines) {
       var li = document.createElement('li');
       var b = document.createElement('b');
-      b.textContent = d.label;
+      b.textContent = label;
       var span = document.createElement('span');
-      d.values.forEach(function (v, i) {
+      lines.forEach(function (v, i) {
         if (i) span.appendChild(document.createElement('br'));
         span.appendChild(document.createTextNode(v));
       });
       li.appendChild(b);
       li.appendChild(span);
       ul.appendChild(li);
-    });
+    }
+
+    details.forEach(function (d) { row(d.label, d.values); });
+    if (t) {
+      if (t.price) row('Tickets', [t.price]);
+      if (t.where) row(t.price ? 'Where from' : 'Tickets', [t.where]);
+    }
+
     card.appendChild(ul);
     return card;
   }

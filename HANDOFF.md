@@ -165,6 +165,13 @@ card, so its slot is an empty div at the top of the sidebar column.
 | `jass` | `event-jass.html` |
 | `almond` | `almond-blossom.html` |
 
+**Tickets.** An event carries `tickfrom`, `tickto`, `tickprice`, `ticksource`
+(`entry` or `person`), `tickwho` and `tickcontact`. The details card shows a `Tickets`
+row and a `Where from` row, and only between the two sale days: before `tickfrom` and
+after `tickto` nothing about tickets appears, and nothing appears at all without a
+price or a source. `Upon entry` needs no name; `From someone` reveals the two person
+boxes on the form and prints as "name, contact".
+
 **Availability.** There is no availability list. An event ties the hall up the day
 before, the day of, and the day after — setting up, the event, clearing away — and
 `SJVSC.blocks(date)` on the events store is the whole rule. It reads the event's own
