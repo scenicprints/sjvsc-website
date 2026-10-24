@@ -15,12 +15,13 @@
   var form = document.getElementById('eform');
   var confirmBox = document.getElementById('confirm');
   var drows = document.getElementById('drows');
+  var tickrows = document.getElementById('tickrows');
   var filelist = document.getElementById('filelist');
   var editing = null;
 
   /* the plain fields; details rows and attachments are their own thing */
   var NAMES = ['title', 'note', 'page', 'desc', 'agenda', 'image', 'date', 'time', 'from',
-               'tickfrom', 'tickto', 'tickprice', 'ticksource', 'tickwho', 'tickcontact'];
+               'tickfrom', 'tickto', 'tickprice'];
   var MUST = ['title', 'date'];
   var ERRS = ['title', 'date', 'image', 'attach'];
   var F = {};
@@ -149,6 +150,70 @@
     }).filter(function (d) { return d.label || d.values.length; });   // blanks ignored
   }
 
+  /* ---- where to get a ticket -----------------------------------------
+
+     A ticket can be had in more than one way at once: upon entry and from
+     two people is a normal answer. Each way is a row, and a row only asks
+     for a name once somebody is selling them. */
+
+  function addTicketRow(seller) {
+    var row = document.createElement('div');
+    row.className = 'trow';
+    row.innerHTML =
+      '<select class="tkind" aria-label="Where to get one">' +
+      '<option value="">Choose one</option>' +
+      '<option value="entry">Upon entry</option>' +
+      '<option value="person">From someone</option></select>' +
+      '<input type="text" class="twho" placeholder="Hans Brunner" ' +
+      'aria-label="Who to ask" autocomplete="off">' +
+      '<input type="text" class="tcontact" placeholder="(209) 555-0143 or an email" ' +
+      'aria-label="How to reach them" autocomplete="off">' +
+      '<button class="abtn small drem" type="button">Remove</button>';
+
+    var kind = row.querySelector('.tkind');
+    var who = row.querySelector('.twho');
+    var contact = row.querySelector('.tcontact');
+
+    function sync() {
+      var person = kind.value === 'person';
+      who.hidden = !person;
+      contact.hidden = !person;
+    }
+    kind.addEventListener('change', sync);
+
+    /* a telephone number is tidied up; an email is left alone */
+    contact.addEventListener('blur', function () {
+      contact.value = D.contactText(contact.value);
+    });
+
+    kind.value = (seller && seller.kind) || '';
+    who.value = (seller && seller.who) || '';
+    contact.value = (seller && seller.contact) || '';
+    sync();
+
+    row.querySelector('.drem').addEventListener('click', function () {
+      row.remove();
+      if (!tickrows.children.length) addTicketRow(null);
+    });
+
+    tickrows.appendChild(row);
+    return row;
+  }
+
+  function readTicketRows() {
+    return [].slice.call(tickrows.querySelectorAll('.trow')).map(function (r) {
+      var kind = r.querySelector('.tkind').value;
+      if (kind === 'person') {
+        return { kind: 'person',
+                 who: r.querySelector('.twho').value.trim(),
+                 contact: D.contactText(r.querySelector('.tcontact').value) };
+      }
+      return kind ? { kind: 'entry' } : null;
+    }).filter(function (x) {
+      return x && (x.kind === 'entry' || x.who || x.contact);
+    });
+  }
+
   /* ---- attachments --------------------------------------------------- */
 
   var MAX_FILE = 400 * 1024;
@@ -273,7 +338,10 @@
     document.getElementById('f-attachfiles').value = '';
     drawFiles();
 
-    showTicketPerson();
+    tickrows.innerHTML = '';
+    var sellers = (e && e.ticksellers) || [];
+    if (sellers.length) sellers.forEach(function (x) { addTicketRow(x); });
+    else addTicketRow(null);
 
     show('form');
     F.title.focus();
@@ -300,6 +368,7 @@
     }
     NAMES.forEach(function (k) { e[k] = F[k].value.trim(); });
     e.details = readRows();
+    e.ticksellers = readTicketRows();
     e.attachments = attachments.slice();
     if (!e.from) e.from = iso(today());
     e.until = plusDay(e.date);                  // off the website the day after
@@ -327,13 +396,9 @@
     if (F.date.value && !F.from.value) F.from.value = iso(today());
   });
 
-  /* who to ask only matters when somebody is selling them */
-  function showTicketPerson() {
-    var on = F.ticksource.value === 'person';
-    document.getElementById('tickperson').hidden = !on;
-    document.getElementById('tickperson2').hidden = !on;
-  }
-  F.ticksource.addEventListener('change', showTicketPerson);
+  document.getElementById('adtick').addEventListener('click', function () {
+    addTicketRow(null).querySelector('.tkind').focus();
+  });
 
   document.getElementById('addrow').addEventListener('click', function () {
     addGroup('', ['']).querySelector('.dlabel').focus();

@@ -229,3 +229,17 @@
   .aactions .danger{margin-left:0}
   .aactions .abtn{width:100%;text-align:center}
 }
+
+/* where a ticket can be had: as many ways as there are */
+.trow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr) auto;
+  gap:10px;margin-bottom:10px;align-items:start}
+.trow select,.trow input[type=text]{width:100%;font:inherit;font-family:var(--ui);
+  padding:12px 13px;border:2px solid var(--line);border-radius:5px;
+  background:var(--white);color:var(--ink)}
+.trow select:focus,.trow input[type=text]:focus{outline:none;border-color:var(--ink)}
+.trow [hidden]{display:none !important}
+#adtick{margin-top:4px}
+@media(max-width:760px){
+  .trow{grid-template-columns:1fr}
+  .trow .drem{width:100%;text-align:center}
+}

@@ -165,12 +165,25 @@ card, so its slot is an empty div at the top of the sidebar column.
 | `jass` | `event-jass.html` |
 | `almond` | `almond-blossom.html` |
 
-**Tickets.** An event carries `tickfrom`, `tickto`, `tickprice`, `ticksource`
-(`entry` or `person`), `tickwho` and `tickcontact`. The details card shows a `Tickets`
-row and a `Where from` row, and only between the two sale days: before `tickfrom` and
-after `tickto` nothing about tickets appears, and nothing appears at all without a
-price or a source. `Upon entry` needs no name; `From someone` reveals the two person
-boxes on the form and prints as "name, contact".
+**Tickets.** An event carries `tickfrom`, `tickto`, `tickprice` and `ticksellers`,
+a list of `{kind:'entry'}` and `{kind:'person', who, contact}`, because a ticket can
+be had in more than one way at once. An event saved before the list existed carried
+a single `ticksource`/`tickwho`/`tickcontact`, and `sellers()` still reads it.
+
+`contactText()` writes ten digits, or eleven starting with a 1, as `(209) 555-0143`.
+Anything holding an `@`, and anything that is not a ten digit number, is left exactly
+as it was typed. It runs on the admin box losing focus, on save, and again at render,
+so older rows tidy up too.
+
+The details card shows a `Tickets` row and a `Where from` row with one line per way,
+and the home page and calendar listings show the price beside the date. All of it only
+between the two sale days: before `tickfrom` and after `tickto` nothing about tickets
+appears, and nothing appears at all without a price or a seller.
+
+Two seed events carry a `page` so the demo shows something out of the box: the Fall
+Jass Party is tied to `jass`, the Swiss Echoes Christmas Party to `echoes`. An event
+with no tie still shows its price on the listings; it just has no page to carry a
+details card.
 
 **Availability.** There is no availability list. An event ties the hall up the day
 before, the day of, and the day after — setting up, the event, clearing away — and

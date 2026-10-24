@@ -11,8 +11,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=115eb797">
-<link rel="stylesheet" href="assets/css/admin.css?v=3ecd66af">
+<link rel="stylesheet" href="assets/css/site.css?v=7b6f5ecb">
+<link rel="stylesheet" href="assets/css/admin.css?v=eb18d2d6">
 </head>
 <body class="adm">
 <a class="skip" href="#main">Skip to content</a>
@@ -163,21 +163,12 @@
             <label for="f-tickprice">Price <span class="opt">optional</span></label>
             <input type="text" id="f-tickprice" placeholder="$15" autocomplete="off">
           </div>
-          <div class="field">
-            <label for="f-ticksource">Where to get one <span class="opt">optional</span></label>
-            <select id="f-ticksource">
-              <option value="">Not said</option>
-              <option value="entry">Upon entry</option>
-              <option value="person">From someone</option>
-            </select>
-          </div>
-          <div class="field" id="tickperson" hidden>
-            <label for="f-tickwho">Who to ask</label>
-            <input type="text" id="f-tickwho" placeholder="Hans Brunner" autocomplete="off">
-          </div>
-          <div class="field" id="tickperson2" hidden>
-            <label for="f-tickcontact">How to reach them</label>
-            <input type="text" id="f-tickcontact" placeholder="(209) 555-0143" autocomplete="off">
+          <div class="field wide">
+            <label id="tickhead">Where to get one <span class="opt">optional</span></label>
+            <p class="hint" style="margin:0 0 12px">As many as there are. A telephone
+              number is tidied up for you; an email address is left as you wrote it.</p>
+            <div id="tickrows" role="group" aria-labelledby="tickhead"></div>
+            <button class="abtn small" type="button" id="adtick">+ Add another place to get one</button>
           </div>
         </fieldset>
 
@@ -208,7 +199,7 @@
   </div>
 </main>
 
-<script src="assets/js/events-data.js?v=91bface7"></script>
-<script src="assets/js/admin-events.js?v=754eec23"></script>
+<script src="assets/js/events-data.js?v=d2e03a5e"></script>
+<script src="assets/js/admin-events.js?v=d1a91db4"></script>
 </body>
 </html>

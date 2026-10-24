@@ -407,3 +407,7 @@ h3{font-size:1.28rem}
 .ecard-when{margin:6px 0 0;font-size:.78rem;font-weight:700;letter-spacing:.11em;
   text-transform:uppercase;color:var(--red)}
 .ecard .rows{margin-top:14px}
+.evt .meta{display:inline}
+.evt-price{display:inline-block;vertical-align:baseline;margin-left:11px;
+  font-family:var(--ui);font-size:.72rem;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--red);border:1.5px solid var(--red);padding:1px 8px}

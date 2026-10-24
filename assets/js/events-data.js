@@ -18,7 +18,7 @@ window.SJVSC = (function () {
       from: '2026-10-01', until: '2026-11-12' },
     { id: 'jass-fall', title: 'Fall Jass Party',
       note: 'The Swiss card game. Sunday afternoon at the hall.',
-      date: '2026-11-15', time: '', link: 'event-jass.html',
+      date: '2026-11-15', time: '', link: 'event-jass.html', page: 'jass',
       from: '2026-09-20', until: '2026-11-16',
       details: [
         { label: 'Where', values: ['110 N. Manley Road, Ripon'] },
@@ -39,7 +39,7 @@ window.SJVSC = (function () {
       ] },
     { id: 'echoes-christmas', title: 'Swiss Echoes Christmas Party',
       note: 'Carols, supper and a dance.',
-      date: '2026-12-12', time: '', link: 'event-echoes-christmas.html',
+      date: '2026-12-12', time: '', link: 'event-echoes-christmas.html', page: 'echoes',
       from: '2026-10-17', until: '2026-12-13' }
   ];
 
@@ -116,7 +116,7 @@ window.SJVSC = (function () {
       return '<' + tag + ' class="evt"' + href + '>'
         + '<span class="dt"><b>' + ('0' + d.getDate()).slice(-2) + '</b><span>'
         + MONTH[d.getMonth()].slice(0, 3) + '</span></span>'
-        + '<span><h3></h3><p></p><span class="meta"></span></span>'
+        + '<span><h3></h3><p></p><span class="meta"></span><b class="evt-price"></b></span>'
         + '</' + tag + '>';
     }).join('');
     // text is set rather than interpolated, so a title with punctuation is safe
@@ -124,6 +124,11 @@ window.SJVSC = (function () {
       row.querySelector('h3').textContent = list[i].title;
       row.querySelector('p').textContent = list[i].note;
       row.querySelector('.meta').textContent = longDate(list[i]);
+      /* a price belongs on the listing too, while it is on sale */
+      var t = tickets(list[i]);
+      var tag = row.querySelector('.evt-price');
+      if (t && t.price) tag.textContent = t.price;
+      else tag.remove();
     });
   }
 
@@ -134,25 +139,48 @@ window.SJVSC = (function () {
     return showing().filter(function (e) { return e.page === id; });
   }
 
+  /* A way to reach somebody is either an email address or a telephone number.
+     Ten digits, or eleven starting with a 1, are written the way the rest of
+     the site writes them. Anything else is left exactly as it was typed. */
+  function contactText(v) {
+    var raw = (v || '').trim();
+    if (!raw || raw.indexOf('@') > -1) return raw;
+    var d = raw.replace(/[^0-9]/g, '');
+    if (d.length === 11 && d.charAt(0) === '1') d = d.slice(1);
+    if (d.length !== 10) return raw;
+    return '(' + d.slice(0, 3) + ') ' + d.slice(3, 6) + '-' + d.slice(6);
+  }
+
+  /* Where a ticket can be had. More than one way at once is normal: upon
+     entry and from two people is a perfectly ordinary answer. Events saved
+     before that was possible carried a single way, and still read. */
+  function sellers(e) {
+    var list = e.ticksellers;
+    if (!list && e.ticksource) {
+      list = [e.ticksource === 'person'
+        ? { kind: 'person', who: e.tickwho, contact: e.tickcontact }
+        : { kind: 'entry' }];
+    }
+    return (list || []).map(function (x) {
+      if (x.kind !== 'person') return 'Upon entry';
+      var who = (x.who || '').trim();
+      var how = contactText(x.contact);
+      return who && how ? who + ', ' + how : (who || how);
+    }).filter(function (t) { return t; });
+  }
+
   /* Tickets show only while they are on sale. No dates means they show for as
      long as the event itself is advertised. Nothing shows when there is neither
      a price nor somewhere to get one. */
   function tickets(e) {
     var price = (e.tickprice || '').trim();
-    var source = e.ticksource || '';
-    if (!price && !source) return null;
+    var where = sellers(e);
+    if (!price && !where.length) return null;
 
     var now = today();
     if (e.tickfrom && now < at(e.tickfrom)) return null;
     if (e.tickto && now > at(e.tickto)) return null;
 
-    var where = '';
-    if (source === 'entry') where = 'Upon entry';
-    else if (source === 'person') {
-      var who = (e.tickwho || '').trim();
-      var how = (e.tickcontact || '').trim();
-      where = who && how ? who + ', ' + how : (who || how);
-    }
     return { price: price, where: where };
   }
 
@@ -198,7 +226,7 @@ window.SJVSC = (function () {
     details.forEach(function (d) { row(d.label, d.values); });
     if (t) {
       if (t.price) row('Tickets', [t.price]);
-      if (t.where) row(t.price ? 'Where from' : 'Tickets', [t.where]);
+      if (t.where.length) row(t.price ? 'Where from' : 'Tickets', t.where);
     }
 
     card.appendChild(ul);
@@ -225,6 +253,7 @@ window.SJVSC = (function () {
 
   return { all: all, save: save, showing: showing, blocks: blocks, onPage: onPage,
            renderPages: renderPages, render: render, at: at,
+           tickets: tickets, contactText: contactText,
            today: today, pretty: pretty, fullDate: fullDate, longDate: longDate,
            MONTH: MONTH, KEY: KEY };
 })();
