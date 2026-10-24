@@ -218,9 +218,11 @@ event had none at all and was not a link. An untied event is still not a link, b
 there is nowhere for it to go, and the admin now says so on the row rather than leaving
 somebody to wonder why one event opens and the next does not.
 
-**Description and Agenda are gone.** Both were collected and rendered nowhere. The
-event's **Picture** and **Attachments** are in the same position: still collected,
-still shown nowhere.
+**Agenda is gone.** It was collected and rendered nowhere. **Description** was taken out
+with it and then put back with somewhere to land: it prints on the details card under
+the day and above the headings, with `white-space:pre-line` so paragraphing survives.
+The event's **Picture** and **Attachments** are still in the position Agenda was in:
+collected, shown nowhere.
 
 **Page ties.** An event can name one of eight standing pages in `Show it on a page`,
 and that page carries it while it is inside its advertising window. A page carries

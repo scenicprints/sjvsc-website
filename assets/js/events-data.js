@@ -243,11 +243,18 @@ window.SJVSC = (function () {
     w.textContent = fullDate(e.date) + (e.time ? ', ' + e.time : '');
     card.appendChild(w);
 
+    if (e.desc) {
+      var about = document.createElement('p');
+      about.className = 'ecard-desc';
+      about.textContent = e.desc;
+      card.appendChild(about);
+    }
+
     var details = (e.details || []).filter(function (d) {
       return d.label && (d.values || []).length;
     });
     var t = tickets(e);
-    if (!details.length && !t) return card;
+    if (!details.length && !t) return card;    // the description may be all there is
 
     var ul = document.createElement('ul');
     ul.className = 'rows';

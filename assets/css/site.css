@@ -407,12 +407,14 @@ h3{font-size:1.28rem}
 /* that page's hand-written Details card, in the same card and rows, so */
 /* a page with two events being advertised carries two of them.         */
 
-.ecard{margin-top:22px}
+.ecard{margin:22px 0}
+.ecard:first-child{margin-top:0}
 .ecard + .ecard{margin-top:18px}
 .ecard h3{margin:0}
 .ecard-when{margin:6px 0 0;font-size:.78rem;font-weight:700;letter-spacing:.11em;
   text-transform:uppercase;color:var(--red)}
-.ecard .rows{margin-top:14px}
+.ecard-desc{margin:14px 0 0;color:var(--ink-2);line-height:1.6;white-space:pre-line}
+.ecard .rows{margin-top:16px}
 .evt .meta{display:inline}
 .evt-price{display:inline-block;vertical-align:baseline;margin-left:11px;
   font-family:var(--ui);font-size:.72rem;font-weight:700;letter-spacing:.09em;
