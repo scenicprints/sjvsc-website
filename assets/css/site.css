@@ -427,15 +427,18 @@ h3{font-size:1.28rem}
 .gsec{padding-bottom:58px}
 .gsec[hidden]{display:none}
 .gbands{display:grid;gap:7px}
-.gband{height:248px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;
+.gband{height:clamp(200px,24vw,420px);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;
   -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
 .gband::-webkit-scrollbar{display:none}
 .gb-run{display:flex;gap:7px;width:max-content;height:100%}
 /* a generous fixed width rather than each picture's own, so three of them
    already run past the edge and the band has somewhere to travel. The whole
    frame is there in the viewer. */
+/* 40vw, so three tiles are 120vw and always wider than the window whatever
+   the screen. That is what guarantees a band of three or more can travel, and
+   that no photograph is ever on screen beside its own copy. */
 .gb-shot{flex:0 0 auto;padding:0;border:0;background:none;cursor:pointer;display:block;
-  line-height:0;height:100%;width:clamp(250px,34vw,480px)}
+  line-height:0;height:100%;width:max(260px,40vw)}
 .gb-shot img{height:100%;width:100%;object-fit:cover;display:block;
   transition:filter .3s,transform .4s cubic-bezier(.22,.7,.3,1)}
 /* a band whose own pictures do not reach the edge fills the width instead of
@@ -476,7 +479,7 @@ html.gv-open,html.gv-open body{overflow:hidden}
 .gv-rail button[aria-current]{opacity:1;border-color:var(--red);border-width:2px}
 
 @media(max-width:700px){
-  .gband{height:166px}
+  .gband{height:170px}
   .gv-stage img{max-height:58vh}
   .gv-step{font-size:1.5rem;padding:12px 4px}
   .gv-rail button{width:58px;height:40px}

@@ -239,7 +239,7 @@ window.SJVSC_GALLERY = (function () {
 
     /* a timer rather than requestAnimationFrame, which does not run in a
        minimised window. The timeline on the home page has the same note. */
-    var STEP = 40, PACE = 0.9;        // about 22 pixels a second
+    var STEP = 40, PACE = 2.4;        // about 60 pixels a second
     setInterval(function () {
       if (Date.now() - held < 2500) return;
       moving.forEach(function (band, i) {
