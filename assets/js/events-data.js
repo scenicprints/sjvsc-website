@@ -47,32 +47,38 @@ window.SJVSC = (function () {
   function at(s) { var p = (s || '').split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
   function today() { var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
 
+  /* the list as it stands in this page, loaded from data/events.json */
+  var LIST = SEED.slice();
+
   function all() {
-    var list;
-    try {
-      var raw = localStorage.getItem(KEY);
-      list = raw ? JSON.parse(raw) : null;
-    } catch (e) { list = null; }      // private window, blocked storage
-    if (!list || !list.length) list = SEED.slice();
-    return list.sort(function (a, b) { return at(a.date) - at(b.date); });
+    return LIST.slice().sort(function (a, b) { return at(a.date) - at(b.date); });
   }
 
-  function save(list) {
-    try { localStorage.setItem(KEY, JSON.stringify(list)); return true; }
-    catch (e) { return false; }
+  function load() {
+    return window.SJVSC_STORE.read('events', SEED).then(function (list) {
+      LIST = (list && list.length !== undefined) ? list : SEED.slice();
+      return all();
+    });
+  }
+
+  function save(list, message) {
+    LIST = list;
+    return window.SJVSC_STORE.write('events', list, message || 'Events');
   }
 
   /* The shelf: events the club runs again, kept apart from the calendar so
      nothing on it reaches a reader until it is put on a date. */
-  function savedAll() {
-    try {
-      var raw = localStorage.getItem(SHELF);
-      return raw ? JSON.parse(raw) : [];
-    } catch (e) { return []; }
+  var SHELVED = [];
+  function savedAll() { return SHELVED.slice(); }
+  function savedLoad() {
+    return window.SJVSC_STORE.read('saved', []).then(function (list) {
+      SHELVED = list || [];
+      return savedAll();
+    });
   }
-  function savedSave(list) {
-    try { localStorage.setItem(SHELF, JSON.stringify(list)); return true; }
-    catch (e) { return false; }
+  function savedSave(list, message) {
+    SHELVED = list;
+    return window.SJVSC_STORE.write('saved', list, message || 'Saved events');
   }
 
   /* what a visitor should see right now: inside its advertising window */
@@ -155,6 +161,7 @@ window.SJVSC = (function () {
     schwingers: 'schwingers-club.html',
     echoes: 'swiss-echoes.html',
     camp: 'kids-swiss-camp.html',
+    schwingen: 'schwingen.html',
     schwingfests: 'event-schwingfest.html',
     bbq: 'members-bbq.html',
     oktoberfest: 'event-oktoberfest.html',
@@ -335,13 +342,17 @@ window.SJVSC = (function () {
     });
   }
 
-  if (typeof document !== 'undefined') {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', renderPages);
-    } else renderPages();
+  /* the public pages wait for the file, then draw themselves from it */
+  if (typeof document !== 'undefined' && !window.SJVSC_ADMIN) {
+    load().then(function () {
+      renderPages();
+      render(document.getElementById('whatson'));
+      render(document.getElementById('upcoming'));
+    });
   }
 
-  return { all: all, save: save, savedAll: savedAll, savedSave: savedSave, showing: showing,
+  return { all: all, load: load, save: save, savedAll: savedAll, savedLoad: savedLoad,
+           savedSave: savedSave, showing: showing,
            href: href, TIED: TIED, blocks: blocks, onPage: onPage,
            renderPages: renderPages, render: render, at: at,
            tickets: tickets, contactText: contactText, priceText: priceText,

@@ -18,6 +18,23 @@ plan asked for, and it holds because nothing behind it is private, only events, 
 rates and photographs already on the public site. The real thing is board members with
 an email and a password, swapped in behind this same screen.
 
+## Where the data lives
+
+**In this repository, in `data/*.json`. Nothing is kept in a browser.**
+
+`events.json`, `saved.json`, `rates.json` and `gallery.json` are the club's data.
+Public pages fetch them and draw themselves. The admin reads the same files through
+the GitHub API and **Save commits them straight back**, one commit per save with a
+message naming what changed.
+
+Writing needs a key. The gate asks for a GitHub token alongside the code; it is held
+in `sessionStorage` for that tab, never committed, and Sign out forgets it. Without
+one the admin still opens and reads, and Save says so rather than appearing to work.
+
+`assets/js/store.js` is the whole of it: `read(name, fallback)` and
+`write(name, value, message)`, plus the blob shas a commit needs. The `SEED` constants
+in each store are the fallback for when the file cannot be fetched, not the source.
+
 ## Setup
 
 ```bash

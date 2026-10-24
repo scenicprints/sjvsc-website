@@ -25,6 +25,7 @@ window.SJVSC_GALLERY = (function () {
     { id: 'schwingers',   name: 'Schwinger’s Club',             page: 'schwingers-club.html' },
     { id: 'echoes',       name: 'Swiss Echoes',                      page: 'swiss-echoes.html' },
     { id: 'camp',         name: 'Kids Swiss Camp',                   page: 'kids-swiss-camp.html' },
+    { id: 'schwingen',    name: 'Schwingen',                        page: 'schwingen.html' },
     { id: 'schwingfests', name: 'Schwingfests',                      page: 'event-schwingfest.html' },
     { id: 'bbq',          name: 'Members’ BBQ',                 page: 'members-bbq.html' },
     { id: 'oktoberfest',  name: 'Oktoberfest',                       page: 'event-oktoberfest.html' },
@@ -62,16 +63,22 @@ window.SJVSC_GALLERY = (function () {
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
-  function all() {
-    try {
-      var raw = localStorage.getItem(KEY);
-      return raw ? JSON.parse(raw) : clone(SEED);
-    } catch (e) { return clone(SEED); }
+  var MAP = clone(SEED);
+
+  function all() { return MAP; }
+
+  function load() {
+    return window.SJVSC_STORE.read('gallery', SEED).then(function (m) {
+      MAP = m && typeof m === 'object' ? m : clone(SEED);
+      return MAP;
+    });
   }
-  function save(map) {
-    try { localStorage.setItem(KEY, JSON.stringify(map)); return true; }
-    catch (e) { return false; }
+
+  function save(map, message) {
+    MAP = map;
+    return window.SJVSC_STORE.write('gallery', map, message || 'Pictures');
   }
+
   function pics(tie) { return all()[tie] || []; }
 
   /* pictures are made small before they are kept, or eight galleries will
@@ -287,13 +294,12 @@ window.SJVSC_GALLERY = (function () {
     });
   }
 
-  if (typeof document !== 'undefined') {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', render);
-    } else render();
+  /* the pages wait for data/gallery.json, then draw the bands */
+  if (typeof document !== 'undefined' && !window.SJVSC_ADMIN) {
+    load().then(render);
   }
 
   return { KEY: KEY, PAGES: PAGES, SEED: SEED, PER_BAND: PER_BAND, MAX_PER_PAGE: MAX_PER_PAGE,
-           all: all, save: save, pics: pics, shrink: shrink,
+           all: all, load: load, save: save, pics: pics, shrink: shrink,
            bandsFor: bandsFor, render: render, openViewer: openViewer, shown: [] };
 }());

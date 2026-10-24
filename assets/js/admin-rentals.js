@@ -8,7 +8,7 @@
 
 (function () {
   var R = window.SJVSC_RATES;
-  var card = R.card();
+  var card = R.card();           // replaced once the repository answers
 
   var dayrows = document.getElementById('dayrows');
   var pricegrid = document.getElementById('pricegrid');
@@ -113,6 +113,11 @@
         card.days = card.days.filter(function (x) { return x !== d; });
         card.spaces.forEach(function (s) { delete s.prices[d.id]; });
         if (!card.days.length) addDay();
+        /* its weekdays would otherwise belong to nothing */
+        var left = card.days[0];
+        (d.covers || []).forEach(function (n) {
+          if ((left.covers || []).indexOf(n) < 0) (left.covers = left.covers || []).push(n);
+        });
         drawDays(); drawGrid();
       }));
 
@@ -124,10 +129,14 @@
   function warnDays() {
     var missing = R.uncovered(card);
     daywarn.hidden = !missing.length;
+    daywarn.className = missing.length ? 'warn bad' : 'warn';
     if (missing.length) {
       daywarn.textContent = 'Nothing covers ' + missing.join(', ') +
-        '. A quote for one of those days is priced in the first column.';
+        '. Every day of the week has to belong to one of these, or a quote for '
+        + 'that day has no price to use. This cannot be saved until it does.';
     }
+    var save = document.querySelector('#rform button[type=submit]');
+    if (save) save.disabled = !!missing.length;
   }
 
   function addDay() {
@@ -300,6 +309,14 @@
     ev.preventDefault();
     saved.hidden = true;
 
+    /* a weekday belonging to no kind of day would have no price to quote */
+    var missing = R.uncovered(card);
+    if (missing.length) {
+      warnDays();
+      daywarn.scrollIntoView({ block: 'center' });
+      return;
+    }
+
     /* a row nobody named is a row nobody meant to keep */
     card.days = card.days.filter(function (d) { return d.name.trim(); });
     card.spaces = card.spaces.filter(function (s) { return s.name.trim(); });
@@ -310,12 +327,24 @@
     if (!card.extras.length) addExtra();
     if (!card.rules.length) addRule();
 
-    var ok = R.save(card);
-    document.getElementById('e-save').hidden = ok;
-    saved.hidden = !ok;
-    drawAll();
-    if (ok) saved.scrollIntoView({ block: 'center' });
+    var save = document.querySelector('#rform button[type=submit]');
+    if (save) save.disabled = true;
+    R.save(card, 'Hall rental rates').then(function () {
+      if (save) save.disabled = false;
+      document.getElementById('e-save').hidden = true;
+      saved.hidden = false;
+      drawAll();
+      saved.scrollIntoView({ block: 'center' });
+    }, function (err) {
+      if (save) save.disabled = false;
+      var e = document.getElementById('e-save');
+      e.textContent = err.message;
+      e.hidden = false;
+    });
   });
 
-  drawAll();
+  R.load().then(function (c) {
+    card = c;
+    drawAll();
+  });
 }());

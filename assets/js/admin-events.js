@@ -7,7 +7,7 @@
 
 (function () {
   var D = window.SJVSC;
-  var events = D.all();
+  var events = D.all();          // replaced once the repository answers
 
   var listview = document.getElementById('listview');
   var formview = document.getElementById('formview');
@@ -419,6 +419,12 @@
     });
   }
 
+  function busy(on) {
+    [].forEach.call(document.querySelectorAll('#eform button, .eactions button'),
+      function (b) { b.disabled = !!on; });
+    document.body.style.cursor = on ? 'progress' : '';
+  }
+
   function show(which) {
     if (which === 'list') drawMonth();
     listview.hidden = which !== 'list';
@@ -490,13 +496,10 @@
 
     if (onShelf) {
       gather(editing);
-      if (!D.savedSave(saved)) {
-        attachError('There is no room left to keep all of this. '
-          + 'Remove a file, or choose a smaller picture.');
-        return;
-      }
-      renderShelf();
-      show('list');
+      busy(true);
+      D.savedSave(saved, 'Saved event: ' + editing.title).then(function () {
+        busy(false); renderShelf(); show('list');
+      }, function (err) { busy(false); attachError(err.message); });
       return;
     }
 
@@ -509,13 +512,15 @@
     if (!e.from) e.from = iso(today());
     e.until = plusDay(e.date);                  // off the website the day after
 
-    if (!D.save(events)) {
-      attachError('There is no room left to keep all of this. '
-        + 'Remove a file, or choose a smaller picture.');
-      return;
-    }
-    render();
-    show('list');
+    busy(true);
+    D.save(events, 'Event: ' + e.title).then(function () {
+      busy(false);
+      render();
+      show('list');
+    }, function (err) {
+      busy(false);
+      attachError(err.message);
+    });
   });
 
   ERRS.forEach(function (k) {
@@ -555,13 +560,12 @@
     var copy = gather({ id: 's' + Date.now() });
     copy.date = ''; copy.from = ''; copy.until = '';   // a saved event has no day
     saved.push(copy);
-    if (!D.savedSave(saved)) {
-      saved.pop();
-      attachError('There is no room left to keep all of this.');
-      return;
-    }
-    renderShelf();
-    document.getElementById('kept').hidden = false;
+    busy(true);
+    D.savedSave(saved, 'Kept for re-use: ' + copy.title).then(function () {
+      busy(false);
+      renderShelf();
+      document.getElementById('kept').hidden = false;
+    }, function (err) { busy(false); saved.pop(); attachError(err.message); });
   });
 
   /* a saved event becomes a real one, and stays on the shelf */
@@ -577,13 +581,10 @@
     e.from = e.from || iso(today());
     e.until = plusDay(e.date);
     events.push(e);
-    if (!D.save(events)) {
-      events.pop();
-      attachError('There is no room left to keep all of this.');
-      return;
-    }
-    render();
-    show('list');
+    busy(true);
+    D.save(events, 'Event: ' + e.title).then(function () {
+      busy(false); render(); show('list');
+    }, function (err) { busy(false); events.pop(); attachError(err.message); });
   });
 
   document.getElementById('addbtn').addEventListener('click', function () { open(null); });
@@ -598,19 +599,26 @@
     document.getElementById('removebtn').focus();
   });
   document.getElementById('reallyremove').addEventListener('click', function () {
+    var name = editing.title;
+    busy(true);
+    var job;
     if (onShelf) {
       saved = saved.filter(function (x) { return x !== editing; });
-      D.savedSave(saved);
-      renderShelf();
+      job = D.savedSave(saved, 'Removed from the saved list: ' + name).then(renderShelf);
     } else {
       events = events.filter(function (x) { return x !== editing; });
-      D.save(events);
-      render();
+      job = D.save(events, 'Removed event: ' + name).then(render);
     }
-    show('list');
+    job.then(function () { busy(false); show('list'); },
+             function (err) { busy(false); attachError(err.message); });
   });
 
-  render();
-  renderShelf();
-  drawMonth();
+  /* nothing is drawn until the repository has answered */
+  Promise.all([D.load(), D.savedLoad()]).then(function (r) {
+    events = r[0];
+    saved = r[1];
+    render();
+    renderShelf();
+    drawMonth();
+  });
 })();

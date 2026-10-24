@@ -7,7 +7,7 @@
 
 (function () {
   var G = window.SJVSC_GALLERY;
-  var store = G.all();
+  var store = G.all();           // replaced once the repository answers
 
   var pickview = document.getElementById('pickview');
   var editview = document.getElementById('editview');
@@ -180,14 +180,18 @@
     if (pics.length) next[page.id] = pics;
     else delete next[page.id];
 
-    if (!G.save(next)) {
-      say('There is no room left to keep all of this. Take a picture out and try again.');
-      return;
-    }
-    store = next;
-    mark();
-    gsaved.hidden = false;
-    drawPick();
+    var btn = document.getElementById('gsave');
+    btn.disabled = true;
+    G.save(next, 'Pictures: ' + page.name).then(function () {
+      btn.disabled = false;
+      store = next;
+      mark();
+      gsaved.hidden = false;
+      drawPick();
+    }, function (err) {
+      btn.disabled = false;
+      say(err.message);
+    });
   });
 
   document.getElementById('gclear').addEventListener('click', function () {
@@ -212,6 +216,9 @@
     ev.returnValue = '';
   });
 
-  drawPick();
-  show('pick');
+  G.load().then(function (m) {
+    store = m;
+    drawPick();
+    show('pick');
+  });
 }());

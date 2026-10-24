@@ -61,25 +61,23 @@ window.SJVSC_RATES = (function () {
     return c;
   }
 
-  function card() {
-    var c;
-    try {
-      var raw = localStorage.getItem(KEY);
-      c = raw ? JSON.parse(raw) : null;
-    } catch (e) { c = null; }          // private window, blocked storage
-    if (!c || !c.spaces || !c.days) c = clone(SEED);
-    return tidy(c);
+  var CARD = clone(SEED);
+
+  function card() { return tidy(CARD); }
+
+  function load() {
+    return window.SJVSC_STORE.read('rates', SEED).then(function (c) {
+      CARD = (c && c.spaces && c.days) ? c : clone(SEED);
+      return card();
+    });
   }
 
-  function save(c) {
-    try { localStorage.setItem(KEY, JSON.stringify(c)); return true; }
-    catch (e) { return false; }        // out of room
+  function save(c, message) {
+    CARD = c;
+    return window.SJVSC_STORE.write('rates', c, message || 'Hall rental rates');
   }
 
-  function reset() {
-    try { localStorage.removeItem(KEY); } catch (e) {}
-    return clone(SEED);
-  }
+  function reset() { return clone(SEED); }
 
   /* Which column a date falls in. The first kind of day that covers the
      weekday wins; a weekday nobody covers falls to the first column, and
@@ -119,7 +117,7 @@ window.SJVSC_RATES = (function () {
 
   return {
     SEED: SEED, KEY: KEY,
-    card: card, save: save, reset: reset, clone: clone,
+    card: card, load: load, save: save, reset: reset, clone: clone,
     dayFor: dayFor, uncovered: uncovered,
     rule: rule, ruleValue: ruleValue, money: money
   };

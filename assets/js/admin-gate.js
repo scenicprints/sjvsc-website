@@ -27,6 +27,7 @@
     var a = e.target.closest ? e.target.closest('.awho a') : null;
     if (!a) return;
     try { sessionStorage.removeItem(KEY); } catch (err) {}
+    if (window.SJVSC_STORE) window.SJVSC_STORE.forgetToken();
   });
 
   if (isIn()) return;
@@ -46,6 +47,11 @@
       '<label for="gate-code">Code</label>' +
       '<input type="password" id="gate-code" autocomplete="off" autocapitalize="off" ' +
       'spellcheck="false" inputmode="text">' +
+      '<label for="gate-key" style="margin-top:20px">GitHub key</label>' +
+      '<input type="password" id="gate-key" autocomplete="off" autocapitalize="off" ' +
+      'spellcheck="false" placeholder="github_pat_...">' +
+      '<p class="gate-note">What you change is committed to the repository, so this ' +
+      'needs a key that can write to it. It is held for this tab and nowhere else.</p>' +
       '<p class="gate-no" hidden>That is not the code. Try again.</p>' +
       '<button class="abtn solid" type="submit">Go in</button>' +
       '<a class="gate-out" href="index.html">Back to the website</a>' +
@@ -65,6 +71,8 @@
         return;
       }
       try { sessionStorage.setItem(KEY, 'yes'); } catch (e) {}
+      var key = gate.querySelector('#gate-key').value.trim();
+      if (key && window.SJVSC_STORE) window.SJVSC_STORE.setToken(key);
       gate.remove();
       document.documentElement.className =
         document.documentElement.className.replace(/\blocked\b/, '').trim();

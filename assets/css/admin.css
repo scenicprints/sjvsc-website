@@ -213,6 +213,9 @@
 
 .warn{margin:12px 0 0;font-size:.95rem;font-weight:600;color:var(--ink);
   background:#FDF6E3;border:2px solid var(--gold);border-radius:5px;padding:12px 14px}
+.warn.bad{background:#FFF6F5;border-color:var(--red);color:#8A1226}
+#rform button[type=submit]:disabled{background:var(--line);border-color:var(--line);
+  color:var(--ink-soft);cursor:default}
 .saved{margin:18px 0 0;font-size:1rem;font-weight:600;color:var(--ok);
   background:#F0F8F3;border:2px solid var(--ok);border-radius:5px;padding:14px 16px}
 
@@ -354,3 +357,4 @@ html.locked .adm > *:not(.gate){display:none !important}
   .amo-cell span{font-size:.64rem}
   .amo-cell i{display:none}
 }
+.gate-note{margin:10px 0 0;font-size:.86rem;color:var(--ink-soft);line-height:1.5}

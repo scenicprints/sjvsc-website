@@ -1,0 +1,122 @@
+{
+  "days": [
+    {
+      "id": "sat",
+      "name": "Saturday",
+      "covers": [
+        6
+      ]
+    },
+    {
+      "id": "frisun",
+      "name": "Friday / Sunday",
+      "covers": [
+        5,
+        0
+      ]
+    },
+    {
+      "id": "week",
+      "name": "Weekday",
+      "covers": [
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  ],
+  "spaces": [
+    {
+      "id": "hall",
+      "name": "Hall only",
+      "prices": {
+        "sat": 1800,
+        "frisun": 1400,
+        "week": 900
+      }
+    },
+    {
+      "id": "both",
+      "name": "Hall and grounds",
+      "prices": {
+        "sat": 2200,
+        "frisun": 1750,
+        "week": 1200
+      }
+    },
+    {
+      "id": "grounds",
+      "name": "Grounds only",
+      "prices": {
+        "sat": 700,
+        "frisun": 600,
+        "week": 450
+      }
+    }
+  ],
+  "extras": [
+    {
+      "id": "kitchen",
+      "name": "Commercial kitchen",
+      "price": 250,
+      "when": "choose"
+    },
+    {
+      "id": "linens",
+      "name": "Linens",
+      "price": 200,
+      "when": "choose"
+    },
+    {
+      "id": "av",
+      "name": "Sound system and projector",
+      "price": 150,
+      "when": "choose"
+    },
+    {
+      "id": "cleaning",
+      "name": "End-of-night cleaning",
+      "price": 300,
+      "when": "choose"
+    },
+    {
+      "id": "bar",
+      "name": "Licensed bartender",
+      "price": 240,
+      "when": "alcohol"
+    }
+  ],
+  "rules": [
+    {
+      "id": "hours",
+      "name": "Hours included",
+      "value": 8,
+      "does": "hours"
+    },
+    {
+      "id": "hourly",
+      "name": "Each hour after that",
+      "value": 150,
+      "does": "hourly"
+    },
+    {
+      "id": "discount",
+      "name": "Members take off",
+      "value": 25,
+      "does": "discount"
+    },
+    {
+      "id": "booking",
+      "name": "Booking deposit (credited against the total)",
+      "value": 500,
+      "does": "print"
+    },
+    {
+      "id": "damage",
+      "name": "Damage deposit (refundable)",
+      "value": 500,
+      "does": "print"
+    }
+  ]
+}
