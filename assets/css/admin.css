@@ -86,6 +86,8 @@
 .estand.live{background:#E6F3EC;color:#17603C}
 .estand.soon{background:var(--cream-2);color:var(--ink-2)}
 .estand.done{background:#F1EFEC;color:var(--ink-soft)}
+.estand.none{background:#FDF6E3;color:#6B5310;margin-left:8px}
+.estand.none[hidden]{display:none}
 .eitem .abtn{flex:0 0 auto;padding:12px 18px}
 .eempty{background:var(--white);border:2px dashed var(--line);border-radius:6px;
   padding:28px 22px;color:var(--ink-2);text-align:center}

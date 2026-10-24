@@ -72,13 +72,18 @@
       li.innerHTML =
         '<span class="ewhen"><b></b><i></i></span>' +
         '<span class="ebody"><b></b><span class="enote"></span>' +
-        '<span class="estand ' + s.cls + '"></span></span>' +
+        '<span class="estand ' + s.cls + '"></span>' +
+        '<span class="estand none" hidden>Not on a page, so it does not open one</span>' +
+        '</span>' +
         '<button class="abtn" type="button">Change</button>';
       li.querySelector('.ewhen b').textContent = at(e.date).getDate();
       li.querySelector('.ewhen i').textContent = D.MONTH[at(e.date).getMonth()].slice(0, 3);
       li.querySelector('.ebody b').textContent = e.title;
       li.querySelector('.enote').textContent = dayName(e.date) + (e.time ? ', ' + e.time : '');
       li.querySelector('.estand').textContent = s.text;
+      /* a row with no tie shows on the calendar but is not a link, because
+         there is nowhere for it to go */
+      li.querySelector('.estand.none').hidden = !!e.page;
       li.querySelector('button').addEventListener('click', function () { open(e); });
       list.appendChild(li);
     });

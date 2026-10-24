@@ -215,7 +215,8 @@ leads: `href(e)` is `TIED[e.page]` first and the old seed `link` only after, for
 seed events whose page is not one of the eight. The admin has never had a link field, so
 an event retied to another page used to keep whatever `link` the seed gave it, and a new
 event had none at all and was not a link. An untied event is still not a link, because
-there is nowhere for it to go.
+there is nowhere for it to go, and the admin now says so on the row rather than leaving
+somebody to wonder why one event opens and the next does not.
 
 **Description and Agenda are gone.** Both were collected and rendered nowhere. The
 event's **Picture** and **Attachments** are in the same position: still collected,
