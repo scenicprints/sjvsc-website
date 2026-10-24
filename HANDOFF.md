@@ -170,6 +170,11 @@ a list of `{kind:'entry'}` and `{kind:'person', who, contact}`, because a ticket
 be had in more than one way at once. An event saved before the list existed carried
 a single `ticksource`/`tickwho`/`tickcontact`, and `sellers()` still reads it.
 
+`priceText()` puts a dollar sign on a price typed as a bare number, and pads a single
+decimal, so `15` reads `$15` and `15.5` reads `$15.50`. Anything that is not a plain
+number is left as typed, so `Free` and `$5 members, $8 otherwise` both survive. The
+listing tag reads `Tickets $15`, because a number alone in a box says nothing.
+
 `contactText()` writes ten digits, or eleven starting with a 1, as `(209) 555-0143`.
 Anything holding an `@`, and anything that is not a ten digit number, is left exactly
 as it was typed. It runs on the admin box losing focus, on save, and again at render,

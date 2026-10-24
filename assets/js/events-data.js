@@ -127,7 +127,7 @@ window.SJVSC = (function () {
       /* a price belongs on the listing too, while it is on sale */
       var t = tickets(list[i]);
       var tag = row.querySelector('.evt-price');
-      if (t && t.price) tag.textContent = t.price;
+      if (t && t.price) tag.textContent = 'Tickets ' + t.price;
       else tag.remove();
     });
   }
@@ -137,6 +137,18 @@ window.SJVSC = (function () {
      page with three in their window shows three. */
   function onPage(id) {
     return showing().filter(function (e) { return e.page === id; });
+  }
+
+  /* A price typed as a bare number is a number of dollars. Anything with a
+     currency mark already on it, and anything that is not a plain number at
+     all, is left exactly as it was typed, so "Free" and "$5 members, $8
+     otherwise" both survive. */
+  function priceText(v) {
+    var raw = (v || '').trim();
+    if (!raw) return '';
+    var m = raw.match(/^([0-9]+)(?:\.([0-9]{1,2}))?$/);
+    if (m) return '$' + m[1] + (m[2] ? '.' + (m[2].length === 1 ? m[2] + '0' : m[2]) : '');
+    return raw;
   }
 
   /* A way to reach somebody is either an email address or a telephone number.
@@ -173,7 +185,7 @@ window.SJVSC = (function () {
      long as the event itself is advertised. Nothing shows when there is neither
      a price nor somewhere to get one. */
   function tickets(e) {
-    var price = (e.tickprice || '').trim();
+    var price = priceText(e.tickprice);
     var where = sellers(e);
     if (!price && !where.length) return null;
 
@@ -253,7 +265,7 @@ window.SJVSC = (function () {
 
   return { all: all, save: save, showing: showing, blocks: blocks, onPage: onPage,
            renderPages: renderPages, render: render, at: at,
-           tickets: tickets, contactText: contactText,
+           tickets: tickets, contactText: contactText, priceText: priceText,
            today: today, pretty: pretty, fullDate: fullDate, longDate: longDate,
            MONTH: MONTH, KEY: KEY };
 })();

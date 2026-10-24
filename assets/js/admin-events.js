@@ -396,6 +396,11 @@
     if (F.date.value && !F.from.value) F.from.value = iso(today());
   });
 
+  /* a bare number is a number of dollars; anything else is left alone */
+  F.tickprice.addEventListener('blur', function () {
+    F.tickprice.value = D.priceText(F.tickprice.value);
+  });
+
   document.getElementById('adtick').addEventListener('click', function () {
     addTicketRow(null).querySelector('.tkind').focus();
   });
