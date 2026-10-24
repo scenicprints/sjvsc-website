@@ -145,10 +145,14 @@ fallback.
 
 **Page ties.** An event can name one of eight standing pages in `Show it on a page`,
 and that page carries it while it is inside its advertising window. A page carries
-every tied event at once, so three in their windows means three boxes. The page holds
-an empty `<div class="epage" data-eventpage="...">` under its header and loads
-`events-data.js`, which fills every such container on load and leaves it `hidden` when
-nothing is on, so a page with no event reads exactly as it did before.
+every tied event at once, so three in their windows means three cards.
+
+The card goes where that page already keeps its hand-written **Details** card, which
+it replaces: `<div data-eventslot="...">` wraps that card, and `events-data.js` swaps
+the contents for one `.card.ecard` per tied event, in the page's own card and `.rows`
+styling. With nothing tied, the slot is left alone and the hand-written card is what
+shows, so those pages read exactly as they did. `swiss-echoes.html` has no Details
+card, so its slot is an empty div at the top of the sidebar column.
 
 | Value | Page |
 |---|---|

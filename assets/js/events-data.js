@@ -134,61 +134,55 @@ window.SJVSC = (function () {
     return showing().filter(function (e) { return e.page === id; });
   }
 
+  /* The details box a tied page carries. It is the page's own Details card,
+     in the page's own card and row styling, so it reads as part of the page
+     rather than as something bolted on top of it. */
   function box(e) {
-    var when = fullDate(e.date) + (e.time ? ', ' + e.time : '');
-    var wrap = document.createElement('article');
-    wrap.className = 'ebox';
+    var card = document.createElement('div');
+    card.className = 'card ecard';
 
-    var head = document.createElement('div');
-    head.className = 'ebox-head';
     var h = document.createElement('h3');
     h.textContent = e.title;
-    var w = document.createElement('p');
-    w.className = 'ebox-when';
-    w.textContent = when;
-    head.appendChild(h);
-    head.appendChild(w);
-    wrap.appendChild(head);
+    card.appendChild(h);
 
-    if (e.note) {
-      var n = document.createElement('p');
-      n.className = 'ebox-note';
-      n.textContent = e.note;
-      wrap.appendChild(n);
-    }
+    var w = document.createElement('p');
+    w.className = 'ecard-when';
+    w.textContent = fullDate(e.date) + (e.time ? ', ' + e.time : '');
+    card.appendChild(w);
 
     var details = (e.details || []).filter(function (d) {
       return d.label && (d.values || []).length;
     });
-    if (details.length) {
-      var dl = document.createElement('dl');
-      dl.className = 'ebox-rows';
-      details.forEach(function (d) {
-        var dt = document.createElement('dt');
-        dt.textContent = d.label;
-        dl.appendChild(dt);
-        var dd = document.createElement('dd');
-        d.values.forEach(function (v, i) {
-          if (i) dd.appendChild(document.createElement('br'));
-          dd.appendChild(document.createTextNode(v));
-        });
-        dl.appendChild(dd);
-      });
-      wrap.appendChild(dl);
-    }
+    if (!details.length) return card;
 
-    return wrap;
+    var ul = document.createElement('ul');
+    ul.className = 'rows';
+    details.forEach(function (d) {
+      var li = document.createElement('li');
+      var b = document.createElement('b');
+      b.textContent = d.label;
+      var span = document.createElement('span');
+      d.values.forEach(function (v, i) {
+        if (i) span.appendChild(document.createElement('br'));
+        span.appendChild(document.createTextNode(v));
+      });
+      li.appendChild(b);
+      li.appendChild(span);
+      ul.appendChild(li);
+    });
+    card.appendChild(ul);
+    return card;
   }
 
-  /* Pages carry an empty container and say which tie they are. Nothing is
-     drawn when nothing is on, so the page reads as it did before. */
+  /* A tied page keeps a hand-written Details card inside its slot. An event
+     being advertised replaces it, and more than one replaces it with one card
+     each. With nothing on, the hand-written card is what stays. */
   function renderPages() {
-    [].forEach.call(document.querySelectorAll('[data-eventpage]'), function (el) {
-      var list = onPage(el.getAttribute('data-eventpage'));
-      el.innerHTML = '';
+    [].forEach.call(document.querySelectorAll('[data-eventslot]'), function (el) {
+      var list = onPage(el.getAttribute('data-eventslot'));
       if (!list.length) return;
+      el.innerHTML = '';
       list.forEach(function (e) { el.appendChild(box(e)); });
-      el.hidden = false;
     });
   }
 

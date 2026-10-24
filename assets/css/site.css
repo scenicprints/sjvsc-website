@@ -397,29 +397,13 @@ h3{font-size:1.28rem}
 }
 
 /* ------------------------------------------------------------------ */
-/* What an event adds to the page it is tied to. A page carries every  */
-/* tied event that is being advertised, so these stack.                */
+/* What an event adds to the page it is tied to. It takes the place of  */
+/* that page's hand-written Details card, in the same card and rows, so */
+/* a page with two events being advertised carries two of them.         */
 
-.epage{margin:34px 0 0}
-.ebox{background:var(--white);border:1px solid var(--line);border-left:5px solid var(--red);
-  padding:24px 26px;margin-bottom:16px}
-.ebox:last-child{margin-bottom:0}
-.ebox-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 20px;
-  padding-bottom:14px;border-bottom:1px solid var(--line)}
-.ebox-head h3{font-family:var(--display);font-size:1.5rem;font-weight:600;line-height:1.15;
-  margin:0;flex:1 1 300px;min-width:0}
-.ebox-when{margin:0;flex:0 0 auto;font-size:.82rem;font-weight:700;letter-spacing:.09em;
+.ecard{margin-top:22px}
+.ecard + .ecard{margin-top:18px}
+.ecard h3{margin:0}
+.ecard-when{margin:6px 0 0;font-size:.78rem;font-weight:700;letter-spacing:.11em;
   text-transform:uppercase;color:var(--red)}
-.ebox-note{margin:14px 0 0;color:var(--ink-2);max-width:62ch}
-.ebox-rows{display:grid;grid-template-columns:minmax(120px,auto) minmax(0,1fr);
-  gap:10px 26px;margin:18px 0 0}
-.ebox-rows dt{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--ink-soft);padding-top:3px}
-.ebox-rows dd{margin:0;color:var(--ink);line-height:1.55;overflow-wrap:anywhere}
-
-@media(max-width:620px){
-  .ebox{padding:20px 18px}
-  .ebox-rows{grid-template-columns:1fr;gap:4px 0}
-  .ebox-rows dd{margin-bottom:12px}
-  .ebox-rows dd:last-child{margin-bottom:0}
-}
+.ecard .rows{margin-top:14px}
