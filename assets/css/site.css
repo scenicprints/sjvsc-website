@@ -417,3 +417,63 @@ h3{font-size:1.28rem}
 .evt-price{display:inline-block;vertical-align:baseline;margin-left:11px;
   font-family:var(--ui);font-size:.72rem;font-weight:700;letter-spacing:.09em;
   text-transform:uppercase;color:var(--red);border:1.5px solid var(--red);padding:1px 8px}
+
+/* ------------------------------------------------------------------ */
+/* The galleries. Bands running the full width of the window, which    */
+/* nothing else here does, travelling opposite ways as the page goes   */
+/* by. Six photographs to a band, so more pictures mean another band   */
+/* rather than smaller pictures.                                       */
+
+.gsec{padding-bottom:58px}
+.gbands{display:grid;gap:7px}
+.gband{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  overscroll-behavior-x:contain}
+.gband::-webkit-scrollbar{display:none}
+.gb-run{display:flex;gap:7px;width:max-content}
+.gb-shot{flex:0 0 auto;padding:0;border:0;background:none;cursor:pointer;display:block;line-height:0}
+.gb-shot img{height:224px;width:auto;display:block;transition:filter .3s,transform .4s cubic-bezier(.22,.7,.3,1)}
+.gb-shot:hover img,.gb-shot:focus-visible img{filter:none;transform:scale(1.04)}
+.gb-shot:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
+
+/* the viewer it opens into */
+html.gv-open,html.gv-open body{overflow:hidden}
+.gview{position:fixed;inset:0;z-index:200;background:rgba(14,12,11,.97);
+  display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:1fr auto;
+  align-items:center;gap:10px;padding:18px}
+.gview[hidden]{display:none}
+.gv-stage{grid-column:2;grid-row:1;margin:0;min-width:0;min-height:0;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.gv-stage img{max-width:100%;max-height:70vh;width:auto;height:auto;display:block;
+  border:1px solid rgba(247,241,228,.25)}
+.gv-stage figcaption{color:#E7DCC9;font-family:var(--ui);font-size:.92rem;text-align:center;
+  max-width:70ch}
+.gv-shut{position:absolute;top:18px;right:18px;z-index:2;font-family:var(--ui);font-size:.82rem;
+  font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--cream);
+  background:none;border:1.5px solid rgba(247,241,228,.5);padding:11px 17px;cursor:pointer}
+.gv-shut:hover{border-color:var(--cream);background:rgba(247,241,228,.1)}
+.gv-step{grid-row:1;background:none;border:0;color:var(--cream);font-size:2rem;line-height:1;
+  padding:18px 10px;cursor:pointer;opacity:.75}
+.gv-step:hover{opacity:1}
+.gv-prev{grid-column:1}
+.gv-next{grid-column:3}
+.gv-rail{grid-column:1/-1;grid-row:2;display:flex;gap:6px;overflow-x:auto;padding:4px 2px;
+  justify-content:safe center;scrollbar-width:none}
+.gv-rail::-webkit-scrollbar{display:none}
+.gv-rail button{flex:0 0 auto;width:74px;height:50px;padding:0;cursor:pointer;
+  background-size:cover;background-position:center;border:1px solid rgba(247,241,228,.3);
+  opacity:.45;transition:opacity .25s,border-color .25s}
+.gv-rail button:hover{opacity:.85}
+.gv-rail button[aria-current]{opacity:1;border-color:var(--red);border-width:2px}
+
+@media(max-width:700px){
+  .gb-shot img{height:148px}
+  .gv-stage img{max-height:58vh}
+  .gv-step{font-size:1.5rem;padding:12px 4px}
+  .gv-rail button{width:58px;height:40px}
+  .gview{padding:12px}
+  .gv-shut{top:12px;right:12px;padding:9px 13px;font-size:.74rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .gb-shot img{transition:none}
+  .gb-shot:hover img,.gb-shot:focus-visible img{transform:none}
+}

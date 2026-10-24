@@ -71,11 +71,13 @@ index.html + 27 other *.html   the pages, at the repository root
 admin.html                     admin home — one row per thing that can be edited
 admin-events.html              the events screen: list, and the add/change form
 admin-rentals.html             the hall rental screen: the whole rate card
+admin-gallery.html             the pictures screen: one page's band at a time
 assets/css/site.css            the public design system
 assets/css/admin.css           the admin side, deliberately larger and plainer
 assets/js/events-data.js       THE event list — admin writes it, public pages read it
                                and draws the details boxes on the eight tied pages
 assets/js/rates-data.js        THE rate card — admin writes it, rentals.html reads it
+assets/js/gallery-data.js      THE pictures — the bands and the viewer as well as the store
 assets/js/site.js              nav, scroll-to-top, timeline, public event lists
 assets/js/admin.js             the admin home (only the date is live)
 assets/js/admin-events.js      the events screen
@@ -146,6 +148,28 @@ the event — that is the mechanism that stops the site going stale. Edits live 
 `localStorage`, so they are per-browser; the real version would write to the club's
 account behind the same screens. The rows already in the markup are the no-script
 fallback.
+
+**The galleries.** `assets/js/gallery-data.js` holds the store, the bands and the
+viewer; `admin-gallery.html` fills them, one page at a time. The eight event pages each
+carry `<div class="gbands" data-gallery="...">` in a `.gsec` section at the foot, which
+stays `hidden` while that page has no pictures.
+
+A band holds six photographs and runs the full width of the window, which nothing else
+on the site does. Band one travels one way as the page scrolls past it and band two the
+other, so the rows weave; a ninth picture puts out a second band and a thirteenth a
+third. Eighteen is the ceiling. A band narrower than the window is repeated four times
+so it has somewhere to travel, and the repeats carry `aria-hidden` and `tabindex=-1` so
+a screen reader is read the originals once. Touching a band stops the scroll driving it
+for four seconds, so a swipe is not fought. Under `prefers-reduced-motion` nothing is
+driven at all and the bands are simply scrollable by hand.
+
+Clicking a photograph opens the viewer: the picture large, `n of m` and the caption
+beneath, every other photograph in a rail along the bottom with the current one marked,
+arrow keys, Escape, and the focus handed back to the picture that was clicked.
+
+Pictures are shrunk to 1100px wide at quality 0.7 before being kept, because eight
+galleries of them have to share the browser's few megabytes with the events and the
+rate card. That is the only reason for the eighteen cap.
 
 **Kept for later: the Kids Swiss Camp Details card.** Removed from the page on the
 owner's instruction, and wanted again at some point. It read:

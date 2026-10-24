@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<!-- Pages serves HTML with max-age=600, so a board member pressing refresh can be
+     handed yesterday's admin screen. These pages are not public; always revalidate. -->
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+<title>Pictures &#183; Website admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/css/site.css?v=65747e83">
+<link rel="stylesheet" href="assets/css/admin.css?v=108c75e0">
+</head>
+<body class="adm">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="abar">
+  <div class="awrap">
+    <span class="abrand">
+      <svg viewBox="0 0 32 34" aria-hidden="true"><path d="M1 1h30v17c0 7.5-6.5 13-15 15.5C7.5 31 1 25.5 1 18Z" fill="#C8102E"/><path d="M13.2 6h5.6v6.2H25v5.6h-6.2V24h-5.6v-6.2H7v-5.6h6.2Z" fill="#fff"/></svg>
+      <span><b>Ripon Swiss Club</b><i>Website admin</i></span>
+    </span>
+    <span class="awho">
+      <span>Signed in as the secretary</span>
+      <a href="index.html">Sign out</a>
+    </span>
+  </div>
+</header>
+
+<main id="main">
+  <div class="awrap">
+
+    <section id="pickview">
+      <a class="aback" href="admin.html">&#8592; Back</a>
+      <h1>Pictures</h1>
+      <p class="alead">Each of these pages carries a band of photographs at the foot of it.
+        Choose a page to add to.</p>
+      <div id="picklist"></div>
+    </section>
+
+    <section id="editview" hidden>
+      <button class="aback" type="button" id="gback">&#8592; Back to the pages</button>
+      <h1 id="ghead">Pictures</h1>
+      <p class="alead" id="glead"></p>
+
+      <div class="field" style="max-width:none">
+        <label for="gfiles">Add pictures</label>
+        <input type="file" id="gfiles" accept="image/*" multiple>
+        <p class="hint">Several at once is fine. Each one is made smaller before it is kept.</p>
+        <p class="err" id="gerr" hidden></p>
+      </div>
+
+      <ul class="glist" id="glist"></ul>
+
+      <div class="aactions">
+        <button class="abtn solid" type="button" id="gsave">Save</button>
+        <a class="abtn" id="gsee" target="_blank" rel="noopener">See the page</a>
+        <button class="abtn danger" type="button" id="gclear">Remove every picture</button>
+      </div>
+      <p class="saved" id="gsaved" hidden>Saved. The page carries these now.</p>
+    </section>
+
+  </div>
+</main>
+
+<script src="assets/js/gallery-data.js?v=8df06fa0"></script>
+<script src="assets/js/admin-gallery.js?v=5be1c801"></script>
+</body>
+</html>
