@@ -123,6 +123,10 @@ ARCHITECTURE.md                page map, data model, how the pieces fit
    but content layouts should be the same thing, rearranged, not a different thing.
 8. **Keep `prefers-reduced-motion` working.**
 
+**The header bar is full width.** `.hdr .wrap` overrides the 1180px column so the
+brand sits near the left edge and the navigation near the right at any screen size.
+Pinned to the page column, both were stranded in the middle of a wide monitor.
+
 ## The top navigation is fixed
 
 **Calendar, Hall Rental, Membership, Contact.** Four items. Everything else is reached
@@ -142,6 +146,28 @@ the event — that is the mechanism that stops the site going stale. Edits live 
 `localStorage`, so they are per-browser; the real version would write to the club's
 account behind the same screens. The rows already in the markup are the no-script
 fallback.
+
+**Kept for later: the Kids Swiss Camp Details card.** Removed from the page on the
+owner's instruction, and wanted again at some point. It read:
+
+| Heading | What it said |
+|---|---|
+| Hours | 9:00am to 4:00pm |
+| Who | Completed Kindergarten to 8th grade |
+| Places | 60 children |
+| Cost | $15, scholarships available |
+| Pay | Venmo @Ripon-Swiss-Club, or by check |
+| Ask | Katharina or Regina Beeler, RiponKSC@gmail.com |
+
+The hours and the cost also came out of that page's prose in the same pass.
+
+**Saved events.** A second store, `sjvsc.saved.v1`, holds events the club runs again.
+Nothing on it reaches a reader. **Keep for re-use** on a dated event copies the form
+onto the shelf with the day and the advertising window stripped. The **Saved events**
+list on the events screen opens one: the form then says *A saved event*, Save updates
+the saved copy, **Put it on the calendar** makes a real event from it and leaves the
+saved one alone, and Remove takes it off the shelf. A saved event needs only a name,
+since the day is what it is waiting for.
 
 **Page ties.** An event can name one of eight standing pages in `Show it on a page`,
 and that page carries it while it is inside its advertising window. A page carries
@@ -241,6 +267,13 @@ else — `rentals.html` has empty tables and an empty space list that `quote.js`
   it four different half-Germanised ways. The index shows "Chuchichäschtli" alone.
 - The six West Coast club URLs on `other-swiss-clubs.html` were **given by the client**
   and differ from the links on the club's own page. Use the ones in the file.
+- The club map is nine pins across two SVGs, wide and narrow. The projection is
+  `x = 49.0847*lon + 6121.888`, `y = -2818.219*ln(tan(pi/4 + lat/2)) + 2772.706` for the
+  wide one and `x = 38.2922*lon + 4775.803`, `y = -2198.027*merc + 2212.572` for the
+  narrow, which reproduces every original pin within about a pixel. The narrow labels
+  need 120 apart or they collide; nine of them is why its viewBox is 1090 tall.
+- The Portland, Oregon club has no name and no website yet, so it carries a pin, a plain
+  city label and a list line with no link. Nothing is invented for it.
 - The map's state outlines are US Census boundary data, projected to Mercator and
   simplified to 212 points by a throwaway script, then baked into the page. There is no
   map library and nothing is fetched at runtime.

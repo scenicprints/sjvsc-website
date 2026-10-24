@@ -12,12 +12,15 @@
   var listview = document.getElementById('listview');
   var formview = document.getElementById('formview');
   var list = document.getElementById('elist');
+  var slist = document.getElementById('slist');
   var form = document.getElementById('eform');
   var confirmBox = document.getElementById('confirm');
   var drows = document.getElementById('drows');
   var tickrows = document.getElementById('tickrows');
   var filelist = document.getElementById('filelist');
   var editing = null;
+  var onShelf = false;           // editing a saved event rather than a dated one
+  var saved = D.savedAll();
 
   /* the plain fields; details rows and attachments are their own thing */
   var NAMES = ['title', 'note', 'page', 'desc', 'agenda', 'image', 'date', 'time', 'from',
@@ -301,6 +304,38 @@
 
   /* ---- opening and saving --------------------------------------------- */
 
+  function gather(into) {
+    var e = into || {};
+    NAMES.forEach(function (k) { e[k] = F[k].value.trim(); });
+    e.details = readRows();
+    e.ticksellers = readTicketRows();
+    e.attachments = attachments.slice();
+    return e;
+  }
+
+  /* the saved list, which carries no dates and reaches no reader */
+  function renderShelf() {
+    slist.innerHTML = '';
+    if (!saved.length) {
+      var empty = document.createElement('li');
+      empty.className = 'eempty';
+      empty.textContent = 'Nothing is saved yet. Keep an event for re-use and it will be here.';
+      slist.appendChild(empty);
+      return;
+    }
+    saved.forEach(function (e) {
+      var li = document.createElement('li');
+      li.className = 'eitem';
+      li.innerHTML =
+        '<span class="ebody"><b></b><span class="enote"></span></span>' +
+        '<button class="abtn" type="button">Open</button>';
+      li.querySelector('.ebody b').textContent = e.title || 'Untitled';
+      li.querySelector('.enote').textContent = e.note || '';
+      li.querySelector('button').addEventListener('click', function () { open(e, true); });
+      slist.appendChild(li);
+    });
+  }
+
   function show(which) {
     listview.hidden = which !== 'list';
     formview.hidden = which !== 'form';
@@ -314,12 +349,19 @@
     });
   }
 
-  function open(e) {
+  function open(e, fromShelf) {
     editing = e;
+    onShelf = !!fromShelf;
     clearErrors();
     confirmBox.hidden = true;
-    document.getElementById('formhead').textContent = e ? 'Change this event' : 'Add an event';
+    document.getElementById('kept').hidden = true;
+    document.getElementById('formhead').textContent =
+      onShelf ? 'A saved event' : (e ? 'Change this event' : 'Add an event');
     document.getElementById('removebtn').hidden = !e;
+    document.getElementById('removebtn').textContent =
+      onShelf ? 'Remove from the saved list' : 'Remove this event';
+    document.getElementById('calbtn').hidden = !onShelf;
+    document.getElementById('keepbtn').hidden = onShelf;
 
     NAMES.forEach(function (k) { F[k].value = (e && e[k]) ? e[k] : ''; });
     document.getElementById('f-imagefile').value = '';
@@ -356,20 +398,30 @@
     ev.preventDefault();
     clearErrors();
     var ok = true;
-    MUST.forEach(function (k) {
+    /* a saved event has no day yet, which is the point of it */
+    (onShelf ? ['title'] : MUST).forEach(function (k) {
       if (!F[k].value.trim()) { fail(k); ok = false; }
     });
     if (!ok) { document.querySelector('.bad').focus(); return; }
+
+    if (onShelf) {
+      gather(editing);
+      if (!D.savedSave(saved)) {
+        attachError('There is no room left to keep all of this. '
+          + 'Remove a file, or choose a smaller picture.');
+        return;
+      }
+      renderShelf();
+      show('list');
+      return;
+    }
 
     var e = editing;
     if (!e) {
       e = { id: 'e' + Date.now() };
       events.push(e);
     }
-    NAMES.forEach(function (k) { e[k] = F[k].value.trim(); });
-    e.details = readRows();
-    e.ticksellers = readTicketRows();
-    e.attachments = attachments.slice();
+    gather(e);
     if (!e.from) e.from = iso(today());
     e.until = plusDay(e.date);                  // off the website the day after
 
@@ -408,6 +460,44 @@
   document.getElementById('addrow').addEventListener('click', function () {
     addGroup('', ['']).querySelector('.dlabel').focus();
   });
+  /* keep what is on the form for re-use, without touching the calendar */
+  document.getElementById('keepbtn').addEventListener('click', function () {
+    clearErrors();
+    if (!F.title.value.trim()) { fail('title'); F.title.focus(); return; }
+    var copy = gather({ id: 's' + Date.now() });
+    copy.date = ''; copy.from = ''; copy.until = '';   // a saved event has no day
+    saved.push(copy);
+    if (!D.savedSave(saved)) {
+      saved.pop();
+      attachError('There is no room left to keep all of this.');
+      return;
+    }
+    renderShelf();
+    document.getElementById('kept').hidden = false;
+  });
+
+  /* a saved event becomes a real one, and stays on the shelf */
+  document.getElementById('calbtn').addEventListener('click', function () {
+    clearErrors();
+    var missing = false;
+    MUST.forEach(function (k) {
+      if (!F[k].value.trim()) { fail(k); missing = true; }
+    });
+    if (missing) { document.querySelector('.bad').focus(); return; }
+
+    var e = gather({ id: 'e' + Date.now() });
+    e.from = e.from || iso(today());
+    e.until = plusDay(e.date);
+    events.push(e);
+    if (!D.save(events)) {
+      events.pop();
+      attachError('There is no room left to keep all of this.');
+      return;
+    }
+    render();
+    show('list');
+  });
+
   document.getElementById('addbtn').addEventListener('click', function () { open(null); });
   document.getElementById('cancelbtn').addEventListener('click', function () { show('list'); });
   document.getElementById('backbtn').addEventListener('click', function () { show('list'); });
@@ -420,11 +510,18 @@
     document.getElementById('removebtn').focus();
   });
   document.getElementById('reallyremove').addEventListener('click', function () {
-    events = events.filter(function (x) { return x !== editing; });
-    D.save(events);
-    render();
+    if (onShelf) {
+      saved = saved.filter(function (x) { return x !== editing; });
+      D.savedSave(saved);
+      renderShelf();
+    } else {
+      events = events.filter(function (x) { return x !== editing; });
+      D.save(events);
+      render();
+    }
     show('list');
   });
 
   render();
+  renderShelf();
 })();

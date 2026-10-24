@@ -32,12 +32,18 @@ p,ul,ol,table,figure{margin:0}
 
 /* header */
 .hdr{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--ink);color:var(--cream)}
-.hdr-in{display:flex;align-items:center;gap:22px;padding-block:13px}
+/* The bar runs the full width of the window, so the brand sits near the left
+   edge and the navigation near the right whatever the screen. Pinning it to
+   the page's 1180px column left both stranded in the middle on a wide one. */
+.hdr .wrap{max-width:none;
+  padding-left:max(clamp(20px,3.5vw,56px),env(safe-area-inset-left,0px));
+  padding-right:max(clamp(20px,3.5vw,56px),env(safe-area-inset-right,0px))}
+.hdr-in{display:flex;align-items:center;gap:clamp(16px,2.5vw,40px);padding-block:13px}
 .brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:inherit;flex:0 0 auto}
 .brand svg{width:28px;height:30px;flex:0 0 auto}
 .brand b{font-family:var(--display);font-size:1rem;display:block;line-height:1.15}
 .brand i{font-style:normal;font-size:.63rem;letter-spacing:.17em;text-transform:uppercase;color:#9C9086;display:block}
-.nav{margin-left:auto;display:flex;align-items:center;gap:21px}
+.nav{margin-left:auto;display:flex;align-items:center;gap:clamp(16px,1.8vw,30px)}
 .nav a{font-size:.86rem;font-weight:500;text-decoration:none;color:var(--cream);padding-bottom:7px;position:relative}
 .nav a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:2px;background:var(--red);transition:right .28s cubic-bezier(.22,.7,.3,1)}
 .nav a:hover::after,.nav a[aria-current]::after{right:0}

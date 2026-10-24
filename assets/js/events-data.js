@@ -10,6 +10,7 @@
 
 window.SJVSC = (function () {
   var KEY = 'sjvsc.events.v1';
+  var SHELF = 'sjvsc.saved.v1';    // events kept to be run again
 
   var SEED = [
     { id: 'club-meeting-nov', title: 'Club meeting',
@@ -58,6 +59,19 @@ window.SJVSC = (function () {
 
   function save(list) {
     try { localStorage.setItem(KEY, JSON.stringify(list)); return true; }
+    catch (e) { return false; }
+  }
+
+  /* The shelf: events the club runs again, kept apart from the calendar so
+     nothing on it reaches a reader until it is put on a date. */
+  function savedAll() {
+    try {
+      var raw = localStorage.getItem(SHELF);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+  function savedSave(list) {
+    try { localStorage.setItem(SHELF, JSON.stringify(list)); return true; }
     catch (e) { return false; }
   }
 
@@ -263,7 +277,7 @@ window.SJVSC = (function () {
     } else renderPages();
   }
 
-  return { all: all, save: save, showing: showing, blocks: blocks, onPage: onPage,
+  return { all: all, save: save, savedAll: savedAll, savedSave: savedSave, showing: showing, blocks: blocks, onPage: onPage,
            renderPages: renderPages, render: render, at: at,
            tickets: tickets, contactText: contactText, priceText: priceText,
            today: today, pretty: pretty, fullDate: fullDate, longDate: longDate,

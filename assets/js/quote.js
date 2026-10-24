@@ -199,9 +199,9 @@
   }
 
   if (grid) {
-    var start = el('qDate').value ? new Date(el('qDate').value + 'T12:00:00') : D.today();
-    if (start < D.today()) start = D.today();
-    shown = new Date(start.getFullYear(), start.getMonth(), 1);
+    /* it opens on this month, which is the one somebody is looking for */
+    var now = D.today();
+    shown = new Date(now.getFullYear(), now.getMonth(), 1);
     el('calPrev').addEventListener('click', function () { step(-1); });
     el('calNext').addEventListener('click', function () { step(1); });
     el('qDate').addEventListener('change', function () {

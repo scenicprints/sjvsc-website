@@ -11,8 +11,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=7b6f5ecb">
-<link rel="stylesheet" href="assets/css/admin.css?v=eb18d2d6">
+<link rel="stylesheet" href="assets/css/site.css?v=c27bb7c0">
+<link rel="stylesheet" href="assets/css/admin.css?v=568b3a45">
 </head>
 <body class="adm">
 <a class="skip" href="#main">Skip to content</a>
@@ -38,6 +38,11 @@
       <h1>Events</h1>
       <button class="abtn solid" type="button" id="addbtn">Add an event</button>
       <ul class="elist" id="elist"></ul>
+
+      <h2 class="ahead">Saved events</h2>
+      <p class="alead" style="margin-bottom:18px">Events the club runs again. Nothing here
+        is on the website. Open one, give it a day, and put it on the calendar.</p>
+      <ul class="elist" id="slist"></ul>
     </section>
 
     <section id="formview" hidden>
@@ -183,10 +188,13 @@
         </fieldset>
 
         <div class="eactions">
-          <button class="abtn solid" type="submit">Save</button>
+          <button class="abtn solid" type="submit" id="savebtn">Save</button>
+          <button class="abtn" type="button" id="calbtn" hidden>Put it on the calendar</button>
+          <button class="abtn" type="button" id="keepbtn">Keep for re-use</button>
           <button class="abtn" type="button" id="cancelbtn">Cancel</button>
           <button class="abtn danger" type="button" id="removebtn">Remove this event</button>
         </div>
+        <p class="saved" id="kept" hidden>Kept. It is on the saved list, ready to run again.</p>
 
         <div class="confirm" id="confirm" hidden>
           <p>Remove this event from the website?</p>
@@ -199,7 +207,7 @@
   </div>
 </main>
 
-<script src="assets/js/events-data.js?v=cc2b2d22"></script>
-<script src="assets/js/admin-events.js?v=7b9ff53a"></script>
+<script src="assets/js/events-data.js?v=e947eec8"></script>
+<script src="assets/js/admin-events.js?v=1108f285"></script>
 </body>
 </html>
