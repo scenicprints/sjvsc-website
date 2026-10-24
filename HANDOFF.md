@@ -2,8 +2,11 @@
 
 **Live:** https://scenicprints.github.io/sjvsc-website/
 **Repo:** https://github.com/scenicprints/sjvsc-website (public)
-**Admin:** https://scenicprints.github.io/sjvsc-website/admin.html — not linked from
-the public site, `noindex`, and not behind a sign-in yet.
+**Admin:** https://scenicprints.github.io/sjvsc-website/admin.html — `noindex`, and not
+behind a sign-in yet. There is now one way in from the public site: a quiet
+**Website admin** link in the home page footer, beside the concept-design note. It is
+on `index.html` only, and the top navigation stays at four items. Until the sign-in
+exists, that link hands an open editor to anyone who finds it.
 
 ## Setup
 

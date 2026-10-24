@@ -277,6 +277,10 @@ h3{font-size:1.28rem}
 .ftr a{color:#B4A99E;text-decoration:none}
 .ftr a:hover{color:var(--cream);text-decoration:underline}
 .ftr-note{margin-top:42px;padding-top:22px;border-top:1px solid var(--line-dark);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:.79rem}
+/* the way in for the board. Quiet, and the only one on the public site. */
+.ftr-admin{color:#9C9086;text-decoration:none;border:1px solid var(--line-dark);
+  padding:5px 12px;white-space:nowrap}
+.ftr-admin:hover{color:var(--cream);border-color:var(--cream)}
 @media(max-width:900px){.ftr-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.ftr-grid{grid-template-columns:1fr}body{font-size:16px}}
 
