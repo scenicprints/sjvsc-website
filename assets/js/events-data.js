@@ -28,11 +28,11 @@ window.SJVSC = (function () {
       ] },
     { id: 'childrens-christmas', title: "Children's Christmas Party",
       note: "For members' children and grandchildren.",
-      date: '2026-12-05', time: '', link: 'event-childrens-christmas.html',
+      date: '2026-12-05', time: '',
       from: '2026-10-10', until: '2026-12-06' },
     { id: 'agm', title: 'Annual General Meeting',
       note: 'Officers are elected. All members may attend.',
-      date: '2026-12-10', time: '7pm', link: 'event-agm.html',
+      date: '2026-12-10', time: '7pm',
       from: '2026-10-15', until: '2026-12-11',
       details: [
         { label: 'Where', values: ['110 N. Manley Road, Ripon'] },
@@ -40,7 +40,7 @@ window.SJVSC = (function () {
       ] },
     { id: 'echoes-christmas', title: 'Swiss Echoes Christmas Party',
       note: 'Carols, supper and a dance.',
-      date: '2026-12-12', time: '', link: 'event-echoes-christmas.html', page: 'echoes',
+      date: '2026-12-12', time: '', page: 'echoes',
       from: '2026-10-17', until: '2026-12-13' }
   ];
 

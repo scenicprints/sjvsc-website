@@ -56,8 +56,7 @@ window.SJVSC_STORE = (function () {
     if (!t) {
       return Promise.reject(new Error(
         'Nothing was saved, because there is no GitHub key in this tab. ' +
-        'Sign out and come back in with one, and this change will be committed ' +
-        'to the repository.'));
+        'Sign out and come back in with one.'));
     }
     var body = {
       message: message || ('Website admin: ' + name),

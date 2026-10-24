@@ -7,16 +7,15 @@ behind a sign-in yet. One way in from the public site: a quiet **Website
 admin** link in the home page footer, beside the concept-design note, on `index.html`
 only. The top navigation stays at four items.
 
-**The code is `ripon1926`**, the `CODE` line at the top of `assets/js/admin-gate.js`
-and nowhere else. The gate loads from the `<head>` of all four admin pages and puts
-`locked` on `<html>` before anything paints, so the admin is never on screen for a
-frame. Being in is `sessionStorage`, so it is per tab and Sign out clears it. A deep
-link to an inner admin page asks for the code too.
+**There is no club code.** The GitHub key is the way in, because everything the admin
+changes is committed to the repository and without a key nothing can be changed. A code
+on top of that protected nothing.
 
-It is a gate, not security: the code is in a file anybody can read. That is what the
-plan asked for, and it holds because nothing behind it is private, only events, hall
-rates and photographs already on the public site. The real thing is board members with
-an email and a password, swapped in behind this same screen.
+The gate loads from the `<head>` of all four admin pages and marks `<html>` before
+anything paints, so the admin is never on screen for a frame. The key is checked against
+`GET /repos/{repo}` before the admin opens: an unknown key, or one that can read but not
+push, is refused at the door rather than at Save. It is held in `sessionStorage` for that
+tab, never committed, and Sign out forgets it.
 
 ## Where the data lives
 
@@ -411,13 +410,9 @@ availability coming off the events.
 
 Next, in the order it was being approached:
 
-1. **The event pages still do not render the data.** `event-agm.html` and its five
-   siblings are hand-written pages of grey placeholder blocks. One page reading an id
-   from the URL would replace all six and close the loop — the admin collects every
-   field those pages have a slot for, and none of it reaches them.
-3. **Real sign-in.** The demo code is in. What is left is board members with an email
-   and a password, behind the same screen. Nothing private may sit behind the code
-   until that exists.
+3. **Sign-in is one GitHub key, shared.** What is left is board members with their own
+   accounts. The key cannot be given to a board that is not going to hold a GitHub
+   token, so this is the piece that has to change before anybody but the owner uses it.
 
 `ROADMAP.md` has the full backlog and the decision log.
 
