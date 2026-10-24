@@ -166,11 +166,19 @@ names they arrived with. Captions say what is in the picture and nothing more.
 A band holds six photographs and runs the full width of the window, which nothing else
 on the site does. Band one travels one way as the page scrolls past it and band two the
 other, so the rows weave; a ninth picture puts out a second band and a thirteenth a
-third. Eighteen is the ceiling. A band narrower than the window is repeated four times
-so it has somewhere to travel, and the repeats carry `aria-hidden` and `tabindex=-1` so
-a screen reader is read the originals once. Touching a band stops the scroll driving it
-for four seconds, so a swipe is not fought. Under `prefers-reduced-motion` nothing is
-driven at all and the bands are simply scrollable by hand.
+third. Eighteen is the ceiling. No photograph is ever shown twice on screen.
+A tile is `clamp(250px,34vw,480px)` wide and cover-cropped rather than sized by its own
+shape, which is what makes three photographs already run past the edge and so gives the
+band somewhere to travel; the whole frame is in the viewer. A band whose pictures still
+do not reach the edge takes `.gb-fit`, spreads them across the full width and holds
+still, because a row of four repeated to make something move is worse than a row of
+four. A band that does travel has its set doubled so the loop joins without a seam, and
+since one set is wider than the window the copy is never on screen beside its original.
+
+The drift is a `setInterval`, not `requestAnimationFrame`, which does not run in a
+minimised window; the timeline has the same note. Touching a band stops it for two and
+a half seconds so a swipe is not fought, and `prefers-reduced-motion` stops it entirely
+and leaves the bands scrollable by hand.
 
 Clicking a photograph opens the viewer: the picture large, `n of m` and the caption
 beneath, every other photograph in a rail along the bottom with the current one marked,

@@ -177,62 +177,86 @@ window.SJVSC_GALLERY = (function () {
 
   function bandsFor(n) { return Math.max(1, Math.ceil(n / PER_BAND)); }
 
-  function fill(band, list, offset) {
-    var run = document.createElement('div');
-    run.className = 'gb-run';
-    /* enough copies that the band always has somewhere to travel */
-    for (var copy = 0; copy < 4; copy++) {
-      list.forEach(function (p, i) {
-        var b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'gb-shot';
-        var img = document.createElement('img');
-        img.src = p.src;
-        img.alt = copy ? '' : (p.caption || 'A photograph from the club');
-        img.loading = 'lazy';
-        b.appendChild(img);
-        if (copy) { b.setAttribute('aria-hidden', 'true'); b.tabIndex = -1; }
-        else b.setAttribute('aria-label', 'Open photograph ' + (offset + i + 1));
-        b.addEventListener('click', function () {
-          openViewer(window.SJVSC_GALLERY.shown, offset + i, b);
-        });
-        run.appendChild(b);
-      });
+  function shot(p, i, offset) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'gb-shot';
+    var img = document.createElement('img');
+    img.src = p.src;
+    img.alt = p.caption || 'A photograph from the club';
+    b.appendChild(img);
+    b.setAttribute('aria-label', 'Open photograph ' + (offset + i + 1));
+    b.addEventListener('click', function () {
+      openViewer(window.SJVSC_GALLERY.shown, offset + i, b);
+    });
+    return b;
+  }
+
+  /* Each photograph appears once. A band only travels if its own pictures are
+     already wider than the window, and then the set is doubled so the loop
+     joins without a seam. A band that fits is spread across the full width and
+     holds still: a row of four photographs repeated to make something move is
+     worse than a row of four photographs. */
+  function layOut(band, list, offset) {
+    var run = band.querySelector('.gb-run');
+    run.innerHTML = '';
+    list.forEach(function (p, i) { run.appendChild(shot(p, i, offset)); });
+
+    band.classList.remove('gb-fit');
+    band.dataset.span = '0';
+    var span = run.scrollWidth;
+    if (span <= band.clientWidth + 4) {
+      band.classList.add('gb-fit');      // fills the width, nothing to travel
+      return false;
     }
-    band.appendChild(run);
+    /* doubled, so wrapping at one set's width is invisible */
+    list.forEach(function (p, i) {
+      var copy = shot(p, i, offset);
+      copy.setAttribute('aria-hidden', 'true');
+      copy.tabIndex = -1;
+      copy.querySelector('img').alt = '';
+      run.appendChild(copy);
+    });
+    band.dataset.span = String(span);
+    return true;
   }
 
   function drive(bands) {
-    var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (still) return;                       // a band you scroll yourself
+    var moving = bands.filter(function (b) { return +b.dataset.span > 0; });
+    if (!moving.length) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
     var held = 0;
-    bands.forEach(function (band) {
+    moving.forEach(function (band, i) {
+      band.dataset.at = i % 2 ? band.dataset.span : '0';
       ['pointerdown', 'wheel', 'touchstart'].forEach(function (ev) {
-        band.addEventListener(ev, function () { held = Date.now(); }, { passive: true });
+        band.addEventListener(ev, function () {
+          held = Date.now();
+          band.dataset.at = String(band.scrollLeft);
+        }, { passive: true });
       });
     });
-    function move() {
-      if (Date.now() - held < 4000) return;  // somebody is pushing it themselves
-      bands.forEach(function (band, i) {
-        var r = band.getBoundingClientRect();
-        var span = window.innerHeight + r.height;
-        var seen = Math.min(1, Math.max(0, (window.innerHeight - r.top) / span));
-        var room = band.scrollWidth - band.clientWidth;
-        if (room <= 0) return;
-        /* every other band runs the other way, so the rows weave */
-        var at = (i % 2 ? 1 - seen : seen);
-        band.scrollLeft = (0.15 + 0.7 * at) * room;
+
+    /* a timer rather than requestAnimationFrame, which does not run in a
+       minimised window. The timeline on the home page has the same note. */
+    var STEP = 40, PACE = 0.9;        // about 22 pixels a second
+    setInterval(function () {
+      if (Date.now() - held < 2500) return;
+      moving.forEach(function (band, i) {
+        var span = +band.dataset.span;
+        if (!span) return;
+        var at = +band.dataset.at + (i % 2 ? -PACE : PACE);
+        if (at >= span) at -= span;
+        if (at < 0) at += span;
+        band.dataset.at = String(at);
+        band.scrollLeft = at;
       });
-    }
-    window.addEventListener('scroll', move, { passive: true });
-    window.addEventListener('resize', move);
-    move();
+    }, STEP);
   }
 
   function render() {
     [].forEach.call(document.querySelectorAll('[data-gallery]'), function (host) {
       var list = pics(host.getAttribute('data-gallery'));
-      /* a page with no photographs carries no heading either */
       var sec = host.closest ? (host.closest('.gsec') || host) : host;
       host.innerHTML = '';
       if (!list.length) { sec.hidden = true; return; }
@@ -246,11 +270,20 @@ window.SJVSC_GALLERY = (function () {
         if (!slice.length) break;
         var band = document.createElement('div');
         band.className = 'gband';
-        fill(band, slice, i * PER_BAND);
+        band.appendChild(document.createElement('div')).className = 'gb-run';
         host.appendChild(band);
+        layOut(band, slice, i * PER_BAND);
         bands.push(band);
       }
       drive(bands);
+
+      /* the window changing width can turn a band that fitted into one that
+         travels, and the other way about */
+      var again;
+      window.addEventListener('resize', function () {
+        clearTimeout(again);
+        again = setTimeout(function () { render(); }, 200);
+      }, { once: true });
     });
   }
 
