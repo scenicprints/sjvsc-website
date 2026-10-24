@@ -228,12 +228,16 @@ collected, shown nowhere.
 and that page carries it while it is inside its advertising window. A page carries
 every tied event at once, so three in their windows means three cards.
 
-The card goes where that page already keeps its hand-written **Details** card, which
-it replaces: `<div data-eventslot="...">` wraps that card, and `events-data.js` swaps
-the contents for one `.card.ecard` per tied event, in the page's own card and `.rows`
-styling. With nothing tied, the slot is left alone and the hand-written card is what
-shows, so those pages read exactly as they did. `swiss-echoes.html` has no Details
-card, so its slot is an empty div at the top of the sidebar column.
+The card runs the full width, straight under the page header and above all the content:
+`<div class="wrap"><div class="eslot" data-eventslot="..."></div></div>` sits between
+the `.phead` and the first `.sec`, and `events-data.js` fills it with one `.ecard` per
+tied event. It was down the right-hand column to begin with, which was the wrong place
+for the only thing on those pages that changes, and too narrow for a description.
+
+A card is the name and the day on one line, the description under them, then the
+headings side by side in `.erows`, which is `auto-fit minmax(210px,1fr)` and becomes a
+single column on a phone. `.erows` is its own class so the `.rows` cards still on
+`wcswa.html` and `kochbuch.html` are untouched. An empty slot adds no height at all.
 
 | Value | Page |
 |---|---|

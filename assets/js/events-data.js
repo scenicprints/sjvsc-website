@@ -234,14 +234,16 @@ window.SJVSC = (function () {
     var card = document.createElement('div');
     card.className = 'card ecard';
 
+    var head = document.createElement('div');
+    head.className = 'ecard-head';
     var h = document.createElement('h3');
     h.textContent = e.title;
-    card.appendChild(h);
-
+    head.appendChild(h);
     var w = document.createElement('p');
     w.className = 'ecard-when';
     w.textContent = fullDate(e.date) + (e.time ? ', ' + e.time : '');
-    card.appendChild(w);
+    head.appendChild(w);
+    card.appendChild(head);
 
     if (e.desc) {
       var about = document.createElement('p');
@@ -257,7 +259,7 @@ window.SJVSC = (function () {
     if (!details.length && !t) return card;    // the description may be all there is
 
     var ul = document.createElement('ul');
-    ul.className = 'rows';
+    ul.className = 'erows';          // its own, so the pages keeping a .rows card are untouched
 
     function row(label, lines) {
       var li = document.createElement('li');
