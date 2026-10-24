@@ -17,20 +17,19 @@
   var confirmBox = document.getElementById('confirm');
   var drows = document.getElementById('drows');
   var tickrows = document.getElementById('tickrows');
-  var filelist = document.getElementById('filelist');
+  var attachrows = document.getElementById('attachrows');
   var editing = null;
   var onShelf = false;           // editing a saved event rather than a dated one
   var saved = D.savedAll();
 
   /* the plain fields; details rows and attachments are their own thing */
-  var NAMES = ['title', 'note', 'desc', 'page', 'image', 'date', 'time', 'from',
+  var NAMES = ['title', 'note', 'desc', 'page', 'date', 'time', 'from',
                'tickfrom', 'tickto', 'tickprice'];
   var MUST = ['title', 'date'];
-  var ERRS = ['title', 'date', 'image', 'attach'];
+  var ERRS = ['title', 'date', 'attach'];
   var F = {};
   NAMES.forEach(function (k) { F[k] = document.getElementById('f-' + k); });
 
-  var attachments = [];
 
   var at = D.at, today = D.today;
   var dayName = D.fullDate;
@@ -222,90 +221,169 @@
     });
   }
 
-  /* ---- attachments --------------------------------------------------- */
+  /* ---- attachments ----------------------------------------------------
+
+     One row each: what it is called, and then either a file chosen from the
+     computer or a web address. A file is kept in the browser, which has very
+     little room, so a large one is refused and a link is the way round it. */
 
   var MAX_FILE = 400 * 1024;
 
-  function drawFiles() {
-    filelist.innerHTML = '';
-    attachments.forEach(function (f, i) {
-      var li = document.createElement('li');
-      li.innerHTML = '<span class="fname"></span><span class="fsize"></span>' +
-        '<button class="abtn small" type="button">Remove</button>';
-      li.querySelector('.fname').textContent = f.name;
-      li.querySelector('.fsize').textContent = size(f.size);
-      li.querySelector('button').addEventListener('click', function () {
-        attachments.splice(i, 1);
-        drawFiles();
-      });
-      filelist.appendChild(li);
-    });
-  }
-
   function attachError(msg) {
     var el = document.getElementById('e-attach');
-    el.textContent = msg;
-    el.hidden = false;
+    el.textContent = msg || '';
+    el.hidden = !msg;
   }
 
-  document.getElementById('f-attachfiles').addEventListener('change', function (ev) {
-    document.getElementById('e-attach').hidden = true;
-    var files = [].slice.call(ev.target.files || []);
-    var toobig = files.filter(function (f) { return f.size > MAX_FILE; });
-    files.filter(function (f) { return f.size <= MAX_FILE; }).forEach(function (f) {
+  function addAttachRow(a) {
+    var row = document.createElement('div');
+    row.className = 'afrow';
+    row.innerHTML =
+      '<input type="text" class="aname" placeholder="Minutes of the meeting" ' +
+      'aria-label="What the attachment is called" autocomplete="off">' +
+      '<input type="text" class="alink" placeholder="https://..." ' +
+      'aria-label="Web address" autocomplete="off">' +
+      '<button class="abtn small apick" type="button"></button>' +
+      '<input type="file" class="afile" hidden>' +
+      '<button class="abtn small danger drem" type="button">Remove</button>';
+
+    var name = row.querySelector('.aname');
+    var link = row.querySelector('.alink');
+    var pick = row.querySelector('.apick');
+    var file = row.querySelector('.afile');
+    var held = { data: '', size: 0, type: '' };
+
+    function show() {
+      pick.textContent = held.data ? 'Take the file off' : 'Choose a file';
+      link.disabled = !!held.data;
+      link.placeholder = held.data ? size(held.size) + ' file attached' : 'https://...';
+    }
+
+    pick.addEventListener('click', function () {
+      if (held.data) {
+        held = { data: '', size: 0, type: '' };
+        show();
+        return;
+      }
+      file.click();
+    });
+
+    file.addEventListener('change', function (ev) {
+      attachError('');
+      var f = ev.target.files && ev.target.files[0];
+      ev.target.value = '';
+      if (!f) return;
+      if (f.size > MAX_FILE) {
+        attachError(f.name + ' is larger than ' + size(MAX_FILE) +
+          '. Put it somewhere and paste the address instead.');
+        return;
+      }
       var reader = new FileReader();
+      reader.onerror = function () { attachError('That file could not be read.'); };
       reader.onload = function () {
-        attachments.push({ name: f.name, size: f.size, type: f.type, data: reader.result });
-        drawFiles();
+        held = { data: reader.result, size: f.size, type: f.type };
+        if (!name.value.trim()) name.value = f.name.replace(/\.[^.]+$/, '');
+        show();
       };
       reader.readAsDataURL(f);
     });
-    if (toobig.length) {
-      attachError(toobig.map(function (f) { return f.name; }).join(', ')
-        + (toobig.length === 1 ? ' is' : ' are') + ' larger than ' + size(MAX_FILE)
-        + '. This demo keeps files in the browser, which has little room.');
-    }
-    ev.target.value = '';
-  });
 
-  /* ---- the picture ---------------------------------------------------- */
+    row.querySelector('.drem').addEventListener('click', function () {
+      row.remove();
+      if (!attachrows.children.length) addAttachRow(null);
+    });
 
-  var MAX = 1000, QUALITY = 0.72;
-  var prev = document.getElementById('imgprev');
-  var prevImg = document.getElementById('imgprevimg');
+    name.value = (a && a.name) || '';
+    link.value = (a && a.link) || '';
+    if (a && a.data) held = { data: a.data, size: a.size || 0, type: a.type || '' };
+    show();
 
-  function showPicture(src) {
-    F.image.value = src || '';
-    prevImg.src = src || '';
-    prev.hidden = !src;
+    attachrows.appendChild(row);
+    row.held = function () { return held; };
+    return row;
   }
 
-  document.getElementById('f-imagefile').addEventListener('change', function (ev) {
-    var file = ev.target.files && ev.target.files[0];
-    if (!file) return;
-    document.getElementById('e-image').hidden = true;
-    var reader = new FileReader();
-    reader.onerror = function () { document.getElementById('e-image').hidden = false; };
-    reader.onload = function () {
-      var img = new Image();
-      img.onerror = function () { document.getElementById('e-image').hidden = false; };
-      img.onload = function () {
-        var w = img.width, h = img.height;
-        if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
-        var c = document.createElement('canvas');
-        c.width = w; c.height = h;
-        c.getContext('2d').drawImage(img, 0, 0, w, h);
-        showPicture(c.toDataURL('image/jpeg', QUALITY));
-      };
-      img.src = reader.result;
-    };
-    reader.readAsDataURL(file);
-  });
+  function readAttachRows() {
+    return [].slice.call(attachrows.querySelectorAll('.afrow')).map(function (r) {
+      var h = r.held();
+      var a = { name: r.querySelector('.aname').value.trim() };
+      if (h.data) { a.data = h.data; a.size = h.size; a.type = h.type; }
+      else a.link = r.querySelector('.alink').value.trim();
+      return a;
+    }).filter(function (a) { return a.name && (a.data || a.link); });
+  }
 
-  document.getElementById('imgclear').addEventListener('click', function () {
-    showPicture('');
-    document.getElementById('f-imagefile').value = '';
-  });
+  /* ---- the month -----------------------------------------------------
+
+     The same events as the list above, laid out as a month so a clash is
+     obvious before it is made. The days either side of an event are marked
+     too, because that is when the hall is tied up. */
+
+  var mogrid = document.getElementById('mogrid');
+  var moAt = null;
+
+  function drawMonth() {
+    if (!mogrid) return;
+    var first = new Date(moAt.getFullYear(), moAt.getMonth(), 1);
+    document.getElementById('motitle').textContent =
+      D.MONTH[first.getMonth()] + ' ' + first.getFullYear();
+
+    var cur = new Date(first);
+    cur.setDate(1 - first.getDay());
+    var end = new Date(first.getFullYear(), first.getMonth() + 1, 0);
+    var cells = [];
+    while (cur <= end || cur.getDay() !== 0) {
+      cells.push(new Date(cur));
+      cur.setDate(cur.getDate() + 1);
+      if (cells.length > 41) break;
+    }
+
+    mogrid.innerHTML = '';
+    var now = today();
+    cells.forEach(function (d) {
+      var out = d.getMonth() !== first.getMonth();
+      var on = events.filter(function (e) { return e.date === iso(d); });
+      var near = !on.length && D.blocks(d);
+
+      var cell = document.createElement(on.length ? 'button' : 'div');
+      if (on.length) cell.type = 'button';
+      cell.className = 'amo-cell' + (out ? ' amo-out' : '') +
+        (on.length ? ' amo-on' : (near ? ' amo-near' : '')) +
+        (iso(d) === iso(now) ? ' amo-today' : '');
+
+      var n = document.createElement('b');
+      n.textContent = d.getDate();
+      cell.appendChild(n);
+
+      on.forEach(function (e) {
+        var tag = document.createElement('span');
+        tag.textContent = e.title;
+        cell.appendChild(tag);
+      });
+      if (near) {
+        var why = document.createElement('i');
+        why.textContent = near.title;
+        cell.appendChild(why);
+      }
+      if (on.length) {
+        cell.setAttribute('aria-label', D.fullDate(iso(d)) + ': ' +
+          on.map(function (e) { return e.title; }).join(', '));
+        cell.addEventListener('click', function () { open(on[0]); });
+      }
+      mogrid.appendChild(cell);
+    });
+  }
+
+  function moStep(by) {
+    moAt = new Date(moAt.getFullYear(), moAt.getMonth() + by, 1);
+    drawMonth();
+  }
+
+  if (mogrid) {
+    moAt = new Date(today().getFullYear(), today().getMonth(), 1);
+    document.getElementById('moprev').addEventListener('click', function () { moStep(-1); });
+    document.getElementById('monext').addEventListener('click', function () { moStep(1); });
+  }
 
   /* ---- opening and saving --------------------------------------------- */
 
@@ -314,7 +392,7 @@
     NAMES.forEach(function (k) { e[k] = F[k].value.trim(); });
     e.details = readRows();
     e.ticksellers = readTicketRows();
-    e.attachments = attachments.slice();
+    e.attachments = readAttachRows();
     return e;
   }
 
@@ -342,6 +420,7 @@
   }
 
   function show(which) {
+    if (which === 'list') drawMonth();
     listview.hidden = which !== 'list';
     formview.hidden = which !== 'form';
     window.scrollTo(0, 0);
@@ -369,8 +448,6 @@
     document.getElementById('keepbtn').hidden = onShelf;
 
     NAMES.forEach(function (k) { F[k].value = (e && e[k]) ? e[k] : ''; });
-    document.getElementById('f-imagefile').value = '';
-    showPicture(e && e.image ? e.image : '');
 
     drows.innerHTML = '';
     var details = (e && e.details) || [];
@@ -381,9 +458,11 @@
       });
     } else addGroup('', ['']);          // one heading, one line, and that is all
 
-    attachments = (e && e.attachments) ? e.attachments.slice() : [];
-    document.getElementById('f-attachfiles').value = '';
-    drawFiles();
+    attachrows.innerHTML = '';
+    attachError('');
+    var files = (e && e.attachments) || [];
+    if (files.length) files.forEach(function (a) { addAttachRow(a); });
+    else addAttachRow(null);
 
     tickrows.innerHTML = '';
     var sellers = (e && e.ticksellers) || [];
@@ -458,6 +537,10 @@
     F.tickprice.value = D.priceText(F.tickprice.value);
   });
 
+  document.getElementById('adattach').addEventListener('click', function () {
+    addAttachRow(null).querySelector('.aname').focus();
+  });
+
   document.getElementById('adtick').addEventListener('click', function () {
     addTicketRow(null).querySelector('.tkind').focus();
   });
@@ -529,4 +612,5 @@
 
   render();
   renderShelf();
+  drawMonth();
 })();

@@ -11,8 +11,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=8c89346d">
-<link rel="stylesheet" href="assets/css/admin.css?v=c62526f8">
+<link rel="stylesheet" href="assets/css/site.css?v=976d2617">
+<link rel="stylesheet" href="assets/css/admin.css?v=c809164f">
 <script src="assets/js/admin-gate.js?v=57e2bdca"></script>
 </head>
 <body class="adm">
@@ -39,6 +39,25 @@
       <h1>Events</h1>
       <button class="abtn solid" type="button" id="addbtn">Add an event</button>
       <ul class="elist" id="elist"></ul>
+
+      <h2 class="ahead">The month</h2>
+      <p class="alead" style="margin-bottom:18px">Every event on the calendar, and the days
+        the hall is tied up around each one. Pick a day to work on what is on it.</p>
+      <div class="amonth">
+        <div class="amonth-top">
+          <button class="abtn small" type="button" id="moprev" aria-label="The month before">&#8592;</button>
+          <h3 id="motitle" aria-live="polite"></h3>
+          <button class="abtn small" type="button" id="monext" aria-label="The month after">&#8594;</button>
+        </div>
+        <div class="amonth-days" aria-hidden="true">
+          <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+        </div>
+        <div class="amonth-grid" id="mogrid"></div>
+        <ul class="amonth-key">
+          <li><span class="sw sw-on"></span>An event</li>
+          <li><span class="sw sw-near"></span>Setting up or clearing away</li>
+        </ul>
+      </div>
 
       <h2 class="ahead">Saved events</h2>
       <p class="alead" style="margin-bottom:18px">Events the club runs again. Nothing here
@@ -89,18 +108,6 @@
               event on the calendar opens it. On <b>No tie</b> the event still shows on the
               calendar, but there is nowhere for it to open, so it is not a link.</p>
           </div>
-          <div class="field">
-            <label for="f-imagefile">Picture <span class="opt">optional</span></label>
-            <input type="file" id="f-imagefile" accept="image/*">
-            <input type="hidden" id="f-image">
-            <p class="hint">A photograph from your computer or phone. It is made smaller
-              before it is kept.</p>
-            <p class="err" id="e-image" hidden>That file could not be read as a picture</p>
-            <div class="imgprev" id="imgprev" hidden>
-              <img id="imgprevimg" alt="The picture chosen for this event">
-              <button class="abtn" type="button" id="imgclear">Remove this picture</button>
-            </div>
-          </div>
         </fieldset>
 
         <fieldset class="pair">
@@ -144,11 +151,12 @@
           </div>
 
           <div class="field wide">
-            <label for="f-attachfiles">Attachments <span class="opt">optional</span></label>
-            <input type="file" id="f-attachfiles" multiple>
-            <p class="hint">Minutes, a flyer, a form to fill in. You can choose several at once.</p>
+            <label id="attachhead">Attachments <span class="opt">optional</span></label>
+            <p class="hint" style="margin:0 0 12px">Minutes, a flyer, a form to fill in. Give each
+              one a name, then either choose a file or paste a web address.</p>
+            <div id="attachrows" role="group" aria-labelledby="attachhead"></div>
+            <button class="abtn small" type="button" id="adattach">+ Add another attachment</button>
             <p class="err" id="e-attach" hidden></p>
-            <ul class="filelist" id="filelist"></ul>
           </div>
         </fieldset>
 
@@ -207,7 +215,7 @@
   </div>
 </main>
 
-<script src="assets/js/events-data.js?v=86f12a87"></script>
-<script src="assets/js/admin-events.js?v=1a9c0e62"></script>
+<script src="assets/js/events-data.js?v=9cdf4fd3"></script>
+<script src="assets/js/admin-events.js?v=beaaed21"></script>
 </body>
 </html>

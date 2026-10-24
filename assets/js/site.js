@@ -98,3 +98,27 @@
   window.SJVSC.render(document.getElementById('whatson'), 5);
   window.SJVSC.render(document.getElementById('upcoming'));
 })();
+
+/* A quote arrives at the contact form with its own details already written
+   in, so nobody types the date and the total out again. */
+(function () {
+  var msg = document.getElementById('cMsg');
+  if (!msg || !window.URLSearchParams) return;
+  var q = new URLSearchParams(window.location.search);
+  var text = q.get('msg');
+  if (text) {
+    msg.value = text;
+    msg.rows = Math.min(12, text.split('\n').length + 2);
+  }
+  var about = q.get('about');
+  var pick = document.getElementById('cTopic');
+  if (about && pick) {
+    [].forEach.call(pick.options, function (o) {
+      if (o.textContent === about) pick.value = o.value || o.textContent;
+    });
+  }
+  if (text) {
+    var name = document.getElementById('cName');
+    if (name && name.focus) name.focus();
+  }
+}());

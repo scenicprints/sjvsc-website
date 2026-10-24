@@ -529,3 +529,5 @@ html.gv-open,html.gv-open body{overflow:hidden}
   .gb-shot img{transition:none}
   .gb-shot:hover img,.gb-shot:focus-visible img{transform:none}
 }
+.ecard-file{color:var(--red);text-underline-offset:3px}
+.ecard-file:hover{text-decoration:none}

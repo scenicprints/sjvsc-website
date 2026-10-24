@@ -11,9 +11,16 @@
   var money = R.money;
 
   /* Availability comes off the events the club already enters. An event ties
-     the hall up the day before, the day of, and the day after. */
+     the hall up the day before, the day of, and the day after. Today and
+     anything before it are gone too: nobody books the hall for this morning. */
   var D = window.SJVSC;
-  function taken(date) { return D.blocks(date); }
+  function gone(date) {
+    /* day against day: the date off the form carries a midday time and
+       today() is midnight, so comparing them straight lets today through */
+    var d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    return d <= D.today();
+  }
+  function taken(date) { return gone(date) || D.blocks(date); }
 
   function el(id) { return document.getElementById(id); }
   function esc(s) {
@@ -113,6 +120,20 @@
 
   /* The nearest open days of the same weekday, so somebody asking for a
      Friday is offered Fridays. */
+  /* what the quote knows, handed to the contact form so nobody retypes it */
+  function enquiry(v, space, guests, hours, total) {
+    var lines = [
+      'Hall rental enquiry',
+      'Date: ' + D.fullDate(v),
+      'Space: ' + space.name,
+      'Guests: ' + guests,
+      'Hours: ' + hours,
+      'Estimate: ' + money(total),
+      'Reference: SJ-' + v.replace(/-/g, '')
+    ];
+    return 'contact.html?about=Hall%20rental&msg=' + encodeURIComponent(lines.join('\n'));
+  }
+
   function nearestOpen(v) {
     var base = new Date(v + 'T12:00:00'), out = [];
     for (var i = 7; i <= 70 && out.length < 2; i += 7) {
@@ -156,7 +177,7 @@
     grid.innerHTML = '';
     cells.forEach(function (d) {
       var out = d.getMonth() !== first.getMonth();
-      var past = d < now;
+      var past = d <= now;          // today is gone too
       var shut = !past && !!taken(d);
       var cell;
 
@@ -202,6 +223,15 @@
     /* it opens on this month, which is the one somebody is looking for */
     var now = D.today();
     shown = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    /* and the form starts on the first day that can actually be booked */
+    if (!el('qDate').value) {
+      var first = new Date(now);
+      for (var tries = 0; tries < 400; tries++) {
+        first.setDate(first.getDate() + 1);
+        if (!taken(first)) { el('qDate').value = iso(first); break; }
+      }
+    }
     el('calPrev').addEventListener('click', function () { step(-1); });
     el('calNext').addEventListener('click', function () { step(1); });
     el('qDate').addEventListener('change', function () {
@@ -237,7 +267,7 @@
         return t.toLocaleDateString('en-US', { day: 'numeric', month: 'long' });
       });
       out.innerHTML = '<div class="result taken" style="display:block">' +
-        '<b>' + pretty + ' is not available.</b>' +
+        '<b>' + pretty + (gone(d) ? ' has passed.' : ' is not available.') + '</b>' +
         (alts.length ? ' The nearest open ones are ' + alts.join(' and ') + '.' : '') +
         '</div>';
       out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -316,7 +346,8 @@
         '<ul class="muted" style="margin-top:6px;padding-left:18px">' +
         requirements.map(function (r) { return '<li style="margin-top:4px">' + r + '</li>'; }).join('') +
         '</ul>' : '') +
-      '<p style="margin-top:16px"><a class="btn btn-red" href="contact.html">Request this date</a></p>' +
+      '<p style="margin-top:16px"><a class="btn btn-red" href="' + enquiry(v, space, guests, asked, total) +
+      '">Request this date</a></p>' +
       '</div></div>' +
       (member || !dRule ? '' : '<p class="muted" style="margin-top:14px">Members rent at ' +
         ruleText(dRule) + ' less. <a href="membership.html">Membership is $50 a year</a>.</p>');

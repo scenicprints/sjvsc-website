@@ -262,7 +262,10 @@ window.SJVSC = (function () {
       return d.label && (d.values || []).length;
     });
     var t = tickets(e);
-    if (!details.length && !t) return card;    // the description may be all there is
+    var hasFiles = (e.attachments || []).some(function (a) {
+      return a.name && (a.data || a.link);
+    });
+    if (!details.length && !t && !hasFiles) return card;   // the description may be all there is
     if (e.desc) body.className = 'ecard-body both';
 
     var ul = document.createElement('ul');
@@ -286,6 +289,34 @@ window.SJVSC = (function () {
     if (t) {
       if (t.price) row('Tickets', [t.price]);
       if (t.where.length) row(t.price ? 'Where from' : 'Tickets', t.where);
+    }
+
+    /* attachments: a file kept with the event, or an address somewhere else.
+       Either way it is a link with the name the club gave it. */
+    var files = (e.attachments || []).filter(function (a) {
+      return a.name && (a.data || a.link);
+    });
+    if (files.length) {
+      var li = document.createElement('li');
+      var b = document.createElement('b');
+      b.textContent = files.length === 1 ? 'Attachment' : 'Attachments';
+      var span = document.createElement('span');
+      files.forEach(function (a, i) {
+        if (i) span.appendChild(document.createElement('br'));
+        var link = document.createElement('a');
+        link.className = 'ecard-file';
+        link.textContent = a.name;
+        if (a.data) { link.href = a.data; link.download = a.name; }
+        else {
+          link.href = a.link;
+          link.target = '_blank';
+          link.rel = 'noopener';
+        }
+        span.appendChild(link);
+      });
+      li.appendChild(b);
+      li.appendChild(span);
+      ul.appendChild(li);
     }
 
     body.appendChild(ul);

@@ -18,6 +18,7 @@
 
   var page = null;          // the page being worked on
   var pics = [];            // its pictures, until Save
+  var clean = '';           // what was on the page when it was opened
 
   function show(which) {
     pickview.hidden = which !== 'pick';
@@ -123,9 +124,13 @@
     draw();
   }
 
+  function mark() { clean = JSON.stringify(pics); }
+  function dirty() { return JSON.stringify(pics) !== clean; }
+
   function open(p) {
     page = p;
     pics = (store[p.id] || []).map(function (x) { return { src: x.src, caption: x.caption }; });
+    mark();
     document.getElementById('ghead').textContent = p.name;
     document.getElementById('gsee').href = p.page;
     say('');
@@ -180,6 +185,7 @@
       return;
     }
     store = next;
+    mark();
     gsaved.hidden = false;
     drawPick();
   });
@@ -192,8 +198,18 @@
   });
 
   document.getElementById('gback').addEventListener('click', function () {
+    if (dirty() && !window.confirm(
+        'You have changed the pictures on this page and not saved them.\n\n' +
+        'Go back and lose the changes?')) return;
     drawPick();
     show('pick');
+  });
+
+  /* closing the tab with pictures unsaved */
+  window.addEventListener('beforeunload', function (ev) {
+    if (editview.hidden || !dirty()) return;
+    ev.preventDefault();
+    ev.returnValue = '';
   });
 
   drawPick();

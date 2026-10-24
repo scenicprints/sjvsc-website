@@ -231,11 +231,12 @@ event had none at all and was not a link. An untied event is still not a link, b
 there is nowhere for it to go, and the admin now says so on the row rather than leaving
 somebody to wonder why one event opens and the next does not.
 
-**Agenda is gone.** It was collected and rendered nowhere. **Description** was taken out
-with it and then put back with somewhere to land: it prints on the details card under
-the day and above the headings, with `white-space:pre-line` so paragraphing survives.
-The event's **Picture** and **Attachments** are still in the position Agenda was in:
-collected, shown nowhere.
+**Agenda and Picture are gone**, both collected and rendered nowhere. **Description**
+prints on the details card under the day, with `white-space:pre-line` so paragraphing
+survives. **Attachments** are rows of `{name, link}` or `{name, data, size, type}`: a
+name, then either a file or a web address, never both. They print on the card as named
+links; a file downloads under its given name, an address opens in a new tab. A file
+over 400KB is refused and the message says to paste an address instead.
 
 **Page ties.** An event can name one of eight standing pages in `Show it on a page`,
 and that page carries it while it is inside its advertising window. A page carries
@@ -291,7 +292,14 @@ Jass Party is tied to `jass`, the Swiss Echoes Christmas Party to `echoes`. An e
 with no tie still shows its price on the listings; it just has no page to carry a
 details card.
 
-**Availability.** There is no availability list. An event ties the hall up the day
+**The month.** The events screen draws a month under the list: the event days in green,
+the day either side in amber because the hall is tied up then, today outlined. Clicking
+a day with an event opens it. It is the same `events` array as the list, so nothing can
+disagree.
+
+**Availability.** There is no availability list. Today and every day before it are gone,
+and the quote says *has passed* rather than *is not available*. The form opens on the
+first day that can be booked rather than a date typed into the markup. An event ties the hall up the day
 before, the day of, and the day after — setting up, the event, clearing away — and
 `SJVSC.blocks(date)` on the events store is the whole rule. It reads the event's own
 day, not its advertising window, so an event that has stopped showing still holds its
@@ -390,8 +398,6 @@ Next, in the order it was being approached:
    siblings are hand-written pages of grey placeholder blocks. One page reading an id
    from the URL would replace all six and close the loop — the admin collects every
    field those pages have a slot for, and none of it reaches them.
-2. **The 2027 calendar on `events.html` is still markup.** Annual dates nobody can
-   edit, which will go stale exactly the way the old site did.
 3. **Real sign-in.** The demo code is in. What is left is board members with an email
    and a password, behind the same screen. Nothing private may sit behind the code
    until that exists.
@@ -401,6 +407,17 @@ Next, in the order it was being approached:
 **`sjvalleyswisshall.com`** is the club's hall rental page, the one the printed
 yard sign and its QR code point at. This site replaces it. It is not a competing
 site to work around and does not need raising again.
+
+**Nothing carries a date it cannot change.** The 2027 year-ahead block is off
+`events.html`, the three Schwingfest dates are off `schwingen.html`, the quote form no
+longer opens on a typed date, and the events heading no longer names a year. `about.html`
+is deleted; it was reachable from nowhere and went over the same ground as
+`club-history.html`.
+
+**A quote carries itself to the contact form.** *Request this date* links to
+`contact.html?about=Hall%20rental&msg=...` with the day, the space, the guests, the
+hours, the estimate and the reference already written into the message, and `site.js`
+fills the form in from the query.
 
 ## Context
 
