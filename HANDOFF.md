@@ -154,6 +154,15 @@ viewer; `admin-gallery.html` fills them, one page at a time. The eight event pag
 carry `<div class="gbands" data-gallery="...">` in a `.gsec` section at the foot, which
 stays `hidden` while that page has no pictures.
 
+A page with no photographs carries no gallery at all: the whole `.gsec` section,
+heading included, is `hidden` in the markup and revealed only when there is something
+to show.
+
+`gallery-data.js` ships a `SEED` with the club's own photographs, under
+`assets/img/gallery/<tie>/`, so the galleries are not empty before anybody touches the
+admin: three on Jass, four on Almond Blossom, one on Swiss Echoes. The files keep the
+names they arrived with. Captions say what is in the picture and nothing more.
+
 A band holds six photographs and runs the full width of the window, which nothing else
 on the site does. Band one travels one way as the page scrolls past it and band two the
 other, so the rows weave; a ninth picture puts out a second band and a thirteenth a

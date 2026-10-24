@@ -425,6 +425,7 @@ h3{font-size:1.28rem}
 /* rather than smaller pictures.                                       */
 
 .gsec{padding-bottom:58px}
+.gsec[hidden]{display:none}
 .gbands{display:grid;gap:7px}
 .gband{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;
   overscroll-behavior-x:contain}

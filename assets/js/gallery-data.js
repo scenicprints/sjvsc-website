@@ -32,11 +32,41 @@ window.SJVSC_GALLERY = (function () {
     { id: 'almond',       name: 'Almond Blossom Parade and Dance',   page: 'almond-blossom.html' }
   ];
 
+  /* The club's own photographs, which ship with the site so the galleries are
+     not empty before anybody has touched the admin. Captions say what is in
+     the picture and nothing more. */
+  var SEED = {
+    jass: [
+      { src: 'assets/img/gallery/jass/625155681_10162035741157115_5195594238666282201_n.jpg',
+        caption: 'Two long tables of players, from the balcony' },
+      { src: 'assets/img/gallery/jass/1.jpg',
+        caption: 'Down one table, under the cantonal banners' },
+      { src: 'assets/img/gallery/jass/627052229_10162035740927115_7641524305463186698_n.jpg',
+        caption: 'A hand being played at the end of the table' }
+    ],
+    echoes: [
+      { src: 'assets/img/gallery/echoes/490833321_10160881230237115_8635471491323325700_n.jpg',
+        caption: 'The chorus singing in front of the painted chalet' }
+    ],
+    almond: [
+      { src: 'assets/img/gallery/almond/parade.jpg',
+        caption: 'The children in front of the float before the parade' },
+      { src: 'assets/img/gallery/almond/641363532_10162113973852115_5652174582833194970_n.jpg',
+        caption: 'The boys in the chalet on the float' },
+      { src: 'assets/img/gallery/almond/637321839_10162113973722115_2167513429647338266_n.jpg',
+        caption: 'Sat on the back of the float, with the cowbell' },
+      { src: 'assets/img/gallery/almond/641311169_10162113973727115_7673311204173951468_n.jpg',
+        caption: 'Two of the girls in front of the float' }
+    ]
+  };
+
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
   function all() {
     try {
       var raw = localStorage.getItem(KEY);
-      return raw ? JSON.parse(raw) : {};
-    } catch (e) { return {}; }
+      return raw ? JSON.parse(raw) : clone(SEED);
+    } catch (e) { return clone(SEED); }
   }
   function save(map) {
     try { localStorage.setItem(KEY, JSON.stringify(map)); return true; }
@@ -202,8 +232,11 @@ window.SJVSC_GALLERY = (function () {
   function render() {
     [].forEach.call(document.querySelectorAll('[data-gallery]'), function (host) {
       var list = pics(host.getAttribute('data-gallery'));
+      /* a page with no photographs carries no heading either */
+      var sec = host.closest ? (host.closest('.gsec') || host) : host;
       host.innerHTML = '';
-      if (!list.length) { host.hidden = true; return; }
+      if (!list.length) { sec.hidden = true; return; }
+      sec.hidden = false;
       host.hidden = false;
       window.SJVSC_GALLERY.shown = list;
 
@@ -227,7 +260,7 @@ window.SJVSC_GALLERY = (function () {
     } else render();
   }
 
-  return { KEY: KEY, PAGES: PAGES, PER_BAND: PER_BAND, MAX_PER_PAGE: MAX_PER_PAGE,
+  return { KEY: KEY, PAGES: PAGES, SEED: SEED, PER_BAND: PER_BAND, MAX_PER_PAGE: MAX_PER_PAGE,
            all: all, save: save, pics: pics, shrink: shrink,
            bandsFor: bandsFor, render: render, openViewer: openViewer, shown: [] };
 }());
