@@ -23,7 +23,7 @@
   var saved = D.savedAll();
 
   /* the plain fields; details rows and attachments are their own thing */
-  var NAMES = ['title', 'note', 'page', 'desc', 'agenda', 'image', 'date', 'time', 'from',
+  var NAMES = ['title', 'note', 'page', 'image', 'date', 'time', 'from',
                'tickfrom', 'tickto', 'tickprice'];
   var MUST = ['title', 'date'];
   var ERRS = ['title', 'date', 'image', 'attach'];

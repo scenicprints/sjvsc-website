@@ -210,6 +210,17 @@ the saved copy, **Put it on the calendar** makes a real event from it and leaves
 saved one alone, and Remove takes it off the shelf. A saved event needs only a name,
 since the day is what it is waiting for.
 
+**Where an event goes.** The page tie is the only thing that says where a calendar row
+leads: `href(e)` is `TIED[e.page]` first and the old seed `link` only after, for the two
+seed events whose page is not one of the eight. The admin has never had a link field, so
+an event retied to another page used to keep whatever `link` the seed gave it, and a new
+event had none at all and was not a link. An untied event is still not a link, because
+there is nowhere for it to go.
+
+**Description and Agenda are gone.** Both were collected and rendered nowhere. The
+event's **Picture** and **Attachments** are in the same position: still collected,
+still shown nowhere.
+
 **Page ties.** An event can name one of eight standing pages in `Show it on a page`,
 and that page carries it while it is inside its advertising window. A page carries
 every tied event at once, so three in their windows means three cards.

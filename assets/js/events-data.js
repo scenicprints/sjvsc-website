@@ -125,9 +125,10 @@ window.SJVSC = (function () {
     }
     el.innerHTML = list.map(function (e) {
       var d = at(e.date);
-      var tag = e.link ? 'a' : 'span';
-      var href = e.link ? ' href="' + e.link + '"' : '';
-      return '<' + tag + ' class="evt"' + href + '>'
+      var to = href(e);
+      var tag = to ? 'a' : 'span';
+      var link = to ? ' href="' + to + '"' : '';
+      return '<' + tag + ' class="evt"' + link + '>'
         + '<span class="dt"><b>' + ('0' + d.getDate()).slice(-2) + '</b><span>'
         + MONTH[d.getMonth()].slice(0, 3) + '</span></span>'
         + '<span><h3></h3><p></p><span class="meta"></span><b class="evt-price"></b></span>'
@@ -145,6 +146,22 @@ window.SJVSC = (function () {
       else tag.remove();
     });
   }
+
+  /* Where a tie leads. An event tied to a page links to that page, which is
+     the only thing the admin ever says about where an event goes. `link` is
+     left over from the seed, for the few events whose page is not one of the
+     eight, and the tie beats it. */
+  var TIED = {
+    schwingers: 'schwingers-club.html',
+    echoes: 'swiss-echoes.html',
+    camp: 'kids-swiss-camp.html',
+    schwingfests: 'event-schwingfest.html',
+    bbq: 'members-bbq.html',
+    oktoberfest: 'event-oktoberfest.html',
+    jass: 'event-jass.html',
+    almond: 'almond-blossom.html'
+  };
+  function href(e) { return TIED[e.page] || e.link || ''; }
 
   /* An event can be tied to one of the standing pages. That page carries it
      while it is being advertised, and carries every tied event at once, so a
@@ -277,7 +294,8 @@ window.SJVSC = (function () {
     } else renderPages();
   }
 
-  return { all: all, save: save, savedAll: savedAll, savedSave: savedSave, showing: showing, blocks: blocks, onPage: onPage,
+  return { all: all, save: save, savedAll: savedAll, savedSave: savedSave, showing: showing,
+           href: href, TIED: TIED, blocks: blocks, onPage: onPage,
            renderPages: renderPages, render: render, at: at,
            tickets: tickets, contactText: contactText, priceText: priceText,
            today: today, pretty: pretty, fullDate: fullDate, longDate: longDate,
