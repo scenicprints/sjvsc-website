@@ -245,11 +245,17 @@ window.SJVSC = (function () {
     head.appendChild(w);
     card.appendChild(head);
 
+    /* the description and the headings share the width rather than leaving
+       half the card empty; with only one of them it takes the lot */
+    var body = document.createElement('div');
+    body.className = 'ecard-body';
+    card.appendChild(body);
+
     if (e.desc) {
       var about = document.createElement('p');
       about.className = 'ecard-desc';
       about.textContent = e.desc;
-      card.appendChild(about);
+      body.appendChild(about);
     }
 
     var details = (e.details || []).filter(function (d) {
@@ -257,6 +263,7 @@ window.SJVSC = (function () {
     });
     var t = tickets(e);
     if (!details.length && !t) return card;    // the description may be all there is
+    if (e.desc) body.className = 'ecard-body both';
 
     var ul = document.createElement('ul');
     ul.className = 'erows';          // its own, so the pages keeping a .rows card are untouched
@@ -281,7 +288,7 @@ window.SJVSC = (function () {
       if (t.where.length) row(t.price ? 'Where from' : 'Tickets', t.where);
     }
 
-    card.appendChild(ul);
+    body.appendChild(ul);
     return card;
   }
 

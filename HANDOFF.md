@@ -234,9 +234,12 @@ the `.phead` and the first `.sec`, and `events-data.js` fills it with one `.ecar
 tied event. It was down the right-hand column to begin with, which was the wrong place
 for the only thing on those pages that changes, and too narrow for a description.
 
-A card is the name and the day on one line, the description under them, then the
-headings side by side in `.erows`, which is `auto-fit minmax(210px,1fr)` and becomes a
-single column on a phone. `.erows` is its own class so the `.rows` cards still on
+A card is the name and the day on one line, then a body that uses the width rather than
+leaving half of it empty: with both a description and headings, `.ecard-body.both` is
+two columns, the prose on the left and the headings down the right, ruled off it. Under
+860px they stack and the headings take the top rule back and spread across; under 620px
+they go to one column. With only one of the two it takes the whole width. The date is
+`flex:0 1 auto` so a long one wraps inside the card instead of spilling past it. `.erows` is its own class so the `.rows` cards still on
 `wcswa.html` and `kochbuch.html` are untouched. An empty slot adds no height at all.
 
 | Value | Page |
