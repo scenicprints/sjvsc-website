@@ -2,37 +2,33 @@
 
 **Live:** https://scenicprints.github.io/sjvsc-website/
 **Repo:** https://github.com/scenicprints/sjvsc-website (public)
-**Admin:** https://scenicprints.github.io/sjvsc-website/admin.html — `noindex`, and not
-behind a sign-in yet. One way in from the public site: a quiet **Website
-admin** link in the home page footer, beside the concept-design note, on `index.html`
-only. The top navigation stays at four items.
+**Admin:** https://scenicprints.github.io/sjvsc-website/admin.html, `noindex`. One way in
+from the public site: a quiet **Website admin** link in the home page footer, beside the
+concept-design note, on `index.html` only. The top navigation stays at four items.
 
-**There is no club code.** The GitHub key is the way in, because everything the admin
-changes is committed to the repository and without a key nothing can be changed. A code
-on top of that protected nothing.
+**The admin reads. It does not write.** There is no sign-in, no code and no key, and
+there is nothing to protect: the screens fetch `data/*.json` and lay out what is in them.
+Every field is fixed and there is no Save.
 
-The gate loads from the `<head>` of all four admin pages and marks `<html>` before
-anything paints, so the admin is never on screen for a frame. The key is checked against
-`GET /repos/{repo}` before the admin opens: an unknown key, or one that can read but not
-push, is refused at the door rather than at Save. It is held in `sessionStorage` for that
-tab, never committed, and Sign out forgets it.
+That is not a missing feature. Pages is files on a branch, so a page can only commit by
+carrying a credential that anyone who opens the page can read. A key was tried and
+rejected, file-download was rejected, and the answer was to drop saving altogether. The
+data is edited in the repository and committed, which is where it has always really
+lived.
 
 ## Where the data lives
 
 **In this repository, in `data/*.json`. Nothing is kept in a browser.**
 
 `events.json`, `saved.json`, `rates.json` and `gallery.json` are the club's data.
-Public pages fetch them and draw themselves. The admin reads the same files through
-the GitHub API and **Save commits them straight back**, one commit per save with a
-message naming what changed.
+Every page fetches them and draws itself, the admin included.
 
-Writing needs a key. The gate asks for a GitHub token alongside the code; it is held
-in `sessionStorage` for that tab, never committed, and Sign out forgets it. Without
-one the admin still opens and reads, and Save says so rather than appearing to work.
+`assets/js/store.js` is the whole of it: `read(name, fallback)` and `path(name)`. The
+`SEED` constants in each store are the fallback for when a file cannot be fetched, not
+the source.
 
-`assets/js/store.js` is the whole of it: `read(name, fallback)` and
-`write(name, value, message)`, plus the blob shas a commit needs. The `SEED` constants
-in each store are the fallback for when the file cannot be fetched, not the source.
+To change what the website says, edit the file and commit. The admin screens are how you
+see what is in them, and the public pages are how a visitor does.
 
 ## Setup
 
@@ -71,7 +67,7 @@ Pages serves HTML with `Cache-Control: max-age=600` and there is no way to chang
 that header on Pages. For up to ten minutes after a push, a plain refresh can hand
 somebody the old page, which then asks for the old stamped script and looks exactly
 like the change did not deploy. Ctrl+Shift+R is the answer in the moment. The three
-admin pages carry a `no-cache` meta so they always revalidate; the public pages do
+four admin pages carry a `no-cache` meta so they always revalidate; the public pages do
 not, because they are the ones that benefit from being cached.
 
 Before saying something is not live, check what the server is actually sending:
@@ -96,21 +92,21 @@ before committing and commit what it changes.
 ## Where things are
 
 ```
-index.html + 27 other *.html   the pages, at the repository root
+index.html + 24 other *.html   the pages, at the repository root
 admin.html                     admin home — one row per thing that can be edited
-admin-events.html              the events screen: list, and the add/change form
+admin-events.html              the events screen: the list, the month, and one event
 admin-rentals.html             the hall rental screen: the whole rate card
 admin-gallery.html             the pictures screen: one page's band at a time
 assets/css/site.css            the public design system
 assets/css/admin.css           the admin side, deliberately larger and plainer
-assets/js/events-data.js       THE event list — admin writes it, public pages read it
-                               and draws the details boxes on the eight tied pages
-assets/js/rates-data.js        THE rate card — admin writes it, rentals.html reads it
-assets/js/gallery-data.js      THE pictures — the bands and the viewer as well as the store
+assets/js/events-data.js       THE event list, and the details boxes on the tied pages
+assets/js/rates-data.js        THE rate card, read by rentals.html and the quote
+assets/js/gallery-data.js      THE pictures: the bands and the viewer
 assets/js/site.js              nav, scroll-to-top, timeline, public event lists
 assets/js/admin.js             the admin home (only the date is live)
 assets/js/admin-events.js      the events screen
 assets/js/admin-rentals.js     the hall rental screen
+assets/js/admin-gallery.js     the pictures screen
 assets/js/quote.js             draws the rate card and prices a date from it
 assets/img/                    23 photographs of theirs
 assets/img/arms/               26 cantonal arms (public domain, Wikimedia)
@@ -170,16 +166,14 @@ rather than count, so the browser fits as many as there is room for — five of 
 rows at page width, two columns on a phone. Numbered 01–15. It replaced a grid of photo
 cards. It has no readout, no descriptions and no images by explicit instruction.
 
-**The events data.** `assets/js/events-data.js` holds one list. `admin-events.html`
-writes it; `index.html` and `events.html` read it. An event shows only while today sits
+**The events data.** `data/events.json` holds one list. `index.html`, `events.html`, the
+nine tied pages and `admin-events.html` all read it. An event shows only while today sits
 inside its advertising window (`from`…`until`), and `until` is computed as the day after
-the event — that is the mechanism that stops the site going stale. Edits live in
-`localStorage`, so they are per-browser; the real version would write to the club's
-account behind the same screens. The rows already in the markup are the no-script
-fallback.
+the event, which is the mechanism that stops the site going stale. The rows already in
+the markup are the no-script fallback.
 
 **The galleries.** `assets/js/gallery-data.js` holds the store, the bands and the
-viewer; `admin-gallery.html` fills them, one page at a time. The eight event pages each
+viewer; `admin-gallery.html` shows them, one page at a time. The nine event pages each
 carry `<div class="gbands" data-gallery="...">` in a `.gsec` section at the foot, which
 stays `hidden` while that page has no pictures.
 

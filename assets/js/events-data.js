@@ -1,16 +1,14 @@
-/* One list of events, read by the public pages and written by the admin.
+/* One list of events, read by every page that shows one.
 
    Each event carries the day it happens and the window it is advertised in.
    A page shows an event only while today sits inside that window, so an
-   event takes itself off the site when its window closes — nobody has to
+   event takes itself off the site when its window closes, and nobody has to
    remember to remove it.
 
-   In this demo the list lives in the browser. The real version keeps it in
-   the club's account; nothing else on these pages would change. */
+   The list is data/events.json, and data/saved.json beside it holds the ones
+   the club runs again. Both are edited in the repository. */
 
 window.SJVSC = (function () {
-  var KEY = 'sjvsc.events.v1';
-  var SHELF = 'sjvsc.saved.v1';    // events kept to be run again
 
   var SEED = [
     { id: 'club-meeting-nov', title: 'Club meeting',
@@ -61,10 +59,6 @@ window.SJVSC = (function () {
     });
   }
 
-  function save(list, message) {
-    LIST = list;
-    return window.SJVSC_STORE.write('events', list, message || 'Events');
-  }
 
   /* The shelf: events the club runs again, kept apart from the calendar so
      nothing on it reaches a reader until it is put on a date. */
@@ -75,10 +69,6 @@ window.SJVSC = (function () {
       SHELVED = list || [];
       return savedAll();
     });
-  }
-  function savedSave(list, message) {
-    SHELVED = list;
-    return window.SJVSC_STORE.write('saved', list, message || 'Saved events');
   }
 
   /* what a visitor should see right now: inside its advertising window */
@@ -102,7 +92,7 @@ window.SJVSC = (function () {
   }
 
   /* Spelled out rather than left to the browser's formatter, which varies
-     by engine — one of them puts a comma after the weekday. */
+     by engine, and one of them puts a comma after the weekday. */
   var WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   var MONTH = ['January', 'February', 'March', 'April', 'May', 'June',
                'July', 'August', 'September', 'October', 'November', 'December'];
@@ -351,11 +341,11 @@ window.SJVSC = (function () {
     });
   }
 
-  return { all: all, load: load, save: save, savedAll: savedAll, savedLoad: savedLoad,
-           savedSave: savedSave, showing: showing,
+  return { all: all, load: load, savedAll: savedAll, savedLoad: savedLoad,
+           showing: showing,
            href: href, TIED: TIED, blocks: blocks, onPage: onPage,
            renderPages: renderPages, render: render, at: at,
            tickets: tickets, contactText: contactText, priceText: priceText,
            today: today, pretty: pretty, fullDate: fullDate, longDate: longDate,
-           MONTH: MONTH, KEY: KEY };
+           MONTH: MONTH };
 })();

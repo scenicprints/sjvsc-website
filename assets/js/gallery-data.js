@@ -1,5 +1,4 @@
-/* The galleries at the foot of the eight event pages, and the admin store
-   behind them.
+/* The galleries at the foot of the event pages.
 
    A gallery is a set of bands running the full width of the window, which
    nothing else on this site does. Band one travels one way as the page is
@@ -12,14 +11,12 @@
    band with nothing to travel cannot travel. The repeats are hidden from a
    screen reader, which is read the originals once.
 
-   In this demo the pictures live in the browser. The real version keeps them
-   in the club's account; nothing on these pages would change. */
+   The pictures are files in assets/img/gallery, named in data/gallery.json.
+   Both are added in the repository. */
 
 window.SJVSC_GALLERY = (function () {
-  var KEY = 'sjvsc.gallery.v1';
   var PER_BAND = 6;
   var MAX_PER_PAGE = 18;          // three bands, and all the room there is
-  var MAX_WIDTH = 1100, QUALITY = 0.7;
 
   var PAGES = [
     { id: 'schwingers',   name: 'Schwinger’s Club',             page: 'schwingers-club.html' },
@@ -74,33 +71,8 @@ window.SJVSC_GALLERY = (function () {
     });
   }
 
-  function save(map, message) {
-    MAP = map;
-    return window.SJVSC_STORE.write('gallery', map, message || 'Pictures');
-  }
 
   function pics(tie) { return all()[tie] || []; }
-
-  /* pictures are made small before they are kept, or eight galleries will
-     not fit in the room a browser gives this */
-  function shrink(file, done, fail) {
-    var reader = new FileReader();
-    reader.onerror = fail;
-    reader.onload = function () {
-      var img = new Image();
-      img.onerror = fail;
-      img.onload = function () {
-        var w = img.width, h = img.height;
-        if (w > MAX_WIDTH) { h = Math.round(h * MAX_WIDTH / w); w = MAX_WIDTH; }
-        var c = document.createElement('canvas');
-        c.width = w; c.height = h;
-        c.getContext('2d').drawImage(img, 0, 0, w, h);
-        done(c.toDataURL('image/jpeg', QUALITY));
-      };
-      img.src = reader.result;
-    };
-    reader.readAsDataURL(file);
-  }
 
   /* ---- the viewer ----------------------------------------------------- */
 
@@ -299,7 +271,7 @@ window.SJVSC_GALLERY = (function () {
     load().then(render);
   }
 
-  return { KEY: KEY, PAGES: PAGES, SEED: SEED, PER_BAND: PER_BAND, MAX_PER_PAGE: MAX_PER_PAGE,
-           all: all, load: load, save: save, pics: pics, shrink: shrink,
+  return { PAGES: PAGES, SEED: SEED, PER_BAND: PER_BAND, MAX_PER_PAGE: MAX_PER_PAGE,
+           all: all, load: load, pics: pics,
            bandsFor: bandsFor, render: render, openViewer: openViewer, shown: [] };
 }());

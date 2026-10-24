@@ -11,11 +11,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=976d2617">
-<link rel="stylesheet" href="assets/css/admin.css?v=04f3331c">
+<link rel="stylesheet" href="assets/css/site.css?v=9ce4a08c">
+<link rel="stylesheet" href="assets/css/admin.css?v=e9d0a60f">
 <script>window.SJVSC_ADMIN = true;</script>
-<script src="assets/js/store.js?v=6b0b4c89"></script>
-<script src="assets/js/admin-gate.js?v=d46d110c"></script>
+<script src="assets/js/store.js?v=c11682aa"></script>
 
 </head>
 <body class="adm">
@@ -28,8 +27,7 @@
       <span><b>Ripon Swiss Club</b><i>Website admin</i></span>
     </span>
     <span class="awho">
-      <span>Signed in as the secretary</span>
-      <a href="index.html">Sign out</a>
+      <a href="index.html">Back to the website</a>
     </span>
   </div>
 </header>
@@ -40,8 +38,8 @@
     <section id="pickview">
       <a class="aback" href="admin.html">&#8592; Back</a>
       <h1>Pictures</h1>
-      <p class="alead">Each of these pages carries a band of photographs at the foot of it.
-        Choose a page to add to.</p>
+      <p class="alead">Each of these pages carries a band of photographs at the foot of it,
+        from <b>data/gallery.json</b>. Choose a page to see what is on it.</p>
       <div id="picklist"></div>
     </section>
 
@@ -50,27 +48,18 @@
       <h1 id="ghead">Pictures</h1>
       <p class="alead" id="glead"></p>
 
-      <div class="field" style="max-width:none">
-        <label for="gfiles">Add pictures</label>
-        <input type="file" id="gfiles" accept="image/*" multiple>
-        <p class="hint">Several at once is fine. Each one is made smaller before it is kept.</p>
-        <p class="err" id="gerr" hidden></p>
-      </div>
 
       <ul class="glist" id="glist"></ul>
 
       <div class="aactions">
-        <button class="abtn solid" type="button" id="gsave">Save</button>
         <a class="abtn" id="gsee" target="_blank" rel="noopener">See the page</a>
-        <button class="abtn danger" type="button" id="gclear">Remove every picture</button>
       </div>
-      <p class="saved" id="gsaved" hidden>Saved. The page carries these now.</p>
     </section>
 
   </div>
 </main>
 
-<script src="assets/js/gallery-data.js?v=112a5202"></script>
-<script src="assets/js/admin-gallery.js?v=7acb8391"></script>
+<script src="assets/js/gallery-data.js?v=c41b5178"></script>
+<script src="assets/js/admin-gallery.js?v=6a213b65"></script>
 </body>
 </html>

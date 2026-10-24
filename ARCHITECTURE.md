@@ -88,7 +88,7 @@ backend, nothing to install.
 | Styling | One stylesheet, `assets/css/site.css` |
 | Behaviour | `assets/js/site.js` — navigation, scroll-to-top, the timeline |
 | | `assets/js/quote.js` — the hall rental quote engine |
-| Data | In the markup, and in one table at the top of `quote.js`, standing in for the admin screens a real build would have |
+| Data | `data/*.json`, fetched by every page. The admin screens show what is in them; they do not write |
 | Heraldry | Twenty-six public-domain cantonal arms from Wikimedia Commons |
 | Photography | Seven images: six recovered from the old site, one supplied by the client |
 | Hosting | **GitHub Pages**, from the root of `main` |
@@ -203,9 +203,10 @@ watch the event appear or vanish. That single interaction makes the argument.
 
 ### What is actually built
 
-One list, in `assets/js/events-data.js`, written by the admin screen and read by the
-public pages. Kept in `localStorage` under `sjvsc.events.v1`; it falls back to the seed
-in that file when storage is empty or blocked.
+One list, in `data/events.json`, fetched by the public pages and by the admin screen.
+`assets/js/events-data.js` reads it and falls back to the `SEED` in that file when it
+cannot be fetched. Nothing is kept in the browser, and nothing on the site writes: the
+file is edited in the repository and committed.
 
 ```
 Event ───── id          'jass-fall', or 'e' + timestamp for a new one
@@ -323,14 +324,20 @@ the club would replace.
 
 ```
 /
-├── index.html + 27 other *.html   the public pages, plus the two admin screens
+├── index.html + 24 other *.html   the public pages, plus the four admin screens
+├── data/*.json                    the club's data: events, saved, rates, gallery
 ├── assets/
 │   ├── css/site.css               the public design system
 │   ├── css/admin.css              the admin side, larger and plainer
-│   ├── js/events-data.js          the event list - admin writes, public pages read
+│   ├── js/store.js                reads data/*.json, and that is all it does
+│   ├── js/events-data.js          the event list, and the tied pages' details boxes
+│   ├── js/rates-data.js           the rate card
+│   ├── js/gallery-data.js         the pictures: the bands and the viewer
 │   ├── js/site.js                 nav, scroll-to-top, timeline, public event lists
 │   ├── js/admin.js                admin home
 │   ├── js/admin-events.js         the events screen
+│   ├── js/admin-rentals.js        the hall rental screen
+│   ├── js/admin-gallery.js        the pictures screen
 │   ├── js/quote.js                hall rental quote engine
 │   ├── img/                       23 of the club's photographs
 │   └── img/arms/                  26 cantonal arms (public domain)

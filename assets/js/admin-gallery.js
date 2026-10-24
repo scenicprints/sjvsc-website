@@ -1,9 +1,9 @@
-/* The pictures screen. One page at a time: add photographs, caption them,
-   move them about, take them out. The order here is the order the bands run
-   in, and every sixth picture puts out another band.
+/* The pictures screen. One page at a time: what is on it, in the order the
+   bands run in, with every sixth picture putting out another band.
 
-   Nothing is written until Save, so a wrong file can be taken out again
-   before it reaches the website. */
+   It reads data/gallery.json and shows what is in it. Pictures are added by
+   putting the files in assets/img/gallery and naming them in that file, in
+   the repository. */
 
 (function () {
   var G = window.SJVSC_GALLERY;
@@ -13,22 +13,13 @@
   var editview = document.getElementById('editview');
   var picklist = document.getElementById('picklist');
   var glist = document.getElementById('glist');
-  var gerr = document.getElementById('gerr');
-  var gsaved = document.getElementById('gsaved');
 
-  var page = null;          // the page being worked on
-  var pics = [];            // its pictures, until Save
-  var clean = '';           // what was on the page when it was opened
+  var pics = [];
 
   function show(which) {
     pickview.hidden = which !== 'pick';
     editview.hidden = which !== 'edit';
     window.scrollTo(0, 0);
-  }
-
-  function say(msg) {
-    gerr.textContent = msg || '';
-    gerr.hidden = !msg;
   }
 
   function bandWord(n) {
@@ -38,7 +29,7 @@
       b + (b === 1 ? ' band' : ' bands') + '.';
   }
 
-  /* ---- the eight pages ------------------------------------------------ */
+  /* ---- the nine pages ------------------------------------------------ */
 
   function drawPick() {
     picklist.innerHTML = '';
@@ -71,7 +62,7 @@
     if (!pics.length) {
       var li = document.createElement('li');
       li.className = 'eempty';
-      li.textContent = 'Nothing here yet. Add a picture and it will appear at the foot of the page.';
+      li.textContent = 'Nothing here yet, so this page carries no band at all.';
       glist.appendChild(li);
       return;
     }
@@ -82,138 +73,31 @@
       li.innerHTML =
         '<span class="gnum"></span>' +
         '<img alt="">' +
-        '<span class="gcap"><label></label><input type="text" autocomplete="off"></span>' +
-        '<span class="gmove">' +
-        '<button class="abtn small" type="button" aria-label="Move it earlier">&#8593;</button>' +
-        '<button class="abtn small" type="button" aria-label="Move it later">&#8595;</button>' +
-        '</span>' +
-        '<button class="abtn small danger" type="button">Remove</button>';
+        '<span class="gcap"><b></b><span class="val"></span></span>';
 
       li.querySelector('.gnum').textContent = ('0' + (i + 1)).slice(-2);
       var img = li.querySelector('img');
       img.src = p.src;
       img.alt = p.caption || 'Picture ' + (i + 1);
 
-      var id = 'gcap' + i;
-      var lab = li.querySelector('label');
-      lab.textContent = 'What it shows';
-      lab.setAttribute('for', id);
-      var box = li.querySelector('input');
-      box.id = id;
-      box.value = p.caption || '';
-      box.placeholder = 'The hall set for the Schwinger Dinner';
-      box.addEventListener('input', function () { p.caption = box.value; });
-
-      var moves = li.querySelectorAll('.gmove button');
-      moves[0].disabled = i === 0;
-      moves[1].disabled = i === pics.length - 1;
-      moves[0].addEventListener('click', function () { swap(i, i - 1); });
-      moves[1].addEventListener('click', function () { swap(i, i + 1); });
-
-      li.querySelector('.danger').addEventListener('click', function () {
-        pics.splice(i, 1);
-        draw();
-      });
+      li.querySelector('.gcap b').textContent = 'What it shows';
+      li.querySelector('.gcap .val').textContent = p.caption || '';
 
       glist.appendChild(li);
     });
   }
 
-  function swap(a, b) {
-    var t = pics[a]; pics[a] = pics[b]; pics[b] = t;
-    draw();
-  }
-
-  function mark() { clean = JSON.stringify(pics); }
-  function dirty() { return JSON.stringify(pics) !== clean; }
-
   function open(p) {
-    page = p;
     pics = (store[p.id] || []).map(function (x) { return { src: x.src, caption: x.caption }; });
-    mark();
     document.getElementById('ghead').textContent = p.name;
     document.getElementById('gsee').href = p.page;
-    say('');
-    gsaved.hidden = true;
     draw();
     show('edit');
   }
 
-  /* ---- adding ---------------------------------------------------------- */
-
-  document.getElementById('gfiles').addEventListener('change', function (ev) {
-    var files = [].slice.call(ev.target.files || []);
-    ev.target.value = '';
-    if (!files.length) return;
-    say('');
-    gsaved.hidden = true;
-
-    var room = G.MAX_PER_PAGE - pics.length;
-    if (room <= 0) {
-      say('This page already holds ' + G.MAX_PER_PAGE + ' pictures, which is all there is room for.');
-      return;
-    }
-    var taking = files.slice(0, room);
-    var over = files.length - taking.length;
-    var left = taking.length;
-
-    taking.forEach(function (file) {
-      G.shrink(file, function (src) {
-        pics.push({ src: src, caption: '' });
-        if (!--left) {
-          draw();
-          if (over) say(over + (over === 1 ? ' picture was' : ' pictures were') +
-            ' left out, because this page holds ' + G.MAX_PER_PAGE + '.');
-        }
-      }, function () {
-        if (!--left) draw();
-        say('One of those could not be read as a picture.');
-      });
-    });
-  });
-
-  /* ---- saving ---------------------------------------------------------- */
-
-  document.getElementById('gsave').addEventListener('click', function () {
-    say('');
-    var next = G.all();
-    if (pics.length) next[page.id] = pics;
-    else delete next[page.id];
-
-    var btn = document.getElementById('gsave');
-    btn.disabled = true;
-    G.save(next, 'Pictures: ' + page.name).then(function () {
-      btn.disabled = false;
-      store = next;
-      mark();
-      gsaved.hidden = false;
-      drawPick();
-    }, function (err) {
-      btn.disabled = false;
-      say(err.message);
-    });
-  });
-
-  document.getElementById('gclear').addEventListener('click', function () {
-    pics = [];
-    draw();
-    say('');
-    gsaved.hidden = true;
-  });
-
   document.getElementById('gback').addEventListener('click', function () {
-    if (dirty() && !window.confirm(
-        'You have changed the pictures on this page and not saved them.\n\n' +
-        'Go back and lose the changes?')) return;
     drawPick();
     show('pick');
-  });
-
-  /* closing the tab with pictures unsaved */
-  window.addEventListener('beforeunload', function (ev) {
-    if (editview.hidden || !dirty()) return;
-    ev.preventDefault();
-    ev.returnValue = '';
   });
 
   G.load().then(function (m) {

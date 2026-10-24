@@ -1,5 +1,4 @@
-/* The hall rental rate card, read by the rentals page and the quote engine
-   and written by the admin.
+/* The hall rental rate card, read by the rentals page and the quote engine.
 
    Nothing here is fixed. The club names what it rents, names its own kinds
    of day, and writes its own extras and rules. The price grid is whatever
@@ -10,13 +9,11 @@
    and a rule carries what it does, so a row the club invents can still be
    arithmetic rather than only print.
 
-   In this demo the card lives in the browser. The real version keeps it in
-   the club's account; nothing else on these pages would change. */
+   The card is data/rates.json, which is edited in the repository. */
 
 window.SJVSC_RATES = (function () {
-  var KEY = 'sjvsc.rates.v1';
 
-  /* Illustrative placeholders. The club replaces them in the admin. */
+  /* Illustrative placeholders, used only if the file cannot be read. */
   var SEED = {
     days: [
       { id: 'sat',  name: 'Saturday',        covers: [6] },
@@ -72,10 +69,6 @@ window.SJVSC_RATES = (function () {
     });
   }
 
-  function save(c, message) {
-    CARD = c;
-    return window.SJVSC_STORE.write('rates', c, message || 'Hall rental rates');
-  }
 
   function reset() { return clone(SEED); }
 
@@ -116,8 +109,8 @@ window.SJVSC_RATES = (function () {
   }
 
   return {
-    SEED: SEED, KEY: KEY,
-    card: card, load: load, save: save, reset: reset, clone: clone,
+    SEED: SEED,
+    card: card, load: load, reset: reset, clone: clone,
     dayFor: dayFor, uncovered: uncovered,
     rule: rule, ruleValue: ruleValue, money: money
   };

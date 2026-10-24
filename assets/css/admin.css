@@ -91,6 +91,8 @@
 .eitem .abtn{flex:0 0 auto;padding:12px 18px}
 .eempty{background:var(--white);border:2px dashed var(--line);border-radius:6px;
   padding:28px 22px;color:var(--ink-2);text-align:center}
+/* the same note inside a field, where it sits under a heading already */
+.field .eempty{padding:15px 18px;text-align:left;margin:0}
 
 /* the form */
 .field{margin-bottom:20px}
@@ -140,34 +142,15 @@
 .imgprev{margin-top:14px;display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
 .imgprev img{display:block;width:230px;height:auto;border:1px solid var(--line);border-radius:5px}
 
-/* details the club writes itself: a heading, what it says, and a way out */
+/* details the club writes itself: a heading and what it says */
 .abtn.small{font-size:.95rem;padding:10px 15px;border-width:2px}
 .dgroup{margin-bottom:10px}
-.drow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr) auto auto;gap:10px;
+.drow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:10px;
   margin-bottom:10px;align-items:start}
-.drow .dlabel,.drow .dvalue{width:100%;font:inherit;font-family:var(--ui);padding:12px 13px;
-  border:2px solid var(--line);border-radius:5px;background:var(--white);color:var(--ink)}
 .drow .dlabel{font-weight:600}
-.drow .dlabel:focus,.drow .dvalue:focus{outline:none;border-color:var(--ink)}
-/* the plus is square and reads as part of the line it belongs to */
-.drow .dadd{padding-inline:0;width:46px;text-align:center;font-size:1.25rem;line-height:1}
-#addrow{margin-top:4px}
-
-/* chosen files */
-.filelist{list-style:none;margin:14px 0 0;padding:0}
-.filelist li{display:flex;align-items:center;gap:14px;background:var(--white);
-  border:2px solid var(--line);border-radius:5px;padding:12px 14px;margin-bottom:8px}
-.filelist .fname{font-weight:600;min-width:0;overflow-wrap:anywhere}
-.filelist .fsize{color:var(--ink-soft);font-size:.92rem;white-space:nowrap}
-.filelist li .abtn{margin-left:auto;flex:0 0 auto}
-
 @media(max-width:620px){
-  .drow{grid-template-columns:46px minmax(0,1fr)}
-  .drow .dlabel,.drow .dvalue{grid-column:1/-1}
+  .drow{grid-template-columns:minmax(0,1fr)}
   .drow .dspacer{display:none}
-  .drow .drem{width:100%;text-align:center}
-  .filelist li{flex-wrap:wrap}
-  .filelist li .abtn{margin-left:0;width:100%;text-align:center}
 }
 
 /* ------------------------------------------------------------------ */
@@ -175,31 +158,25 @@
 /* drawn from two of them, so a new column widens the grid rather than */
 /* needing a new rule here.                                            */
 
-.rsec{border:0;padding:22px 0 0;margin:22px 0 0;border-top:1px solid var(--line)}
+.rsec{border:0;min-width:0;padding:22px 0 0;margin:22px 0 0;border-top:1px solid var(--line)}
 .rsec:first-of-type{border-top:0;padding-top:0;margin-top:0}
 .rsec legend{font-family:var(--display);font-size:1.2rem;font-weight:600;padding:0;margin:0}
 
 .rrow{display:grid;gap:10px;margin-bottom:10px;align-items:center}
-.rrow input[type=text],.rrow select{width:100%;font:inherit;font-family:var(--ui);
-  padding:12px 13px;border:2px solid var(--line);border-radius:5px;
-  background:var(--white);color:var(--ink)}
-.rrow input[type=text]:focus,.rrow select:focus{outline:none;border-color:var(--ink)}
 .rrow .rname{font-weight:600}
 .rrow .rprice{text-align:right;font-variant-numeric:tabular-nums}
 
-/* a kind of day: its name, the days it covers, and a way out */
-.rday{grid-template-columns:minmax(0,1fr) auto auto}
+/* a kind of day: its name and the days it covers */
+.rday{grid-template-columns:minmax(0,1fr) auto}
 .rticks{display:flex;flex-wrap:wrap;gap:4px}
-.rtick{display:flex;align-items:center;gap:5px;background:var(--white);
-  border:2px solid var(--line);border-radius:5px;padding:9px 10px;cursor:pointer;
+.rtick{display:flex;align-items:center;gap:5px;background:var(--cream);
+  border:2px solid var(--line);border-radius:5px;padding:9px 10px;cursor:default;
   font-size:.92rem;font-weight:600;white-space:nowrap}
-.rtick:hover{border-color:var(--ink)}
-.rtick input{width:19px;height:19px;margin:0;accent-color:var(--red);cursor:pointer}
-.rtick:focus-within{border-color:var(--ink)}
+.rtick input{width:19px;height:19px;margin:0;accent-color:var(--red);cursor:default;opacity:1}
 
-/* the grid: one name column, one column per kind of day, one button */
+/* the grid: one name column, then one column per kind of day */
 .gridscroll{overflow-x:auto;margin-bottom:10px}
-.rgrid{grid-template-columns:minmax(150px,1.2fr) repeat(var(--cols,3),minmax(96px,1fr)) auto;
+.rgrid{grid-template-columns:minmax(150px,1.2fr) repeat(var(--cols,3),minmax(96px,1fr));
   min-width:min-content}
 .rhead{margin-bottom:6px}
 .rcolname{font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
@@ -208,8 +185,8 @@
   font-size:.78rem;letter-spacing:.02em;text-transform:none;color:var(--ink-2)}
 .rcoldays.rdead{color:var(--red)}
 
-/* extras and rules: name, number, what it does, and a way out */
-.rpair{grid-template-columns:minmax(0,1fr) 124px minmax(0,230px) auto}
+/* extras and rules: name, number, what it does */
+.rpair{grid-template-columns:minmax(0,1fr) 124px minmax(0,300px)}
 
 .warn{margin:12px 0 0;font-size:.95rem;font-weight:600;color:var(--ink);
   background:#FDF6E3;border:2px solid var(--gold);border-radius:5px;padding:12px 14px}
@@ -226,9 +203,7 @@
 @media(max-width:760px){
   .rpair{grid-template-columns:minmax(0,1fr) 110px}
   .rpair select{grid-column:1/-1}
-  .rpair .abtn{grid-column:1/-1;width:100%;text-align:center}
   .rday{grid-template-columns:1fr}
-  .rday .abtn{width:100%;text-align:center}
   .rticks{justify-content:space-between}
   .rtick{flex:1 1 auto;justify-content:center}
   .aactions .danger{margin-left:0}
@@ -236,17 +211,11 @@
 }
 
 /* where a ticket can be had: as many ways as there are */
-.trow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr) auto;
+.trow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr);
   gap:10px;margin-bottom:10px;align-items:start}
-.trow select,.trow input[type=text]{width:100%;font:inherit;font-family:var(--ui);
-  padding:12px 13px;border:2px solid var(--line);border-radius:5px;
-  background:var(--white);color:var(--ink)}
-.trow select:focus,.trow input[type=text]:focus{outline:none;border-color:var(--ink)}
 .trow [hidden]{display:none !important}
-#adtick{margin-top:4px}
 @media(max-width:760px){
   .trow{grid-template-columns:1fr}
-  .trow .drem{width:100%;text-align:center}
 }
 
 /* the saved list sits under the calendar's own */
@@ -255,20 +224,14 @@
 
 /* the pictures screen: one row per photograph, in the order the bands run */
 .glist{list-style:none;margin:20px 0 0;padding:0}
-.gitem{display:grid;grid-template-columns:auto 128px minmax(0,1fr) auto auto;gap:16px;
+.gitem{display:grid;grid-template-columns:auto 128px minmax(0,1fr);gap:16px;
   align-items:center;background:var(--white);border:2px solid var(--line);border-radius:6px;
   padding:14px;margin-bottom:10px}
 .gnum{font-family:var(--display);font-size:1.3rem;font-weight:600;color:var(--ink-soft)}
 .gitem img{width:128px;height:84px;object-fit:cover;display:block;border:1px solid var(--line)}
 .gcap{display:block;min-width:0}
-.gcap label{display:block;font-size:.68rem;font-weight:700;letter-spacing:.15em;
+.gcap b{display:block;font-size:.68rem;font-weight:700;letter-spacing:.15em;
   text-transform:uppercase;color:var(--ink-soft);margin-bottom:5px}
-.gcap input{width:100%;font:inherit;font-family:var(--ui);padding:11px 12px;
-  border:2px solid var(--line);border-radius:5px;background:var(--white);color:var(--ink)}
-.gcap input:focus{outline:none;border-color:var(--ink)}
-.gmove{display:flex;flex-direction:column;gap:6px}
-.gmove button{padding:6px 11px;font-size:1rem;line-height:1}
-.gmove button:disabled{color:var(--line);border-color:var(--line);cursor:default}
 #picklist .arow{width:100%;text-align:left;font:inherit;cursor:pointer;margin-bottom:12px;
   font-family:var(--ui)}
 
@@ -276,51 +239,15 @@
   .gitem{grid-template-columns:auto minmax(0,1fr);gap:12px}
   .gitem img{grid-column:1/-1;width:100%;height:150px}
   .gcap{grid-column:1/-1}
-  .gmove{grid-column:1;flex-direction:row}
-  .gitem .danger{grid-column:2;align-self:end}
 }
 
 /* ------------------------------------------------------------------ */
-/* The way in. Locks from the <head>, so the admin is never on screen  */
-/* for a frame before the code is given.                               */
-
-html.locked .adm > *:not(.gate){display:none !important}
-.gate{position:fixed;inset:0;z-index:300;background:var(--cream);
-  display:flex;align-items:center;justify-content:center;
-  padding:max(24px,env(safe-area-inset-top,0px)) 20px}
-.gate-box{width:100%;max-width:420px;background:var(--white);border:2px solid var(--line);
-  border-radius:8px;padding:34px 30px;display:flex;flex-direction:column}
-.gate-mark{width:40px;height:43px;display:block;margin:0 auto 18px}
-.gate-box h1{font-family:var(--display);font-size:1.7rem;font-weight:600;line-height:1.15;
-  margin:0 0 8px;text-align:center}
-.gate-box > p{margin:0 0 24px;text-align:center;color:var(--ink-2);line-height:1.5}
-.gate-box label{font-size:.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--ink-soft);margin-bottom:7px}
-.gate-box input{font:inherit;font-family:var(--ui);font-size:1.25rem;letter-spacing:.14em;
-  padding:15px 16px;border:2px solid var(--line);border-radius:5px;background:var(--white);
-  color:var(--ink);text-align:center}
-.gate-box input:focus{outline:none;border-color:var(--ink)}
-.gate-no{margin:12px 0 0;font-size:.95rem;font-weight:600;color:var(--red);text-align:center}
-.gate-box .abtn{margin-top:22px;width:100%;text-align:center}
-.gate-out{margin-top:18px;text-align:center;font-size:.92rem;font-weight:600;color:var(--red)}
-
-@media(max-width:480px){
-  .gate-box{padding:28px 22px}
-  .gate-box h1{font-size:1.45rem}
-}
-
 /* attachments: a name, then either a file or an address */
-.afrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) auto auto;gap:10px;
+.afrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:10px;
   margin-bottom:10px;align-items:center}
-.afrow input[type=text]{width:100%;font:inherit;font-family:var(--ui);padding:12px 13px;
-  border:2px solid var(--line);border-radius:5px;background:var(--white);color:var(--ink)}
-.afrow input[type=text]:focus{outline:none;border-color:var(--ink)}
-.afrow input[type=text]:disabled{background:var(--cream);color:var(--ink-soft)}
 .afrow .aname{font-weight:600}
-#adattach{margin-top:4px}
 @media(max-width:760px){
   .afrow{grid-template-columns:1fr}
-  .afrow .abtn{width:100%;text-align:center}
 }
 
 /* the month: the same events as the list, laid out so a clash is obvious */
@@ -357,4 +284,25 @@ html.locked .adm > *:not(.gate){display:none !important}
   .amo-cell span{font-size:.64rem}
   .amo-cell i{display:none}
 }
-.gate-note{margin:10px 0 0;font-size:.86rem;color:var(--ink-soft);line-height:1.5}
+
+/* ------------------------------------------------------------------ */
+/* Every field on these screens holds something out of data/*.json and */
+/* is not to be typed in. The box stays, because the box is what lines */
+/* the values up, but it sits on the cream rather than on white, so it  */
+/* reads as settled instead of waiting for a keystroke.                */
+
+.adm input.ro,.adm textarea.ro,.adm select.ro{background:var(--cream);
+  cursor:default;opacity:1;color:var(--ink);-webkit-text-fill-color:var(--ink)}
+.adm select.ro{appearance:none;-webkit-appearance:none;padding-right:13px}
+.adm input.ro:focus{outline:2px solid var(--ink);outline-offset:2px;border-color:var(--line)}
+.adm input.ro::placeholder,.adm textarea.ro::placeholder{
+  color:var(--ink-soft);font-style:italic;opacity:1}
+/* A value wraps, because a caption or an address is as long as it is and a
+   box that cuts it off on a phone is no use to anybody. It is drawn as the
+   box the field used to be, so a screen reads the same as it did. */
+.adm .val{display:block;font:inherit;font-family:var(--ui);padding:12px 13px;
+  border:2px solid var(--line);
+  border-radius:5px;background:var(--cream);color:var(--ink);
+  overflow-wrap:anywhere;min-width:0}
+.adm .val:empty::before{content:'Nothing set';color:var(--ink-soft);font-style:italic}
+.adm .gcap .val{padding:11px 12px}

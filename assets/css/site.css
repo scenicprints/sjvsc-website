@@ -1,4 +1,4 @@
-/* San Joaquin Valley Swiss Club — concept site
+/* San Joaquin Valley Swiss Club, concept site
    Graphic-led: type, flat colour and heraldry carry the pages.
    Six photographs exist, so they punctuate rather than lead. */
 :root{
@@ -332,7 +332,7 @@ h3{font-size:1.28rem}
 }
 
 /* the West Coast map: states projected to a static path, no map library.
-   Two arrangements of the same data — see .swnarrow for the phone. */
+   Two arrangements of the same data. See .swnarrow for the phone. */
 .swmap{margin:0}
 .swmap svg{display:block;width:100%;height:auto;margin-inline:auto}
 .swmap .swwide{display:block;max-height:84vh}

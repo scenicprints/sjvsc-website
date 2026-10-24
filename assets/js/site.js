@@ -92,7 +92,7 @@
 
 /* The two public event lists are drawn from the shared event data, so what
    the admin saves is what a visitor sees. The markup already in the page is
-   the same list rendered — it stands in when there is no script. */
+   the same list rendered, and it stands in when there is no script. */
 /* events-data.js draws them, once data/events.json is in. */
 
 /* A quote arrives at the contact form with its own details already written

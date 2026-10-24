@@ -11,11 +11,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=976d2617">
-<link rel="stylesheet" href="assets/css/admin.css?v=04f3331c">
+<link rel="stylesheet" href="assets/css/site.css?v=9ce4a08c">
+<link rel="stylesheet" href="assets/css/admin.css?v=e9d0a60f">
 <script>window.SJVSC_ADMIN = true;</script>
-<script src="assets/js/store.js?v=6b0b4c89"></script>
-<script src="assets/js/admin-gate.js?v=d46d110c"></script>
+<script src="assets/js/store.js?v=c11682aa"></script>
 
 </head>
 <body class="adm">
@@ -28,8 +27,7 @@
       <span><b>Ripon Swiss Club</b><i>Website admin</i></span>
     </span>
     <span class="awho">
-      <span>Signed in as the secretary</span>
-      <a href="index.html">Sign out</a>
+      <a href="index.html">Back to the website</a>
     </span>
   </div>
 </header>
@@ -39,27 +37,25 @@
     <a class="aback" href="admin.html">&#8592; Back</a>
     <h1>Hall rental</h1>
 
-    <p class="alead">Everything the rate card shows is written here. Nothing on this
-      screen is fixed, so a new thing to rent, a new kind of day, a new extra or a
-      new rule all start by pressing a button.</p>
+    <p class="alead">Everything the rate card shows, out of <b>data/rates.json</b>. None of
+      it is fixed in the website: a new thing to rent, a new kind of day, a new extra or a
+      new rule is a line in that file, and the rate card and the quote follow it.</p>
 
     <form id="rform">
 
       <fieldset class="rsec">
         <legend>Kinds of day</legend>
-        <p class="hint" style="margin:0 0 14px">Name each kind of day and tick the days
-          it covers. These become the columns of the price list underneath.</p>
+        <p class="hint" style="margin:0 0 14px">Each kind of day and the weekdays it covers.
+          These are the columns of the price list underneath.</p>
         <div id="dayrows"></div>
-        <button class="abtn small" type="button" id="adday">+ Add another kind of day</button>
         <p class="warn" id="daywarn" hidden></p>
       </fieldset>
 
       <fieldset class="rsec">
         <legend>Prices</legend>
-        <p class="hint" style="margin:0 0 14px">Name what can be rented, and give it a
-          price under each kind of day.</p>
+        <p class="hint" style="margin:0 0 14px">What can be rented, and its price under each
+          kind of day.</p>
         <div class="gridscroll"><div id="pricegrid"></div></div>
-        <button class="abtn small" type="button" id="adspace">+ Add another thing to rent</button>
       </fieldset>
 
       <fieldset class="rsec">
@@ -67,7 +63,6 @@
         <p class="hint" style="margin:0 0 14px">What it is, what it costs, and when it
           goes on the bill.</p>
         <div id="extrarows"></div>
-        <button class="abtn small" type="button" id="adextra">+ Add another extra</button>
       </fieldset>
 
       <fieldset class="rsec">
@@ -76,23 +71,18 @@
           it does to a quote. <b>Only printed</b> puts it on the rate card and leaves the
           arithmetic alone.</p>
         <div id="rulerows"></div>
-        <button class="abtn small" type="button" id="adrule">+ Add another rule</button>
       </fieldset>
 
-      <p class="err" id="e-save" hidden>There is no room left to keep this.</p>
-      <p class="saved" id="saved" hidden>Saved. The rate card and the quote now use these.</p>
 
       <div class="aactions">
-        <button class="abtn solid" type="submit">Save</button>
         <a class="abtn" href="rentals.html" target="_blank" rel="noopener">See the rate card</a>
-        <button class="abtn danger" type="button" id="resetbtn">Put the placeholders back</button>
       </div>
     </form>
 
   </div>
 </main>
 
-<script src="assets/js/rates-data.js?v=87b57e8d"></script>
-<script src="assets/js/admin-rentals.js?v=a1af32af"></script>
+<script src="assets/js/rates-data.js?v=33c0c23c"></script>
+<script src="assets/js/admin-rentals.js?v=908b5b4c"></script>
 </body>
 </html>
