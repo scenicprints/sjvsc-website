@@ -410,6 +410,11 @@ h3{font-size:1.28rem}
 /* The event sits across the top of the page it is tied to, not down the side
    of it. It is the only thing on these pages that changes, so it gets the
    full width and the headings run side by side instead of stacking. */
+/* the card follows the width of the screen, not the 1180px page column, with
+   a gutter that grows with it */
+.ewrap{width:100%;
+  padding-left:max(clamp(18px,4vw,72px),env(safe-area-inset-left,0px));
+  padding-right:max(clamp(18px,4vw,72px),env(safe-area-inset-right,0px))}
 .eslot{margin:38px 0 0}
 .ecard{background:var(--white);border:1px solid var(--line);border-left:5px solid var(--red);
   padding:26px 30px;margin-bottom:16px}
@@ -421,32 +426,24 @@ h3{font-size:1.28rem}
 .ecard-when{margin:0;flex:0 1 auto;min-width:0;font-size:.82rem;font-weight:700;
   letter-spacing:.11em;text-transform:uppercase;color:var(--red)}
 .ecard-body{margin-top:16px}
-.ecard-body.both{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);
-  gap:0 40px;align-items:start}
-.ecard-desc{margin:0;color:var(--ink-2);line-height:1.65;white-space:pre-line}
-.erows{list-style:none;margin:22px 0 0;padding:20px 0 0;border-top:2px solid var(--ink);
+/* the prose flows in columns, so it fills a wide card without any line
+   running to an unreadable length */
+.ecard-desc{color:var(--ink-2);line-height:1.65;columns:3 30ch;column-gap:46px}
+.ecard-desc p{margin:0 0 1em;break-inside:avoid-column}
+.ecard-desc p:last-child{margin-bottom:0}
+.erows{list-style:none;margin:24px 0 0;padding:20px 0 0;border-top:2px solid var(--ink);
   display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:20px 34px}
-/* beside a description the headings run down one column, ruled off the prose
-   rather than off the card */
-.ecard-body.both .erows{margin:0;padding:2px 0 2px 28px;border-top:0;
-  border-left:2px solid var(--ink);grid-template-columns:1fr;gap:18px}
 .erows li{display:block;min-width:0}
 .erows b{display:block;font-family:var(--ui);font-size:.68rem;font-weight:700;
   letter-spacing:.15em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px}
 .erows span{display:block;line-height:1.55;overflow-wrap:anywhere}
 
-@media(max-width:860px){
-  /* on a narrow screen they stack, and the headings take the rule back */
-  .ecard-body.both{grid-template-columns:1fr;gap:0}
-  .ecard-body.both .erows{margin-top:22px;padding:20px 0 0;border-left:0;
-    border-top:2px solid var(--ink);
-    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:20px 34px}
-}
 @media(max-width:620px){
   .ecard{padding:22px 18px}
   .ecard h3{font-size:1.4rem}
   .ecard-when{font-size:.72rem;letter-spacing:.06em}
-  .erows,.ecard-body.both .erows{grid-template-columns:1fr;gap:16px}
+  .ecard-desc{columns:1}
+  .erows{grid-template-columns:1fr;gap:16px}
 }
 .evt .meta{display:inline}
 .evt-price{display:inline-block;vertical-align:baseline;margin-left:11px;

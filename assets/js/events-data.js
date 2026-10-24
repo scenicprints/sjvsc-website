@@ -252,9 +252,16 @@ window.SJVSC = (function () {
     card.appendChild(body);
 
     if (e.desc) {
-      var about = document.createElement('p');
+      /* real paragraphs, so the prose can flow in columns and fill the card
+         at a width anybody can still read */
+      var about = document.createElement('div');
       about.className = 'ecard-desc';
-      about.textContent = e.desc;
+      String(e.desc).split(/\n\s*\n/).forEach(function (para) {
+        if (!para.trim()) return;
+        var p = document.createElement('p');
+        p.textContent = para.trim();
+        about.appendChild(p);
+      });
       body.appendChild(about);
     }
 
@@ -263,7 +270,7 @@ window.SJVSC = (function () {
     });
     var t = tickets(e);
     if (!details.length && !t) return card;    // the description may be all there is
-    if (e.desc) body.className = 'ecard-body both';
+
 
     var ul = document.createElement('ul');
     ul.className = 'erows';          // its own, so the pages keeping a .rows card are untouched
