@@ -181,21 +181,35 @@ window.SJVSC_GALLERY = (function () {
     run.innerHTML = '';
     list.forEach(function (p, i) { run.appendChild(shot(p, i, offset)); });
 
-    band.classList.remove('gb-fit');
+    band.classList.remove('gb-one');
     band.dataset.span = '0';
-    var span = run.scrollWidth;
-    if (span <= band.clientWidth + 4) {
-      band.classList.add('gb-fit');      // fills the width, nothing to travel
+
+    /* One photograph is a photograph. There is nothing for it to travel past
+       and copying it across the window reads as a fault rather than a band,
+       so it is shown at its own size and held still. */
+    if (list.length < 2) {
+      band.classList.add('gb-one');
       return false;
     }
-    /* doubled, so wrapping at one set's width is invisible */
-    list.forEach(function (p, i) {
-      var copy = shot(p, i, offset);
-      copy.setAttribute('aria-hidden', 'true');
-      copy.tabIndex = -1;
-      copy.querySelector('img').alt = '';
-      run.appendChild(copy);
-    });
+
+    /* Two or more travel, whether or not the set is already wider than the
+       window. A set narrower than the window is repeated until there is a
+       full window of pictures beyond the wrap point, which is what makes
+       the loop join invisibly; wrapping at one set's width then never shows
+       the end of the run. */
+    var span = run.scrollWidth;
+    var need = band.clientWidth + span + 8;
+    var guard = 0;
+    while (run.scrollWidth < need && guard < 12) {
+      list.forEach(function (p, i) {
+        var copy = shot(p, i, offset);
+        copy.setAttribute('aria-hidden', 'true');   // the originals are read once
+        copy.tabIndex = -1;
+        copy.querySelector('img').alt = '';
+        run.appendChild(copy);
+      });
+      guard++;
+    }
     band.dataset.span = String(span);
     return true;
   }

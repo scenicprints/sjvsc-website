@@ -208,6 +208,14 @@ to show.
 admin: three on Jass, four on Almond Blossom, one on Swiss Echoes. The files keep the
 names they arrived with. Captions say what is in the picture and nothing more.
 
+One photograph is not a band. It is shown at its own proportions, in the middle, and
+holds still, because there is nothing for it to travel past and copying it across the
+window reads as a fault. From two upward the band travels: a set narrower than the
+window is repeated until there is a full window of pictures beyond the wrap point,
+which is what makes the loop join invisibly. Two at 1200px wide is three copies, six
+tiles. An earlier version only doubled the set and only travelled when the set was
+already wider than the window, so two pictures sat as still as one.
+
 A band holds six photographs and runs the full width of the window, which nothing else
 on the site does. Band one travels one way as the page scrolls past it and band two the
 other, so the rows weave; a ninth picture puts out a second band and a thirteenth a

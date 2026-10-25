@@ -492,8 +492,10 @@ a.evt:hover .dt b,a.evt:hover .dt span{color:#fff}
   transition:filter .3s,transform .4s cubic-bezier(.22,.7,.3,1)}
 /* a band whose own pictures do not reach the edge fills the width instead of
    repeating itself */
-.gb-fit .gb-run{width:100%}
-.gb-fit .gb-shot{flex:1 1 0;min-width:0;width:auto}
+/* a single photograph: its own shape, in the middle, going nowhere */
+.gb-one .gb-run{width:100%;justify-content:center}
+.gb-one .gb-shot{flex:0 0 auto;width:auto;max-width:92vw;cursor:zoom-in}
+.gb-one .gb-shot img{width:auto;height:100%;object-fit:contain}
 .gb-shot:hover img,.gb-shot:focus-visible img{filter:none;transform:scale(1.04)}
 .gb-shot:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
 
