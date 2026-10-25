@@ -529,5 +529,20 @@ html.gv-open,html.gv-open body{overflow:hidden}
   .gb-shot img{transition:none}
   .gb-shot:hover img,.gb-shot:focus-visible img{transform:none}
 }
+/* An event that carries a photograph of itself. The picture takes a column
+   of its own beside the words, upright or not, and goes above them on a
+   phone where there is only ever one column. */
+.ecard-shot{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);
+  gap:26px 30px;align-items:start}
+.ecard-shot .ecard-head{grid-column:1/-1}
+.ecard-pic{margin:0;min-width:0}
+.ecard-pic img{display:block;width:100%;height:auto;border:1px solid var(--line)}
+.ecard-shot .ecard-said{min-width:0}
+.ecard-shot .ecard-body{margin-top:0}
+@media(max-width:760px){
+  .ecard-shot{grid-template-columns:1fr;gap:18px}
+  .ecard-pic img{max-height:62vh;width:auto;max-width:100%;margin:0 auto}
+}
+
 .ecard-file{color:var(--red);text-underline-offset:3px}
 .ecard-file:hover{text-decoration:none}

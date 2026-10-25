@@ -156,10 +156,11 @@ window.SJVSC = (function () {
     bbq: 'members-bbq.html',
     oktoberfest: 'event-oktoberfest.html',
     jass: 'event-jass.html',
-    almond: 'almond-blossom.html',
-    christmas: 'event-childrens-christmas.html',
-    agm: 'event-agm.html'
+    almond: 'almond-blossom.html'
   };
+  /* Where an event opens. Either it belongs to something the club already
+     has a page for, and that page carries it, or it has a page of its own
+     and says so in link. One or the other, never neither. */
   function href(e) { return TIED[e.page] || e.link || ''; }
 
   /* An event can be tied to one of the standing pages. That page carries it
@@ -244,11 +245,31 @@ window.SJVSC = (function () {
     head.appendChild(w);
     card.appendChild(head);
 
+    /* A photograph of the event, where the club has put one on it. It sits
+       beside everything else rather than above it, because these are mostly
+       upright photographs and one across the full card would push the day
+       and the details off the screen. */
+    var holder = card;
+    if (e.image) {
+      card.className = 'card ecard ecard-shot';
+      holder = document.createElement('div');
+      holder.className = 'ecard-said';
+      var fig = document.createElement('div');
+      fig.className = 'ecard-pic';
+      var pic = document.createElement('img');
+      pic.src = e.image;
+      pic.alt = e.title;
+      pic.loading = 'lazy';
+      fig.appendChild(pic);
+      card.appendChild(fig);
+      card.appendChild(holder);
+    }
+
     /* the description and the headings share the width rather than leaving
        half the card empty; with only one of them it takes the lot */
     var body = document.createElement('div');
     body.className = 'ecard-body';
-    card.appendChild(body);
+    holder.appendChild(body);
 
     if (e.desc) {
       var about = document.createElement('p');
@@ -265,7 +286,8 @@ window.SJVSC = (function () {
       return a.name && (a.data || a.link);
     });
     if (!details.length && !t && !hasFiles) return card;   // the description may be all there is
-    if (e.desc) body.className = 'ecard-body both';
+    /* beside a photograph there is no room to split this again */
+    if (e.desc && !e.image) body.className = 'ecard-body both';
 
     var ul = document.createElement('ul');
     ul.className = 'erows';          // its own, so the pages keeping a .rows card are untouched
@@ -328,6 +350,18 @@ window.SJVSC = (function () {
   function renderPages() {
     [].forEach.call(document.querySelectorAll('[data-eventslot]'), function (el) {
       var list = onPage(el.getAttribute('data-eventslot'));
+      if (!list.length) return;
+      el.innerHTML = '';
+      list.forEach(function (e) { el.appendChild(box(e)); });
+    });
+
+    /* An event with a page of its own. The page does not have to name the
+       event: the event already names the page, in link, so the page shows
+       whichever event points at it and needs no editing when next year's
+       comes round. */
+    [].forEach.call(document.querySelectorAll('[data-eventpage]'), function (el) {
+      var here = (location.pathname.split('/').pop() || 'index.html');
+      var list = showing().filter(function (e) { return e.link === here; });
       if (!list.length) return;
       el.innerHTML = '';
       list.forEach(function (e) { el.appendChild(box(e)); });

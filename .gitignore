@@ -6,3 +6,4 @@ node_modules/
 Thumbs.db
 *.log
 artifact-index.html
+recovered/
