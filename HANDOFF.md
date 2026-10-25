@@ -173,7 +173,22 @@ calendar that opens nothing is a fault, not a state. `TIED` in events-data.js is
 whole list, and a new page of its own means a page, a line in `TIED`, a line in
 gallery-data.js `PAGES`, and an option in the admin's picker.
 
-**The events data.** `data/events.json` holds one list. `index.html`, `events.html`, the
+**The Calendar page.** `calendar.html`, which until today was `events.html` and titled
+Events, though the navigation has always called it Calendar. It carries the year drawn
+from `data/events.json`: twelve months, each listing what is on in it, because the
+club's year is a dozen events and a grid of empty squares says less about it than a
+list of what is on. Everything planned is there, advertised or not. An event being
+advertised is a link to wherever it opens; one that is not is a button that says
+details to come, because there is nothing to read yet. A month with nothing in it carries its
+name and nothing else: the page already says club meetings are the second Wednesday of
+every month, and repeating it ten times down the year says nothing. The year steps with the arrows. The list underneath
+still shows only what is being advertised.
+
+A day-by-day month was built first and thrown away: twelve months at a glance is what
+he asked for, and seven columns on a phone leave about forty pixels a day, which breaks
+a title into pieces of two letters.
+
+**The events data.** `data/events.json` holds one list. `index.html`, `calendar.html`, the
 eleven tied pages and `admin-events.html` all read it. An event shows only while today sits
 inside its advertising window (`from`…`until`), and `until` is computed as the day after
 the event, which is the mechanism that stops the site going stale. The rows already in
@@ -349,9 +364,12 @@ else — `rentals.html` has empty tables and an empty space list that `quote.js`
 - `site.css` styles `.field label` as a small uppercase caption for the quote form.
   `admin.css` restates every one of those properties; drop one and the admin labels go
   back to shouting.
-- `.cal` was already taken by the 2027 grid on `events.html`. The rental calendar is
-  `.rcal`. Grep `site.css` for a class name before adding one; the first collision
-  rendered the new calendar as a four-column card with the legend on top of it.
+- `.cal` is the twelve-month 2027 grid that used to sit on the calendar page. It was
+  removed in 3ab27fe along with the hardcoded 2027 dates, and the month that replaced
+  it on `calendar.html` is `.mcal`, drawn from `data/events.json`. The rental calendar
+  is `.rcal`. Grep `site.css` for a class name before adding one: `.cal` has now
+  collided with two different calendars, the first rendering as a four-column card with
+  the legend on top of it and the second as three columns of squashed weekdays.
 - Watch CSS specificity when toggling with `display`. `.swmap svg{display:block}` beat
   `.swnarrow{display:none}` and rendered both maps at once; `.abody>span{display:block}`
   beat `.atag{display:inline-block}`. Scope the toggle to match.
@@ -422,7 +440,7 @@ yard sign and its QR code point at. This site replaces it. It is not a competing
 site to work around and does not need raising again.
 
 **Nothing carries a date it cannot change.** The 2027 year-ahead block is off
-`events.html`, the three Schwingfest dates are off `schwingen.html`, the quote form no
+`calendar.html`, the three Schwingfest dates are off `schwingen.html`, the quote form no
 longer opens on a typed date, and the events heading no longer names a year. `about.html`
 is deleted; it was reachable from nowhere and went over the same ground as
 `club-history.html`.

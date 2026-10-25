@@ -117,7 +117,7 @@ Legend: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] Picture upload, resized in the browser; multi-file attachments
 - [x] Changes visibly affect the public site (home page and calendar)
 - [ ] Event pages render the data — six hand-written placeholder pages remain
-- [ ] The 2027 calendar on events.html is still markup
+- [ ] The 2027 calendar on calendar.html is still markup
 - [ ] Month calendar: events, holds, bookings
 - [x] **Rate card editor** — the proof that prices are not hardcoded
 

@@ -169,14 +169,24 @@ a.evt:hover .dt b,a.evt:hover .dt span{color:#fff}
 .cal{display:grid;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
 .mo{background:var(--white);padding:18px 18px 20px;min-height:152px;display:flex;flex-direction:column}
 .mo > h3{font-family:var(--ui);font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:13px;padding-bottom:9px;border-bottom:1px solid var(--line)}
+/* a month with nothing on it: the name, and the quiet of the rest of it */
 .mo.quiet{background:var(--cream-2)}
-.mo.quiet .none{font-size:.84rem;color:var(--ink-soft);font-style:italic}
+.mo.quiet > h3{margin-bottom:0;padding-bottom:0;border-bottom:0}
 .mo .ev{display:block;text-decoration:none;color:inherit;padding:6px 0}
 .mo .ev + .ev{border-top:1px dotted var(--line)}
 .mo .ev b{font-family:var(--display);font-size:.98rem;font-weight:700;display:block;line-height:1.25}
 .mo .ev:hover b{color:var(--red)}
 .mo .ev span{font-size:.75rem;color:var(--ink-soft);letter-spacing:.04em}
 .mo .tagline{margin-top:auto;padding-top:10px;font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red)}
+
+/* On a phone the twelve months stack, and a month with nothing on it does
+   not deserve a card of its own height: it folds onto one line so the
+   months that do have something are a short scroll away rather than a long
+   one. */
+@media(max-width:620px){
+  .mo{min-height:0;padding:14px 16px 16px}
+  .mo.quiet{padding:11px 16px}
+}
 
 /* timeline, horizontal */
 .tlh-bar{display:flex;align-items:center;gap:12px;margin-bottom:24px}
@@ -529,6 +539,55 @@ html.gv-open,html.gv-open body{overflow:hidden}
   .gb-shot img{transition:none}
   .gb-shot:hover img,.gb-shot:focus-visible img{transform:none}
 }
+/* The year on the Calendar page: twelve months, each listing what is on in
+   it, drawn from data/events.json. The grid itself is the .cal/.mo block
+   above, which this page has used since the beginning. */
+.yr{margin-top:20px}
+.yr-top{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.yr-top h3{flex:1 1 auto;text-align:center;margin:0;font-family:var(--display);
+  font-size:1.45rem;font-weight:600}
+.yr-step{flex:0 0 auto;background:var(--white);border:2px solid var(--line);
+  border-radius:5px;padding:9px 15px;font:inherit;font-family:var(--ui);font-weight:600;
+  color:var(--ink);cursor:pointer;line-height:1}
+.yr-step:hover{border-color:var(--ink)}
+
+/* an event that cannot be opened yet is a button, so it needs a button's
+   defaults taken off it, and it must not light up like one that can */
+.mo button.ev{width:100%;text-align:left;background:none;border:0;font:inherit;
+  font-family:inherit;color:inherit;cursor:pointer;padding:6px 0}
+.mo .ev:hover b{color:inherit}
+.mo a.ev:hover b,.mo button.ev:hover b{color:var(--red)}
+.mo .ev-soon span{color:var(--ink-2)}
+
+/* what a day says when its event is not being advertised yet */
+.mcalpop{position:fixed;inset:0;z-index:200;background:rgba(26,22,19,.55);
+  display:flex;align-items:center;justify-content:center;padding:24px}
+.mcalpop[hidden]{display:none}
+.mcalpop-box{background:var(--white);border:1px solid var(--line);
+  border-left:5px solid var(--red);border-radius:6px;padding:28px 26px;
+  max-width:420px;width:100%;text-align:left}
+.mcalpop-box h3{margin:0;font-family:var(--display);font-size:1.45rem;font-weight:600;
+  line-height:1.2}
+.mcalpop-when{margin:8px 0 0;font-size:.82rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink-soft)}
+.mcalpop-say{margin:16px 0 0;color:var(--ink-2);line-height:1.6}
+.mcalpop-box .btn{margin-top:22px}
+html.mcalpop-open{overflow:hidden}
+
+/* Seven columns on a phone leaves about forty pixels a day, which breaks a
+   title into pieces of two letters. The day carries a mark instead, and
+   pressing it names the event: on the page it opens, or in the panel. */
+@media(max-width:700px){
+  .mcal-days span{font-size:.6rem;letter-spacing:.04em}
+  .mcal-cell{min-height:54px;padding:5px 4px;text-align:center}
+  .mcal-cell b{font-size:.86rem}
+  .mcal-cell span{display:none}
+  .mcal-on::after{content:"";display:block;width:7px;height:7px;border-radius:50%;
+    background:var(--red);margin:5px auto 0}
+  .mcal-soon::after{background:var(--ink-2)}
+  .mcal-days,.mcal-grid{gap:4px}
+}
+
 /* An event that carries a photograph of itself. The picture takes a column
    of its own beside the words, upright or not, and goes above them on a
    phone where there is only ever one column. */

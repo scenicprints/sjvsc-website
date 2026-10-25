@@ -368,12 +368,130 @@ window.SJVSC = (function () {
     });
   }
 
+  /* ---- the year -------------------------------------------------------
+
+     Twelve months at once rather than one month of days: the club's year is
+     a dozen events, and a grid of empty squares says less about it than a
+     list of what is on. Everything planned is here, advertised or not. An
+     event being advertised opens wherever it opens; one that is not says so
+     when pressed, because there is nothing to read yet. */
+
+  var yrAt = null;
+
+  function calSay(e) {
+    var pop = document.getElementById('mcalpop');
+    if (!pop) {
+      pop = document.createElement('div');
+      pop.id = 'mcalpop';
+      pop.className = 'mcalpop';
+      pop.setAttribute('role', 'dialog');
+      pop.setAttribute('aria-modal', 'true');
+      pop.innerHTML =
+        '<div class="mcalpop-box">' +
+        '<h3></h3><p class="mcalpop-when"></p>' +
+        '<p class="mcalpop-say">Details to come.</p>' +
+        '<button class="btn btn-ink" type="button">Close</button></div>';
+      document.body.appendChild(pop);
+      pop.addEventListener('click', function (ev) {
+        if (ev.target === pop || ev.target.tagName === 'BUTTON') calShut();
+      });
+      document.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Escape' && !pop.hidden) calShut();
+      });
+    }
+    pop.querySelector('h3').textContent = e.title;
+    pop.querySelector('.mcalpop-when').textContent = fullDate(e.date) +
+      (e.time ? ', ' + e.time : '');
+    pop.hidden = false;
+    document.documentElement.classList.add('mcalpop-open');
+    pop.querySelector('button').focus();
+  }
+
+  function calShut() {
+    var pop = document.getElementById('mcalpop');
+    if (!pop) return;
+    pop.hidden = true;
+    document.documentElement.classList.remove('mcalpop-open');
+    if (calCameFrom && calCameFrom.focus) calCameFrom.focus();
+  }
+
+  var calCameFrom = null;
+
+  function drawYear() {
+    var grid = document.getElementById('yrgrid');
+    if (!grid) return;
+    document.getElementById('yrtitle').textContent = yrAt;
+
+    var live = showing();
+    var mine = all().filter(function (e) { return at(e.date).getFullYear() === yrAt; })
+      .sort(function (a, b) { return at(a.date) - at(b.date); });
+
+    grid.innerHTML = '';
+    MONTH.forEach(function (name, m) {
+      var on = mine.filter(function (e) { return at(e.date).getMonth() === m; });
+      var box = document.createElement('div');
+      box.className = 'mo' + (on.length ? '' : ' quiet');
+
+      var h = document.createElement('h3');
+      h.textContent = name;
+      box.appendChild(h);
+
+      if (!on.length) {          // nothing on, so the month says nothing
+        grid.appendChild(box);
+        return;
+      }
+
+      on.forEach(function (e) {
+        var open = live.indexOf(e) > -1 && href(e);
+        var row = document.createElement(open ? 'a' : 'button');
+        row.className = 'ev';
+        if (open) row.href = href(e);
+        else row.type = 'button';
+
+        var b = document.createElement('b');
+        b.textContent = e.title;
+        row.appendChild(b);
+
+        var when = document.createElement('span');
+        var d = at(e.date);
+        when.textContent = WEEK[d.getDay()].slice(0, 3) + ' ' + d.getDate() +
+          (open ? '' : '  ·  Details to come');
+        row.appendChild(when);
+
+        if (!open) {
+          row.classList.add('ev-soon');
+          row.addEventListener('click', function () {
+            calCameFrom = row;
+            calSay(e);
+          });
+        }
+        box.appendChild(row);
+      });
+
+      grid.appendChild(box);
+    });
+  }
+
+  function yrStep(by) {
+    yrAt += by;
+    drawYear();
+  }
+
+  function startCal() {
+    if (!document.getElementById('yrgrid')) return;
+    yrAt = today().getFullYear();
+    document.getElementById('yrprev').addEventListener('click', function () { yrStep(-1); });
+    document.getElementById('yrnext').addEventListener('click', function () { yrStep(1); });
+    drawYear();
+  }
+
   /* the public pages wait for the file, then draw themselves from it */
   if (typeof document !== 'undefined' && !window.SJVSC_ADMIN) {
     load().then(function () {
       renderPages();
       render(document.getElementById('whatson'));
       render(document.getElementById('upcoming'));
+      startCal();
     });
   }
 
