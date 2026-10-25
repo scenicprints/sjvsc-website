@@ -155,12 +155,12 @@ h3{font-size:1.28rem}
 /* event rows */
 .evt{display:grid;grid-template-columns:70px 1fr;gap:20px;padding:20px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit;align-items:start}
 .evt:first-child{border-top:1px solid var(--line)}
-.evt:hover h3{color:var(--red)}
+a.evt:hover h3{color:var(--red)}
 .evt .dt{text-align:center;border:1.5px solid var(--ink);padding:7px 2px;background:var(--white);transition:background .28s,border-color .28s}
 .evt .dt b{display:block;font-family:var(--display);font-size:1.7rem;line-height:1;color:var(--ink);transition:color .28s}
 .evt .dt span{display:block;font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-top:4px;transition:color .28s}
-.evt:hover .dt{background:var(--red);border-color:var(--red)}
-.evt:hover .dt b,.evt:hover .dt span{color:#fff}
+a.evt:hover .dt{background:var(--red);border-color:var(--red)}
+a.evt:hover .dt b,a.evt:hover .dt span{color:#fff}
 .evt h3{font-size:1.16rem}
 .evt p{font-size:.93rem;color:var(--ink-2);margin-top:5px}
 .evt .meta{font-size:.8rem;color:var(--ink-soft);margin-top:5px;letter-spacing:.03em}

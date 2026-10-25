@@ -166,14 +166,21 @@ rather than count, so the browser fits as many as there is room for — five of 
 rows at page width, two columns on a phone. Numbered 01–15. It replaced a grid of photo
 cards. It has no readout, no descriptions and no images by explicit instruction.
 
+**Every event opens something.** An event is tied to a page, and a page it ties to is
+either a standing page the club already has (Jass, Oktoberfest, Swiss Echoes) or a page
+of its own (Children's Christmas Party, the AGM). There is no third case: a row on the
+calendar that opens nothing is a fault, not a state. `TIED` in events-data.js is the
+whole list, and a new page of its own means a page, a line in `TIED`, a line in
+gallery-data.js `PAGES`, and an option in the admin's picker.
+
 **The events data.** `data/events.json` holds one list. `index.html`, `events.html`, the
-nine tied pages and `admin-events.html` all read it. An event shows only while today sits
+eleven tied pages and `admin-events.html` all read it. An event shows only while today sits
 inside its advertising window (`from`…`until`), and `until` is computed as the day after
 the event, which is the mechanism that stops the site going stale. The rows already in
 the markup are the no-script fallback.
 
 **The galleries.** `assets/js/gallery-data.js` holds the store, the bands and the
-viewer; `admin-gallery.html` shows them, one page at a time. The nine event pages each
+viewer; `admin-gallery.html` shows them, one page at a time. The eleven tied pages each
 carry `<div class="gbands" data-gallery="...">` in a `.gsec` section at the foot, which
 stays `hidden` while that page has no pictures.
 

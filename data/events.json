@@ -47,7 +47,8 @@
     "date": "2026-12-05",
     "time": "",
     "from": "2026-10-10",
-    "until": "2026-12-06"
+    "until": "2026-12-06",
+    "page": "christmas"
   },
   {
     "id": "agm",
@@ -70,7 +71,8 @@
           "All members"
         ]
       }
-    ]
+    ],
+    "page": "agm"
   },
   {
     "id": "echoes-christmas",

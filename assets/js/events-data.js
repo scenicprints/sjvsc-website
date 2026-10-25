@@ -156,7 +156,9 @@ window.SJVSC = (function () {
     bbq: 'members-bbq.html',
     oktoberfest: 'event-oktoberfest.html',
     jass: 'event-jass.html',
-    almond: 'almond-blossom.html'
+    almond: 'almond-blossom.html',
+    christmas: 'event-childrens-christmas.html',
+    agm: 'event-agm.html'
   };
   function href(e) { return TIED[e.page] || e.link || ''; }
 

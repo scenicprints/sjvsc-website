@@ -29,7 +29,7 @@
       b + (b === 1 ? ' band' : ' bands') + '.';
   }
 
-  /* ---- the nine pages ------------------------------------------------ */
+  /* ---- the eleven pages ------------------------------------------------ */
 
   function drawPick() {
     picklist.innerHTML = '';

@@ -27,7 +27,9 @@ window.SJVSC_GALLERY = (function () {
     { id: 'bbq',          name: 'Members’ BBQ',                 page: 'members-bbq.html' },
     { id: 'oktoberfest',  name: 'Oktoberfest',                       page: 'event-oktoberfest.html' },
     { id: 'jass',         name: 'Jass',                              page: 'event-jass.html' },
-    { id: 'almond',       name: 'Almond Blossom Parade and Dance',   page: 'almond-blossom.html' }
+    { id: 'almond',       name: 'Almond Blossom Parade and Dance',   page: 'almond-blossom.html' },
+    { id: 'christmas',    name: 'Children’s Christmas Party',        page: 'event-childrens-christmas.html' },
+    { id: 'agm',          name: 'Annual General Meeting',            page: 'event-agm.html' }
   ];
 
   /* The club's own photographs, which ship with the site so the galleries are
