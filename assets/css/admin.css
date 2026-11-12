@@ -306,3 +306,24 @@
   overflow-wrap:anywhere;min-width:0}
 .adm .val:empty::before{content:'Nothing set';color:var(--ink-soft);font-style:italic}
 .adm .gcap .val{padding:11px 12px}
+
+/* ---- signed in ------------------------------------------------------
+
+   The bar at the top says who you are, because an admin that does not is
+   an admin where somebody changes something from a colleague's machine
+   without noticing. */
+.adm .aauth{display:inline-flex;align-items:center;gap:12px;margin-right:18px}
+.adm .awhoami{font-size:.9375rem;color:var(--ink-2);font-weight:600}
+
+/* A box that can be typed into has to look unlike one that cannot. The
+   locked screen is the reading screen, and it should stay restful. */
+.adm .val.edit{background:var(--white);border-color:var(--line-dark);cursor:text}
+.adm .val.edit:focus{outline:2px solid var(--red);outline-offset:-2px;background:#fff}
+.adm .val.edit:empty::before{content:'Type here';color:var(--ink-soft);font-style:italic}
+
+.adm .arowadd{margin:10px 0 4px}
+
+/* what just happened, beside the buttons that did it */
+.adm .asaid{margin-left:16px;font-size:.9375rem;color:var(--ink-2);align-self:center}
+.adm .asaid.bad{color:var(--red);font-weight:600}
+.adm .eactions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}

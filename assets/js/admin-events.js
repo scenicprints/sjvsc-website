@@ -1,10 +1,14 @@
 /* The events screen. The list itself lives in events-data.js, which the
    public pages read too, so what is shown here is what they show.
 
-   This screen reads data/events.json and data/saved.json and shows what is in
-   them. It does not change them: a GitHub Pages site is files, and the files
-   are changed by editing them in the repository and committing. So every
-   field here is fixed, and there is nothing to press that could lose work. */
+   Signed out, it shows what is on the website and nothing can be altered:
+   every field is fixed and there is nothing to press that could lose work.
+   Signed in, the same screen is the one the board edits, and Save sends the
+   event to the Worker, which decides whether to accept it.
+
+   Which of the two you get is decided by the Worker, not by Clerk: the
+   screen asks /api/me whether a write would be accepted, because that is
+   the only answer that matters. */
 
 (function () {
   var D = window.SJVSC;
@@ -19,6 +23,12 @@
   var tickrows = document.getElementById('tickrows');
   var attachrows = document.getElementById('attachrows');
   var saved = D.savedAll();
+
+  /* set from /api/me once the Worker has answered */
+  var canEdit = false;
+  /* the event open in the form; null while adding a new one */
+  var current = null;
+  var onShelf = false;
 
   /* the plain fields; details rows and attachments are their own thing */
   var NAMES = ['title', 'note', 'desc', 'page', 'date', 'time', 'from',
@@ -55,6 +65,32 @@
       s.disabled = true;
       s.classList.add('ro');
     });
+  }
+
+  /* The reverse of lock, for a board member who may write. Date boxes
+     become real date pickers: the locked screen writes a day out in full
+     because that is how it is read, but "Sunday 15 November 2026" is not
+     something to hand back to a server. */
+  function unlock(where) {
+    [].forEach.call(where.querySelectorAll('input, textarea'), function (i) {
+      i.readOnly = false;
+      i.classList.remove('ro');
+      i.placeholder = i.dataset.hint || '';
+    });
+    [].forEach.call(where.querySelectorAll('select'), function (sel) {
+      sel.disabled = false;
+      sel.classList.remove('ro');
+    });
+  }
+
+  /* The repeating rows are divs, not inputs, so lock never touched them and
+     unlock cannot either. Signed in, they become editable in place. */
+  function editable(el) {
+    if (canEdit) {
+      el.contentEditable = 'true';
+      el.classList.add('edit');
+    }
+    return el;
   }
 
   /* a heading with nothing under it, or no headings at all */
@@ -119,7 +155,7 @@
     var row = document.createElement('div');
     row.className = 'drow';
     row.innerHTML = '<span class="dspacer"></span><div class="dvalue val"></div>';
-    row.querySelector('.dvalue').textContent = value || '';
+    editable(row.querySelector('.dvalue')).textContent = value || '';
     group.appendChild(row);
     if (group.querySelector('.drow') === row) {     // the heading box lives here
       row.replaceChild(group.querySelector('.dlabel'), row.querySelector('.dspacer'));
@@ -132,7 +168,7 @@
     group.className = 'dgroup';
     var box = document.createElement('div');
     box.className = 'dlabel val';
-    box.textContent = label || '';
+    editable(box).textContent = label || '';
     group.appendChild(box);                      // picked up by the first line
     drows.appendChild(group);
     (values && values.length ? values : ['']).forEach(function (v) { addLine(group, v); });
@@ -153,16 +189,35 @@
       '<div class="tcontact val"></div>';
 
     var how = (seller && seller.kind) || '';
-    row.querySelector('.tkind').textContent =
-      how === 'entry' ? 'Upon entry' : how === 'person' ? 'From someone' : '';
+    var kindCell = row.querySelector('.tkind');
+    if (canEdit) {
+      /* a kind is one of three things, so it is picked, never typed */
+      var sel = document.createElement('select');
+      [['', 'Not set'], ['entry', 'Upon entry'], ['person', 'From someone']]
+        .forEach(function (pair) {
+          var o = document.createElement('option');
+          o.value = pair[0];
+          o.textContent = pair[1];
+          sel.appendChild(o);
+        });
+      sel.value = how;
+      sel.addEventListener('change', function () {
+        var person = sel.value === 'person';
+        row.querySelector('.twho').hidden = !person;
+        row.querySelector('.tcontact').hidden = !person;
+      });
+      kindCell.appendChild(sel);
+    } else {
+      kindCell.textContent =
+        how === 'entry' ? 'Upon entry' : how === 'person' ? 'From someone' : '';
+    }
 
     /* only somebody has a name and a way to reach them */
     var who = row.querySelector('.twho');
     var contact = row.querySelector('.tcontact');
-    if (how === 'person') {
-      who.textContent = (seller && seller.who) || '';
-      contact.textContent = (seller && seller.contact) || '';
-    } else {
+    editable(who).textContent = (seller && seller.who) || '';
+    editable(contact).textContent = (seller && seller.contact) || '';
+    if (how !== 'person') {
       who.hidden = true;
       contact.hidden = true;
     }
@@ -181,8 +236,8 @@
     row.className = 'afrow';
     row.innerHTML = '<div class="aname val"></div><div class="alink val"></div>';
 
-    row.querySelector('.aname').textContent = (a && a.name) || '';
-    row.querySelector('.alink').textContent = a && a.data
+    editable(row.querySelector('.aname')).textContent = (a && a.name) || '';
+    editable(row.querySelector('.alink')).textContent = a && a.data
       ? 'A file in the data, ' + size(a.size || 0)
       : (a && a.link) || '';
 
@@ -295,15 +350,25 @@
   }
 
   function open(e, fromShelf) {
+    current = (e && e.id) ? e : null;
+    onShelf = !!fromShelf;
     document.getElementById('formhead').textContent =
       fromShelf ? 'A saved event' : 'This event';
 
-    /* a day is written out in full, because that is how it is read */
+    /* Locked, a day is written out in full because that is how it is read.
+       Editable, it is a date box holding the value the server wants. */
     NAMES.forEach(function (k) {
       var v = (e && e[k]) ? e[k] : '';
-      if (v && DATES.indexOf(k) > -1) v = D.fullDate(v);
-      if (v && k === 'tickprice') v = D.priceText(v);
-      F[k].value = v;
+      var isDate = DATES.indexOf(k) > -1;
+      if (canEdit) {
+        if (isDate) F[k].type = 'date';
+        F[k].value = v;
+      } else {
+        if (isDate) F[k].type = 'text';
+        if (v && isDate) v = D.fullDate(v);
+        if (v && k === 'tickprice') v = D.priceText(v);
+        F[k].value = v;
+      }
     });
 
     drows.innerHTML = '';
@@ -325,19 +390,193 @@
     if (sellers.length) sellers.forEach(function (x) { addTicketRow(x); });
     else nothing(tickrows, 'Nowhere is set to get one.');
 
-    lock(form);
+    if (canEdit) {
+      unlock(form);
+      addRowButtons();
+    } else {
+      lock(form);
+    }
+    said('');
+    document.getElementById('savebtn').hidden = !canEdit;
+    /* nothing to delete until it has been saved once */
+    document.getElementById('delbtn').hidden = !canEdit || !current;
     show('form');
+  }
+
+  /* ---- reading the form back ---------------------------------------- */
+
+  function text(el) { return (el ? el.textContent : '').trim(); }
+
+  function readDetails() {
+    return [].map.call(drows.querySelectorAll('.dgroup'), function (g) {
+      return {
+        label: text(g.querySelector('.dlabel')),
+        values: [].map.call(g.querySelectorAll('.dvalue'), text)
+                  .filter(function (v) { return v; })
+      };
+    }).filter(function (d) { return d.label || d.values.length; });
+  }
+
+  function readAttachments() {
+    return [].map.call(attachrows.querySelectorAll('.afrow'), function (r) {
+      return { name: text(r.querySelector('.aname')), link: text(r.querySelector('.alink')) };
+    }).filter(function (a) { return a.name || a.link; });
+  }
+
+  function readSellers() {
+    return [].map.call(tickrows.querySelectorAll('.trow'), function (r) {
+      var sel = r.querySelector('.tkind select');
+      var kind = sel ? sel.value : '';
+      if (kind === 'person') {
+        return {
+          kind: 'person',
+          who: text(r.querySelector('.twho')),
+          contact: text(r.querySelector('.tcontact'))
+        };
+      }
+      return kind ? { kind: kind } : null;
+    }).filter(Boolean);
+  }
+
+  function collect() {
+    var out = {};
+    NAMES.forEach(function (k) { out[k] = (F[k].value || '').trim(); });
+    out.details = readDetails();
+    out.attachments = readAttachments();
+    out.ticksellers = readSellers();
+    return out;
+  }
+
+  /* ---- adding a row to each of the repeating sections ---------------- */
+
+  function addRowButtons() {
+    [[drows, 'Add a heading', function () {
+        var empty = drows.querySelector('.eempty');
+        if (empty) empty.remove();
+        addGroup('', ['']);
+      }],
+     [attachrows, 'Add an attachment', function () {
+        var empty = attachrows.querySelector('.eempty');
+        if (empty) empty.remove();
+        addAttachRow({});
+      }],
+     [tickrows, 'Add a way to get one', function () {
+        var empty = tickrows.querySelector('.eempty');
+        if (empty) empty.remove();
+        addTicketRow({ kind: 'entry' });
+      }]
+    ].forEach(function (spec) {
+      var holder = spec[0];
+      if (!holder || holder.parentNode.querySelector('.arowadd')) return;
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'abtn small arowadd';
+      b.textContent = spec[1];
+      b.addEventListener('click', spec[2]);
+      holder.parentNode.insertBefore(b, holder.nextSibling);
+    });
+  }
+
+  /* ---- saying what happened ------------------------------------------ */
+
+  function said(message, bad) {
+    var box = document.getElementById('saidwhat');
+    if (!box) return;
+    box.textContent = message || '';
+    box.classList.toggle('bad', !!bad);
+  }
+
+  function reload() {
+    return Promise.all([D.load(), D.savedLoad()]).then(function (r) {
+      events = r[0];
+      saved = r[1];
+      render();
+      renderShelf();
+      drawMonth();
+    });
+  }
+
+  function save() {
+    if (!canEdit) return;
+    var body = collect();
+    if (!body.title) { said('An event needs a name.', true); return; }
+
+    var btn = document.getElementById('savebtn');
+    btn.disabled = true;
+    said('Saving...');
+
+    var where = onShelf ? 'saved' : 'events';
+    var job = current
+      ? window.SJVSC_STORE.update(where, current.id, body)
+      : window.SJVSC_STORE.create(where, body);
+
+    job.then(function (saved2) {
+      current = saved2;
+      document.getElementById('delbtn').hidden = false;
+      said('Saved. The website shows this now.');
+      return reload();
+    }).catch(function (err) {
+      said(err.message || 'That did not save.', true);
+    }).then(function () {
+      btn.disabled = false;
+    });
+  }
+
+  function remove() {
+    if (!canEdit || !current) return;
+    if (!window.confirm('Delete "' + current.title + '"? This cannot be undone.')) return;
+
+    var btn = document.getElementById('delbtn');
+    btn.disabled = true;
+    said('Deleting...');
+
+    window.SJVSC_STORE.remove(onShelf ? 'saved' : 'events', current.id)
+      .then(function () {
+        current = null;
+        return reload();
+      })
+      .then(function () { show('list'); })
+      .catch(function (err) { said(err.message || 'That did not delete.', true); })
+      .then(function () { btn.disabled = false; });
   }
 
   document.getElementById('cancelbtn').addEventListener('click', function () { show('list'); });
   document.getElementById('backbtn').addEventListener('click', function () { show('list'); });
+  document.getElementById('savebtn').addEventListener('click', save);
+  document.getElementById('delbtn').addEventListener('click', remove);
+  document.getElementById('addbtn').addEventListener('click', function () {
+    onShelf = false;
+    open(null);
+    document.getElementById('formhead').textContent = 'A new event';
+  });
 
-  /* nothing is drawn until the repository has answered */
-  Promise.all([D.load(), D.savedLoad()]).then(function (r) {
+  /* Whether this screen can write is the Worker's answer, not Clerk's. A
+     signed-in visitor the Worker would refuse must not be shown a Save
+     button that cannot work. */
+  function askWhetherWeMayWrite() {
+    return window.SJVSC_STORE.me().then(function (me) {
+      canEdit = !!(me && me.signedIn);
+      document.getElementById('addbtn').hidden = !canEdit;
+      document.getElementById('signedoutnote').hidden = canEdit;
+    });
+  }
+
+  /* nothing is drawn until the data has arrived */
+  Promise.all([D.load(), D.savedLoad(), askWhetherWeMayWrite()]).then(function (r) {
     events = r[0];
     saved = r[1];
     render();
     renderShelf();
     drawMonth();
   });
+
+  /* Clerk settles after the first paint, so ask again when it does. */
+  if (window.SJVSC_AUTH) {
+    window.SJVSC_AUTH.onChange(function () {
+      var was = canEdit;
+      askWhetherWeMayWrite().then(function () {
+        if (canEdit !== was) show('list');
+      });
+    });
+  }
 })();

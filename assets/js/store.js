@@ -42,14 +42,20 @@ window.SJVSC_STORE = (function () {
      message is the one the Worker wrote, which is already phrased for a
      person to read. */
   function send(method, url, body) {
-    var options = {
-      method: method,
-      credentials: 'same-origin',
-      headers: { 'Content-Type': 'application/json' }
-    };
-    if (body !== undefined) options.body = JSON.stringify(body);
+    /* admin-auth.js provides this on the admin pages. Elsewhere there is no
+       token and no write; the Worker answers 401 either way. */
+    var token = window.SJVSC_TOKEN ? window.SJVSC_TOKEN() : Promise.resolve(null);
 
-    return fetch(API + url, options).then(function (r) {
+    return token.then(function (t) {
+      var options = {
+        method: method,
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' }
+      };
+      if (t) options.headers.Authorization = 'Bearer ' + t;
+      if (body !== undefined) options.body = JSON.stringify(body);
+      return fetch(API + url, options);
+    }).then(function (r) {
       if (r.status === 204) return null;
       return r.json().catch(function () { return {}; }).then(function (data) {
         if (r.ok) return data;
@@ -65,8 +71,16 @@ window.SJVSC_STORE = (function () {
     path: function (name) { return API + name; },
 
     /* who is signed in, if anyone — the admin asks before unlocking a form */
+    /* What the Worker thinks of us, which is the answer that counts: the
+       admin unlocks on this rather than on Clerk saying we are signed in,
+       because only the Worker decides whether a write will be accepted. */
     me: function () {
-      return fetch(bust(API + 'me'), { credentials: 'same-origin' })
+      var token = window.SJVSC_TOKEN ? window.SJVSC_TOKEN() : Promise.resolve(null);
+      return token.then(function (t) {
+        var headers = {};
+        if (t) headers.Authorization = 'Bearer ' + t;
+        return fetch(bust(API + 'me'), { credentials: 'same-origin', headers: headers });
+      })
         .then(function (r) { return r.ok ? r.json() : { signedIn: false }; })
         .catch(function () { return { signedIn: false }; });
     },
