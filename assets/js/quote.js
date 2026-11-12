@@ -1,9 +1,13 @@
-/* Hall rental: the rate card on the page and the quote under the form.
+/* Hall rental: what it costs on the page, and the quote under the form.
 
-   Every figure comes from rates-data.js, which the admin writes. Nothing
-   about the card is assumed here: the club names its own kinds of day, its
-   own spaces, its own extras and its own rules, so this file draws whatever
-   it finds and prices from the same thing a renter is looking at. */
+   None of the arithmetic is here. rates-data.js has quoteFor(), which is a
+   pure function held to the club's own application forms by
+   scripts/test-rates.mjs; this file collects what the renter said, asks it,
+   and lays the answer out. Anything that looks like a price in this file is
+   a bug.
+
+   Availability still comes from the events the club enters, which is the
+   one thing the forms cannot tell anybody. */
 
 (function () {
   var R = window.SJVSC_RATES;
@@ -28,91 +32,129 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
-  function hours() { return R.ruleValue(card, 'hours', 8); }
-  function hourly() { return R.ruleValue(card, 'hourly', 0); }
-  function discount() { return R.ruleValue(card, 'discount', 0) / 100; }
-
-  /* A rule's number is written the way that rule is used. */
-  function ruleText(r) {
-    var n = parseFloat(String(r.value).replace(/[^0-9.\-]/g, ''));
-    if (isNaN(n)) return esc(r.value);
-    if (r.does === 'discount') return n + '%';
-    if (r.does === 'hours') return n + (n === 1 ? ' hour' : ' hours');
-    return money(n);
-  }
-
-  function spaceById(id) {
-    for (var i = 0; i < card.spaces.length; i++) if (card.spaces[i].id === id) return card.spaces[i];
-    return card.spaces[0];
-  }
-
   /* ---- the page ------------------------------------------------------ */
 
-  function drawSpaces() {
-    var sel = el('qSpace');
+  function drawUse() {
+    var sel = el('qUse');
     if (!sel) return;
-    sel.innerHTML = card.spaces.map(function (s, i) {
-      return '<option value="' + esc(s.id) + '"' + (i === 0 ? ' selected' : '') + '>' +
-        esc(s.name) + '</option>';
+    sel.innerHTML = card.use.map(function (u, i) {
+      return '<option value="' + esc(u.id) + '"' + (i === card.use.length - 1 ? ' selected' : '') +
+        '>' + esc(u.name) + (u.price ? ' (' + money(u.price) + ')' : '') + '</option>';
     }).join('');
   }
 
-  function drawExtraBoxes() {
-    var box = el('qExtras');
+  /* Everything here is free today. Showing a price only when there is one
+     keeps a row of "$0" off a page nobody wants to read. */
+  function drawOptions() {
+    var box = el('qOptions');
     if (!box) return;
-    var choosable = card.extras.filter(function (x) { return x.when === 'choose'; });
-    box.innerHTML = choosable.map(function (x) {
-      return '<label><input type="checkbox" data-extra="' + esc(x.id) + '"> ' +
-        esc(x.name) + '</label>';
+    box.innerHTML = card.options.map(function (o) {
+      return '<label><input type="checkbox" data-option="' + esc(o.id) + '"> ' +
+        esc(o.name) + (o.price ? ' <span class="muted">' + money(o.price) + '</span>' : '') +
+        '</label>';
     }).join('');
-    var always = card.extras.filter(function (x) { return x.when === 'always'; });
-    if (always.length) {
-      box.innerHTML += '<p class="muted" style="margin-top:4px">Included on every booking: ' +
-        always.map(function (x) { return esc(x.name); }).join(', ') + '.</p>';
-    }
   }
 
-  function drawMemberLabel() {
-    var lab = el('qMemberLabel');
-    if (!lab) return;
-    var d = R.rule(card, 'discount');
-    lab.textContent = 'I am a club member' + (d ? ' (' + ruleText(d) + ' off)' : '');
+  /* A waiver belongs to members, so the question only appears for one. */
+  function drawWaiver() {
+    var wrap = el('qWaiverWrap');
+    var who = el('qWho');
+    if (!wrap || !who) return;
+    var member = who.value === 'member';
+    var w = card.waivers.filter(function (x) { return R.appliesTo(x.who, member); })[0];
+    wrap.hidden = !member || !w;
+    if (w) {
+      el('qWaiverLabel').textContent = w.name;
+      el('qWaiver').setAttribute('data-waiver', w.id);
+    }
+    if (wrap.hidden) el('qWaiver').checked = false;
+  }
+
+  /* How many guards this many guests needs, said as the number is typed,
+     because it is the thing that surprises people. */
+  function drawGuardNote() {
+    var note = el('qGuardNote');
+    var who = el('qWho');
+    if (!note || !who) return;
+    var member = who.value === 'member';
+    var n = R.appliesTo(card.rules.guards && card.rules.guards.who, member)
+      ? R.guardsFor(card, el('qGuests').value) : 0;
+    note.textContent = n
+      ? n + ' licensed security ' + (n === 1 ? 'guard is' : 'guards are') + ' required at this size.'
+      : '';
   }
 
   function drawRateCard() {
     var lead = el('rateLead');
     if (lead) {
-      lead.innerHTML = card.rules.map(function (r) {
-        return esc(r.name) + ' <b>' + ruleText(r) + '</b>';
-      }).join(' &#183; ');
+      lead.textContent = 'The hall is one price, whoever you are and whichever day you take it. ' +
+        'Members pay ' + money(card.rent.member) + ' and everyone else ' +
+        money(card.rent.nonmember) + '.';
     }
 
     var t = el('rateTable');
     if (t) {
-      t.innerHTML = '<caption>Placeholder rates.</caption>' +
-        '<thead><tr><th>Space</th>' +
-        card.days.map(function (d) { return '<th class="num">' + esc(d.name) + '</th>'; }).join('') +
-        '</tr></thead><tbody>' +
-        card.spaces.map(function (s) {
-          return '<tr><td>' + esc(s.name) + '</td>' +
-            card.days.map(function (d) {
-              return '<td class="num">' + money(s.prices[d.id] || 0) + '</td>';
-            }).join('') + '</tr>';
-        }).join('') + '</tbody>';
+      var feeRow = function (f, member) {
+        if (!R.appliesTo(f.who, member)) return '<td class="num muted">&#8212;</td>';
+        return '<td class="num">' + money(f.amount) + '</td>';
+      };
+      t.innerHTML =
+        '<thead><tr><th></th><th class="num">Member</th><th class="num">Not a member</th></tr></thead>' +
+        '<tbody><tr><td>Hall rental</td><td class="num">' + money(card.rent.member) +
+        '</td><td class="num">' + money(card.rent.nonmember) + '</td></tr>' +
+        card.fees.map(function (f) {
+          return '<tr><td>' + esc(f.name) +
+            (f.refundable ? ' <span class="muted">(returned after the event)</span>' : '') +
+            '</td>' + feeRow(f, true) + feeRow(f, false) + '</tr>';
+        }).join('') +
+        card.waivers.map(function (w) {
+          return '<tr><td>' + esc(w.name) + '</td>' +
+            (R.appliesTo(w.who, true) ? '<td class="num">' + money(0) + '</td>' : '<td class="num muted">&#8212;</td>') +
+            (R.appliesTo(w.who, false) ? '<td class="num">' + money(0) + '</td>' : '<td class="num muted">&#8212;</td>') +
+            '</tr>';
+        }).join('') +
+        '</tbody>';
     }
 
-    var x = el('extraTable');
-    if (x) {
-      var note = { always: 'on every booking', alcohol: 'required with alcohol' };
-      x.innerHTML = '<thead><tr><th>Extra</th><th class="num">Price</th></tr></thead><tbody>' +
-        card.extras.map(function (e) {
-          return '<tr><td>' + esc(e.name) +
-            (note[e.when] ? ' <span class="muted">(' + note[e.when] + ')</span>' : '') +
-            '</td><td class="num">' + money(e.price) + '</td></tr>';
-        }).join('') +
-        card.rules.filter(function (r) { return r.does === 'print'; }).map(function (r) {
-          return '<tr><td>' + esc(r.name) + '</td><td class="num">' + ruleText(r) + '</td></tr>';
-        }).join('') + '</tbody>';
+    var ex = el('rateExtras');
+    if (ex) {
+      var free = card.options.filter(function (o) { return !o.price; });
+      var paid = card.options.filter(function (o) { return o.price; });
+      ex.innerHTML =
+        (free.length ? '<p class="muted">Included at no charge: ' +
+          free.map(function (o) { return esc(o.name).toLowerCase(); }).join(', ') + '.</p>' : '') +
+        (paid.length ? '<div class="scroll"><table class="tbl"><tbody>' +
+          paid.map(function (o) {
+            return '<tr><td>' + esc(o.name) + '</td><td class="num">' + money(o.price) + '</td></tr>';
+          }).join('') + '</tbody></table></div>' : '');
+    }
+
+    var rr = el('rateRules');
+    if (rr) {
+      var a = card.rules.access || {};
+      var bits = [];
+      if (a.from) {
+        bits.push('<li>The hall is yours from <b>' + esc(a.from) + '</b> on the day until <b>' +
+          esc(a.until) + '</b>, and you have until <b>' + esc(a.clearBy) +
+          '</b> to clear up.</li>');
+      }
+      if (a.setupDayBefore) {
+        bits.push('<li>Members may decorate the day before, ' + esc(a.setupDayBefore) + '.</li>');
+      }
+      if (card.rules.noSales) bits.push('<li>' + esc(card.rules.noSales) + '</li>');
+      if (card.rules.memberMonths) {
+        bits.push('<li>The member rate is for members of at least <b>' +
+          card.rules.memberMonths + ' months</b>.</li>');
+      }
+      (card.rules.cancellation || []).forEach(function (c) {
+        if (!c.note) return;
+        bits.push('<li>Cancel ' + (c.daysBefore ? c.daysBefore + ' or more days before' : 'later than that') +
+          ': ' + esc(c.note) + '</li>');
+      });
+      rr.innerHTML = bits.length
+        ? '<h3>The terms</h3><ul class="muted" style="margin-top:10px;padding-left:18px;line-height:1.7">' +
+          bits.join('') + '</ul>'
+        : '';
     }
   }
 
@@ -121,14 +163,15 @@
   /* The nearest open days of the same weekday, so somebody asking for a
      Friday is offered Fridays. */
   /* what the quote knows, handed to the contact form so nobody retypes it */
-  function enquiry(v, space, guests, hours, total) {
+  function enquiry(v, q, usedName, guests) {
     var lines = [
       'Hall rental enquiry',
       'Date: ' + D.fullDate(v),
-      'Space: ' + space.name,
+      'Renting as: ' + (q.member ? 'a club member' : 'not a member'),
+      'Using: ' + usedName,
       'Guests: ' + guests,
-      'Hours: ' + hours,
-      'Estimate: ' + money(total),
+      'Estimate: ' + money(q.total) +
+        (q.deposit ? ' plus ' + money(q.deposit.amount) + ' held as a deposit' : ''),
       'Reference: SJ-' + v.replace(/-/g, '')
     ];
     return 'contact.html?about=Hall%20rental&msg=' + encodeURIComponent(lines.join('\n'));
@@ -244,10 +287,16 @@
     drawMonth();
   }
 
-  drawSpaces();
-  drawExtraBoxes();
-  drawMemberLabel();
+  drawUse();
+  drawOptions();
+  drawWaiver();
   drawRateCard();
+  drawGuardNote();
+
+  if (el('qWho')) {
+    el('qWho').addEventListener('change', function () { drawWaiver(); drawGuardNote(); });
+  }
+  if (el('qGuests')) el('qGuests').addEventListener('input', drawGuardNote);
 
   var form = el('quoteForm');
   if (!form) return;
@@ -274,51 +323,28 @@
       return;
     }
 
-    var space = spaceById(el('qSpace').value);
+    var member = el('qWho').value === 'member';
     var guests = parseInt(el('qGuests').value, 10) || 0;
-    var inc = hours();
-    var asked = parseInt(el('qHours').value, 10) || inc;
-    var alcohol = el('qAlcohol').checked;
-    var member = el('qMember').checked;
-    var day = R.dayFor(card, d);
+    var useId = el('qUse').value;
+    var chosen = [].map.call(form.querySelectorAll('[data-option]:checked'), function (b) {
+      return b.getAttribute('data-option');
+    });
+    var waiverBox = el('qWaiver');
+    var waiver = (waiverBox && waiverBox.checked && !el('qWaiverWrap').hidden)
+      ? waiverBox.getAttribute('data-waiver') : null;
 
-    var lines = [];
-    lines.push({
-      label: space.name + ' &#8212; ' + day.name + ' rate, ' + inc + ' hours included',
-      amount: space.prices[day.id] || 0
+    var q = R.quoteFor(card, {
+      member: member, use: useId, options: chosen, guests: guests, waiver: waiver
     });
 
-    var over = Math.max(0, asked - inc);
-    if (over > 0 && hourly() > 0) {
-      lines.push({
-        label: 'Additional hours (' + over + ' &#215; ' + money(hourly()) + ')',
-        amount: over * hourly()
-      });
-    }
+    var used = R.byId(card.use, useId);
+    var usedName = used ? used.name : '';
 
-    card.extras.forEach(function (x) {
-      if (x.when === 'always') { lines.push({ label: esc(x.name), amount: x.price }); return; }
-      if (x.when === 'alcohol') { if (alcohol) lines.push({ label: esc(x.name), amount: x.price }); return; }
-      var box = form.querySelector('[data-extra="' + x.id + '"]');
-      if (box && box.checked) lines.push({ label: esc(x.name), amount: x.price });
-    });
-
-    var requirements = [];
-    if (alcohol) {
-      requirements.push('A certificate of liability insurance naming the club as additional insured.');
-      requirements.push('No alcohol may be sold without a one-day permit from California ABC.');
-    }
-
-    var subtotal = lines.reduce(function (s, l) { return s + l.amount; }, 0);
-    var off = member ? Math.round(subtotal * discount()) : 0;
-    var total = subtotal - off;
-    var dRule = R.rule(card, 'discount');
-
-    var rows = lines.map(function (l) {
-      return '<tr><td>' + l.label + '</td><td class="num">' + money(l.amount) + '</td></tr>';
+    var rows = q.lines.map(function (l) {
+      return '<tr><td>' + esc(l.label) +
+        (l.note ? '<br><span class="muted">' + esc(l.note) + '</span>' : '') +
+        '</td><td class="num">' + money(l.amount) + '</td></tr>';
     }).join('');
-
-    var due = card.rules.filter(function (r) { return r.does === 'print'; });
 
     out.innerHTML = '<div class="result open" style="display:block;margin-bottom:20px">' +
       '<b>' + pretty + ' is available.</b> Here is the estimate.</div>' +
@@ -326,31 +352,36 @@
       '<div style="padding:20px 22px;border-bottom:1px solid var(--line);display:flex;' +
       'justify-content:space-between;gap:14px;flex-wrap:wrap">' +
       '<div><span class="eyebrow" style="color:var(--ink-soft)">Estimate</span>' +
-      '<h3 style="margin-top:4px">' + esc(space.name) + ', ' + guests + ' guests</h3></div>' +
+      '<h3 style="margin-top:4px">' + esc(usedName) + ', ' + guests + ' guests</h3></div>' +
       '<div class="muted" style="text-align:right">Ref. SJ-' + v.replace(/-/g, '') +
-      '<br>Valid 30 days</div></div>' +
+      '<br>' + (member ? 'Member rate' : 'Not a member') + '</div></div>' +
       '<div class="scroll"><table class="tbl" style="margin:0"><tbody>' + rows +
-      '<tr><td><b>Subtotal</b></td><td class="num"><b>' + money(subtotal) + '</b></td></tr>' +
-      (off ? '<tr><td>' + esc(dRule.name) + ' (' + ruleText(dRule) + ')</td>' +
-        '<td class="num">&#8722;' + money(off) + '</td></tr>' : '') +
-      '<tr style="background:var(--cream-2)"><td style="font-size:1.05rem"><b>Total</b></td>' +
-      '<td class="num" style="font-size:1.05rem"><b>' + money(total) + '</b></td></tr>' +
+      '<tr style="background:var(--cream-2)"><td style="font-size:1.05rem"><b>To pay</b></td>' +
+      '<td class="num" style="font-size:1.05rem"><b>' + money(q.total) + '</b></td></tr>' +
       '</tbody></table></div>' +
+
+      /* A deposit is not a cost. It sits apart from the total so nobody
+         reads money they get back as money they have spent. */
+      (q.deposit ? '<div style="padding:18px 22px;border-top:1px solid var(--line)">' +
+        '<p><b>' + esc(q.deposit.label) + ': ' + money(q.deposit.amount) + '</b>, held, not spent.</p>' +
+        (q.deposit.note ? '<p class="muted" style="margin-top:4px">' + esc(q.deposit.note) + '</p>' : '') +
+        '</div>' : '') +
+
+      (q.requirements.length ? '<div style="padding:18px 22px;border-top:1px solid var(--line)">' +
+        '<p><b>What you need to provide</b></p>' +
+        '<ul class="muted" style="margin-top:8px;padding-left:18px;line-height:1.7">' +
+        q.requirements.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') +
+        '</ul></div>' : '') +
+
       '<div style="padding:18px 22px;border-top:1px solid var(--line)">' +
-      (due.length ? '<p class="muted"><b>Taken separately:</b></p>' +
-        '<ul class="muted" style="margin-top:6px;padding-left:18px">' +
-        due.map(function (r) {
-          return '<li style="margin-top:4px">' + esc(r.name) + ', ' + ruleText(r) + '</li>';
-        }).join('') + '</ul>' : '') +
-      (requirements.length ? '<p class="muted" style="margin-top:12px"><b>Required of you:</b></p>' +
-        '<ul class="muted" style="margin-top:6px;padding-left:18px">' +
-        requirements.map(function (r) { return '<li style="margin-top:4px">' + r + '</li>'; }).join('') +
-        '</ul>' : '') +
-      '<p style="margin-top:16px"><a class="btn btn-red" href="' + enquiry(v, space, guests, asked, total) +
-      '">Request this date</a></p>' +
+      '<p style="margin:0"><a class="btn btn-red" href="' +
+      enquiry(v, q, usedName, guests) + '">Request this date</a></p>' +
       '</div></div>' +
-      (member || !dRule ? '' : '<p class="muted" style="margin-top:14px">Members rent at ' +
-        ruleText(dRule) + ' less. <a href="membership.html">Membership is $50 a year</a>.</p>');
+
+      (member ? '' : '<p class="muted" style="margin-top:14px">Members pay ' +
+        money(card.rent.member) + ' for the same hall, a saving of ' +
+        money(card.rent.nonmember - card.rent.member) + '. ' +
+        '<a href="membership.html">Membership is $50 a year</a>.</p>');
 
     out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });

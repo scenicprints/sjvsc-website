@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=ac5c671d">
+<link rel="stylesheet" href="assets/css/site.css?v=3edd3dc8">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -122,27 +122,32 @@
             </div>
             <div class="field">
               <label for="qGuests">Guests</label>
-              <input type="number" id="qGuests" value="180" min="1" max="400">
+              <input type="number" id="qGuests" value="180" min="1" max="600">
+              <p class="hint" id="qGuardNote"></p>
             </div>
           </div>
           <div class="fields">
             <div class="field">
-              <label for="qSpace">Space</label>
-              <select id="qSpace"></select>
+              <label for="qUse">What you are using</label>
+              <select id="qUse"></select>
             </div>
             <div class="field">
-              <label for="qHours">Hours</label>
-              <input type="number" id="qHours" value="8" min="4" max="16">
+              <label for="qWho">Renting as</label>
+              <select id="qWho">
+                <option value="nonmember">Not a club member</option>
+                <option value="member">A club member</option>
+              </select>
             </div>
           </div>
 
-          <h4 style="margin-top:22px;font-family:var(--ui);font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft)">Extras</h4>
-          <div id="qExtras" style="margin-top:10px;display:grid;gap:9px;font-size:.94rem"></div>
+          <h4 class="qsub">Also using</h4>
+          <div id="qOptions" class="qchecks"></div>
 
-          <h4 style="margin-top:22px;font-family:var(--ui);font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft)">Also</h4>
-          <div style="margin-top:10px;display:grid;gap:9px;font-size:.94rem">
-            <label><input type="checkbox" id="qAlcohol" checked> Alcohol will be served</label>
-            <label><input type="checkbox" id="qMember"> <span id="qMemberLabel">I am a club member</span></label>
+          <div id="qWaiverWrap" hidden>
+            <h4 class="qsub">Is it</h4>
+            <div class="qchecks">
+              <label><input type="checkbox" id="qWaiver"> <span id="qWaiverLabel"></span></label>
+            </div>
           </div>
 
           <button class="btn btn-red" type="submit" style="margin-top:22px;width:100%">Build quote</button>
@@ -156,16 +161,13 @@
 
   <section class="sec band-cream2">
     <div class="wrap">
-      <div class="shead" id="rates"><span class="eyebrow">Prices</span><h2>Rate card</h2></div>
+      <div class="shead" id="rates"><span class="eyebrow">Prices</span><h2>What it costs</h2></div>
       <p class="lead" style="margin-top:10px" id="rateLead"></p>
       <div class="scroll">
-        <table class="tbl" id="rateTable">
-          <caption>Placeholder rates.</caption>
-        </table>
+        <table class="tbl" id="rateTable"></table>
       </div>
-      <div class="scroll">
-        <table class="tbl" id="extraTable" style="margin-top:26px"></table>
-      </div>
+      <div id="rateExtras" style="margin-top:26px"></div>
+      <div id="rateRules" style="margin-top:30px"></div>
     </div>
   </section>
 </main>
@@ -198,7 +200,7 @@
 <script src="assets/js/site.js?v=6a88a173"></script>
 <script src="assets/js/store.js?v=2339f225"></script>
 <script src="assets/js/events-data.js?v=482e60db"></script>
-<script src="assets/js/rates-data.js?v=80e1c413"></script>
-<script src="assets/js/quote.js?v=425e5db3"></script>
+<script src="assets/js/rates-data.js?v=cf07d874"></script>
+<script src="assets/js/quote.js?v=5f012805"></script>
 </body>
 </html>
