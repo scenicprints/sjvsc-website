@@ -29,6 +29,13 @@
     }
   ],
 
+  // The workers.dev address is how the club sees the site before the domain
+  // moves. Preview URLs are off: every deployed version would otherwise get
+  // its own public address, and there is no reason for several public copies
+  // of the club's site to exist at once.
+  "workers_dev": true,
+  "preview_urls": false,
+
   "observability": { "enabled": true },
 
   "vars": {
