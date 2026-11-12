@@ -42,6 +42,31 @@ window.SJVSC = (function () {
       from: '2026-10-17', until: '2026-12-13' }
   ];
 
+  /* The picture an event shows.
+
+     There is no separate field for it: a picture is attached like
+     anything else, and the first image among the attachments becomes the
+     event's picture rather than a line in a list of downloads. An event
+     that already names an image keeps it. */
+  var LOOKS_LIKE_A_PICTURE = /\.(jpe?g|png|webp|gif|avif)(\?|$)/i;
+
+  function pictureFor(e) {
+    if (e && e.image) return e.image;
+    var found = (e && e.attachments || []).filter(function (a) {
+      return a && a.link && LOOKS_LIKE_A_PICTURE.test(a.link);
+    })[0];
+    return found ? found.link : '';
+  }
+
+  /* everything attached except the one being shown as the picture */
+  function filesFor(e) {
+    var shown = e && e.image ? null : pictureFor(e);
+    return (e && e.attachments || []).filter(function (a) {
+      if (!a.name || !(a.data || a.link)) return false;
+      return !(shown && a.link === shown);
+    });
+  }
+
   function at(s) { var p = (s || '').split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
   function today() { var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
 
@@ -250,14 +275,15 @@ window.SJVSC = (function () {
        upright photographs and one across the full card would push the day
        and the details off the screen. */
     var holder = card;
-    if (e.image) {
+    var picture = pictureFor(e);
+    if (picture) {
       card.className = 'card ecard ecard-shot';
       holder = document.createElement('div');
       holder.className = 'ecard-said';
       var fig = document.createElement('div');
       fig.className = 'ecard-pic';
       var pic = document.createElement('img');
-      pic.src = e.image;
+      pic.src = picture;
       pic.alt = e.title;
       pic.loading = 'lazy';
       fig.appendChild(pic);
@@ -282,12 +308,10 @@ window.SJVSC = (function () {
       return d.label && (d.values || []).length;
     });
     var t = tickets(e);
-    var hasFiles = (e.attachments || []).some(function (a) {
-      return a.name && (a.data || a.link);
-    });
+    var hasFiles = filesFor(e).length > 0;
     if (!details.length && !t && !hasFiles) return card;   // the description may be all there is
     /* beside a photograph there is no room to split this again */
-    if (e.desc && !e.image) body.className = 'ecard-body both';
+    if (e.desc && !picture) body.className = 'ecard-body both';
 
     var ul = document.createElement('ul');
     ul.className = 'erows';          // its own, so the pages keeping a .rows card are untouched
@@ -314,9 +338,7 @@ window.SJVSC = (function () {
 
     /* attachments: a file kept with the event, or an address somewhere else.
        Either way it is a link with the name the club gave it. */
-    var files = (e.attachments || []).filter(function (a) {
-      return a.name && (a.data || a.link);
-    });
+    var files = filesFor(e);
     if (files.length) {
       var li = document.createElement('li');
       var b = document.createElement('b');
