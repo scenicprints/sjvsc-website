@@ -131,51 +131,47 @@
 
     /* ---- What's included and House rules.
 
-       Both are written from the card, so a figure the board changes in the
-       admin changes this prose too. One idea per sentence and the same
-       voice throughout, because these two blocks are read one after the
-       other and anything assembled shows. Notes the club wrote stand as
-       their own sentences rather than being tacked onto mine. ---- */
+       Both are short lines in one column, not prose. These are things to
+       scan, not passages to read, and paragraphs of them were hard going.
+       One fact per line, same shape in both sections.
 
-    /* The club writes some of these strings and they may or may not end in
-       a full stop -- "San Joaquin Valley Swiss Club, Inc." ends in one that
-       belongs to the name. Never add a second. */
-    var stop = function (text) {
-      return /[.!?]$/.test(String(text).trim()) ? text : text + '.';
+       Written from the card, so a figure changed in the admin changes
+       these too. ---- */
+
+    /* The club writes some of these strings and they may or may not end
+       in a full stop. Never add a second. */
+    var stop = function (t) {
+      return /[.!?]$/.test(String(t).trim()) ? t : t + '.';
     };
-
-    var para = function (list) {
-      return list.filter(Boolean).map(function (x) { return '<p>' + x + '</p>'; }).join('');
+    var list = function (cls, items) {
+      items = items.filter(Boolean);
+      if (!items.length) return '';
+      return '<ul class="rlist ' + cls + '">' +
+        items.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>';
     };
 
     var inc = el('included');
     if (inc) {
-      var free = card.options.filter(function (o) { return !o.price && o.id !== 'alcohol'; });
       var kitchen = R.byId(card.options, 'kitchen');
-      var paid = card.options.filter(function (o) { return o.price; });
       var a = card.rules.access || {};
-      var said = [];
+      var got = [];
 
-      if (kitchen && kitchen.note) said.push(stop(esc(kitchen.note)));
+      card.options.forEach(function (o) {
+        if (o.price || o.id === 'alcohol') return;
+        var note = o.id === 'kitchen' && o.note ? ' <span>' + esc(o.note) + '</span>' : '';
+        got.push(esc(o.name) + note);
+      });
+      card.options.forEach(function (o) {
+        if (o.price) got.push(esc(o.name) + ' <span>' + money(o.price) + '</span>');
+      });
       if (a.from && a.until) {
-        said.push('The hall is yours from <b>' + esc(a.from) + '</b> until <b>' +
-          esc(a.until) + '</b>' +
-          (a.clearBy ? ', and until <b>' + esc(a.clearBy) + '</b> to clear up' : '') + '.');
+        got.push('Yours from <b>' + esc(a.from) + '</b> to <b>' + esc(a.until) + '</b>' +
+          (a.clearBy ? ', cleared by <b>' + esc(a.clearBy) + '</b>' : ''));
       }
       if (a.setupDayBefore) {
-        said.push('Members can get in the day before to decorate, ' +
-          esc(a.setupDayBefore) + '.');
+        got.push('Members may decorate the day before, ' + esc(a.setupDayBefore));
       }
-      if (paid.length) {
-        said.push(paid.map(function (o) {
-          return esc(o.name) + ' is ' + money(o.price);
-        }).join('. ') + '.');
-      }
-
-      inc.innerHTML =
-        (free.length ? '<ul class="ticks">' + free.map(function (o) {
-          return '<li>' + esc(o.name) + '</li>';
-        }).join('') + '</ul>' : '') + para(said);
+      inc.innerHTML = list('ticks', got);
     }
 
     var hr = el('houserules');
@@ -184,39 +180,41 @@
       var g = card.rules.guards || {};
       var rules = [];
 
-      if (card.rules.noSales) rules.push(stop(esc(card.rules.noSales)));
+      if (card.rules.noSales) rules.push(esc(card.rules.noSales));
       if (card.rules.minimumAge) {
-        rules.push('Whoever signs for it must be <b>' + card.rules.minimumAge + '</b> or older.');
+        rules.push('Whoever signs for it must be <b>' + card.rules.minimumAge + '</b> or older');
       }
       if (ins.amount) {
-        rules.push(stop('You need liability cover of at least <b>' + money(ins.amount) +
-          '</b>' + (ins.named ? ', naming ' + stop(esc(ins.named)) : '.')) +
-          (ins.daysBefore ? ' The certificate is due ' + ins.daysBefore + ' days before.' : ''));
+        rules.push('Liability cover of at least <b>' + money(ins.amount) + '</b>' +
+          (ins.named ? ', naming ' + esc(ins.named).replace(/\.$/, '') : ''));
+        if (ins.daysBefore) {
+          rules.push('Certificate due <b>' + ins.daysBefore + ' days</b> before');
+        }
       }
-      rules.push('Serving alcohol adds liquor liability.');
+      rules.push('Alcohol adds liquor liability');
       if (g.base) {
-        rules.push('Non-members hire licensed guards: <b>' + g.base + '</b> up to ' +
-          g.baseUpTo + ' guests, and one more for every ' + g.perExtra + ' after that' +
-          (g.daysBefore ? '. The contract is due ' + g.daysBefore + ' days before' : '') + '.');
-        if (g.note) rules.push(stop(esc(g.note)));
+        rules.push('Non-members: <b>' + g.base + ' licensed guards</b> up to ' + g.baseUpTo +
+          ' guests, one more for every ' + g.perExtra + ' after');
+        if (g.daysBefore) {
+          rules.push('Guard contract due <b>' + g.daysBefore + ' days</b> before');
+        }
+        if (g.note) rules.push(esc(g.note).replace(/\.$/, ''));
       }
       if (card.rules.holdHarmless && card.rules.holdHarmless.note) {
-        rules.push(stop(esc(card.rules.holdHarmless.note)));
+        rules.push(esc(card.rules.holdHarmless.note).replace(/\.$/, ''));
       }
       if (card.rules.memberMonths) {
         rules.push('The member rate is for members of at least <b>' +
-          card.rules.memberMonths + ' months</b>.');
+          card.rules.memberMonths + ' months</b>');
       }
+      (card.rules.cancellation || []).forEach(function (c) {
+        if (!c.note) return;
+        rules.push((c.daysBefore ? 'Cancel <b>' + c.daysBefore + ' days or more</b> before'
+                                 : 'Cancel later than that') +
+          ' <span>' + esc(c.note).replace(/\.$/, '') + '</span>');
+      });
 
-      var cancels = (card.rules.cancellation || []).filter(function (c) { return c.note; });
-      if (cancels.length) {
-        rules.push(cancels.map(function (c) {
-          return (c.daysBefore ? '<b>' + c.daysBefore + ' days or more</b> before: '
-                               : '<b>Later</b>: ') + esc(c.note);
-        }).join('<br>'));
-      }
-
-      hr.innerHTML = para(rules);
+      hr.innerHTML = list('rules', rules);
     }
   }
 
@@ -456,10 +454,7 @@
       enquiry(v, q, usedName, guests) + '">Ask about this date</a></p>' +
       '</div></div>' +
 
-      (member ? '' : '<p class="muted" style="margin-top:14px">Members pay ' +
-        money(card.rent.member) + ' for the same hall, a saving of ' +
-        money(card.rent.nonmember - card.rent.member) + '. ' +
-        '<a href="membership.html">Membership is $50 a year</a>.</p>');
+      '';
 
     out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });

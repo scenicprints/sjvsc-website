@@ -649,17 +649,18 @@ html.mcalpop-open{overflow:hidden}
 .psave{grid-column:1/-1;margin:6px 0 0;font-size:1.02rem;color:var(--ink-2)}
 .psave a{font-weight:600;white-space:nowrap}
 
-/* what comes with it, which is a selling point and was a muted aside */
-.inchead{margin:38px 0 0;font-size:1.15rem}
-.ticks{list-style:none;margin:14px 0 0;padding:0;display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px 26px;max-width:820px}
-.ticks li{position:relative;padding-left:28px;line-height:1.45}
-.ticks li::before{content:'';position:absolute;left:4px;top:.42em;width:11px;height:6px;
-  border-left:2.5px solid var(--red);border-bottom:2.5px solid var(--red);
+/* One list shape for What's included and House rules. Short lines in a
+   single column: these are scanned, not read, and the paragraphs they
+   replaced were hard going. */
+.rlist{list-style:none;margin:16px 0 0;padding:0;max-width:60ch}
+.rlist li{position:relative;padding:0 0 0 26px;margin-top:9px;line-height:1.5}
+.rlist li span{display:block;font-size:.88rem;color:var(--ink-soft);margin-top:1px}
+
+.rlist.ticks li::before{content:'';position:absolute;left:3px;top:.42em;width:11px;
+  height:6px;border-left:2.5px solid var(--red);border-bottom:2.5px solid var(--red);
   transform:rotate(-45deg)}
-.ticks li span{display:block;font-size:.86rem;color:var(--ink-soft);margin-top:2px}
-.ticks.paid li span{display:inline;margin-left:6px;color:var(--ink-2);font-weight:600}
-.waivernote{margin-top:22px;font-size:.98rem;color:var(--ink-2);max-width:62ch}
+.rlist.rules li::before{content:'';position:absolute;left:3px;top:.62em;width:11px;
+  height:2px;background:var(--red)}
 
 /* the terms are reference, not persuasion, so they fold away */
 .terms{margin-top:38px;border-top:1px solid var(--line);padding-top:18px}
@@ -678,7 +679,3 @@ html.mcalpop-open{overflow:hidden}
 .notabooking p{margin:0}
 .notabooking p + p{margin-top:8px}
 
-/* the ticked list inside a prose column, where a paragraph follows it */
-.prose .ticks{margin:14px 0 20px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-  gap:8px 20px;max-width:none}
-.prose .ticks li{padding-left:24px}
