@@ -84,77 +84,136 @@
       : '';
   }
 
+  /* What a booking of each kind comes to, so the two numbers a reader
+     actually wants are the two numbers they see first. */
+  function headline(member) {
+    return R.quoteFor(card, { member: member, guests: 0 });
+  }
+
   function drawRateCard() {
     var lead = el('rateLead');
     if (lead) {
-      lead.textContent = 'The hall is one price, whoever you are and whichever day you take it. ' +
-        'Members pay ' + money(card.rent.member) + ' and everyone else ' +
-        money(card.rent.nonmember) + '.';
+      lead.textContent = 'One price, whichever day of the week you take it. ' +
+        'What changes it is whether you are a member.';
     }
 
+    /* ---- the two totals, large ---- */
+    var cards = el('priceCards');
+    if (cards) {
+      var m = headline(true), n = headline(false);
+      var box = function (q, title, feature) {
+        return '<div class="pricecard' + (feature ? ' feature' : '') + '">' +
+          '<span class="eyebrow">' + title + '</span>' +
+          '<p class="pbig">' + money(q.total) + '</p>' +
+          '<p class="pnote">' + q.lines.map(function (l) {
+            return esc(l.label.replace(/,.*$/, '')) + ' ' + money(l.amount);
+          }).join(' &#183; ') + '</p>' +
+          (q.deposit
+            ? '<p class="pdep">plus ' + money(q.deposit.amount) + ' held as a deposit, returned after</p>'
+            : '<p class="pdep">no deposit held</p>') +
+          '</div>';
+      };
+      cards.innerHTML = box(m, 'As a member', true) + box(n, 'Not a member', false) +
+        '<p class="psave">Membership is <a href="membership.html">$50 a year</a> and takes ' +
+        money(card.rent.nonmember - card.rent.member) + ' off this.</p>';
+    }
+
+    /* ---- the same thing itemised ---- */
     var t = el('rateTable');
     if (t) {
-      var feeRow = function (f, member) {
-        if (!R.appliesTo(f.who, member)) return '<td class="num muted">&#8212;</td>';
-        return '<td class="num">' + money(f.amount) + '</td>';
+      var cell = function (f, member) {
+        return R.appliesTo(f.who, member)
+          ? '<td class="num">' + money(f.amount) + '</td>'
+          : '<td class="num muted">&#8212;</td>';
       };
       t.innerHTML =
         '<thead><tr><th></th><th class="num">Member</th><th class="num">Not a member</th></tr></thead>' +
         '<tbody><tr><td>Hall rental</td><td class="num">' + money(card.rent.member) +
         '</td><td class="num">' + money(card.rent.nonmember) + '</td></tr>' +
         card.fees.map(function (f) {
-          return '<tr><td>' + esc(f.name) +
-            (f.refundable ? ' <span class="muted">(returned after the event)</span>' : '') +
-            '</td>' + feeRow(f, true) + feeRow(f, false) + '</tr>';
+          return '<tr' + (f.refundable ? ' class="held"' : '') + '><td>' + esc(f.name) +
+            (f.refundable ? ' <span class="muted">held, not spent</span>' : '') +
+            '</td>' + cell(f, true) + cell(f, false) + '</tr>';
         }).join('') +
         card.waivers.map(function (w) {
-          return '<tr><td>' + esc(w.name) + '</td>' +
+          return '<tr><td>' + esc(w.name) +
+            (w.note ? ' <span class="muted">' + esc(w.note) + '</span>' : '') + '</td>' +
             (R.appliesTo(w.who, true) ? '<td class="num">' + money(0) + '</td>' : '<td class="num muted">&#8212;</td>') +
             (R.appliesTo(w.who, false) ? '<td class="num">' + money(0) + '</td>' : '<td class="num muted">&#8212;</td>') +
             '</tr>';
-        }).join('') +
-        '</tbody>';
+        }).join('') + '</tbody>';
     }
 
+    /* ---- free today. Alcohol is a permission, not an amenity, so it is
+            not in the list of things thrown in. ---- */
     var ex = el('rateExtras');
     if (ex) {
-      var free = card.options.filter(function (o) { return !o.price; });
+      var free = card.options.filter(function (o) { return !o.price && o.id !== 'alcohol'; });
       var paid = card.options.filter(function (o) { return o.price; });
       ex.innerHTML =
-        (free.length ? '<p class="muted">Included at no charge: ' +
-          free.map(function (o) { return esc(o.name).toLowerCase(); }).join(', ') + '.</p>' : '') +
-        (paid.length ? '<div class="scroll"><table class="tbl"><tbody>' +
+        (free.length ? '<p class="inclusive"><b>At no extra charge:</b> ' +
+          free.map(function (o) { return esc(o.name.toLowerCase()); }).join(', ') + '.</p>' : '') +
+        (paid.length ? '<div class="scroll"><table class="tbl" style="margin-top:14px"><tbody>' +
           paid.map(function (o) {
             return '<tr><td>' + esc(o.name) + '</td><td class="num">' + money(o.price) + '</td></tr>';
           }).join('') + '</tbody></table></div>' : '');
     }
 
+    /* ---- the terms, in three readable groups rather than one long list ---- */
     var rr = el('rateRules');
     if (rr) {
       var a = card.rules.access || {};
-      var bits = [];
+      var ins = card.rules.insurance || {};
+      var g = card.rules.guards || {};
+
+      var when = [];
       if (a.from) {
-        bits.push('<li>The hall is yours from <b>' + esc(a.from) + '</b> on the day until <b>' +
-          esc(a.until) + '</b>, and you have until <b>' + esc(a.clearBy) +
-          '</b> to clear up.</li>');
+        when.push('The hall is yours from <b>' + esc(a.from) + '</b> on the day until <b>' +
+          esc(a.until) + '</b>.');
       }
-      if (a.setupDayBefore) {
-        bits.push('<li>Members may decorate the day before, ' + esc(a.setupDayBefore) + '.</li>');
+      if (a.clearBy) when.push('You have until <b>' + esc(a.clearBy) + '</b> to clear up.');
+      if (a.setupDayBefore) when.push('Members may decorate the day before, ' + esc(a.setupDayBefore) + '.');
+      if (card.rules.noSales) when.push(esc(card.rules.noSales));
+      if (card.rules.minimumAge) {
+        when.push('Whoever rents it must be <b>' + card.rules.minimumAge + '</b> or older.');
       }
-      if (card.rules.noSales) bits.push('<li>' + esc(card.rules.noSales) + '</li>');
+
+      var bring = [];
+      if (ins.amount) {
+        bring.push('Liability cover of at least <b>' + money(ins.amount) + '</b>' +
+          (ins.named ? ', naming ' + esc(ins.named) : '') +
+          (ins.daysBefore ? ', ' + ins.daysBefore + ' days before' : '') + '.');
+      }
+      bring.push('Liquor liability as well, if alcohol is served.');
+      if (g.base) {
+        bring.push('Non-members: <b>' + g.base + ' licensed guards</b> up to ' + g.baseUpTo +
+          ' guests, and one more for every ' + g.perExtra + ' after that.');
+      }
+      if (card.rules.holdHarmless) {
+        bring.push('A member who would rather not have guards signs the hold harmless statement.');
+      }
       if (card.rules.memberMonths) {
-        bits.push('<li>The member rate is for members of at least <b>' +
-          card.rules.memberMonths + ' months</b>.</li>');
+        bring.push('The member rate is for members of at least <b>' +
+          card.rules.memberMonths + ' months</b>.');
       }
-      (card.rules.cancellation || []).forEach(function (c) {
-        if (!c.note) return;
-        bits.push('<li>Cancel ' + (c.daysBefore ? c.daysBefore + ' or more days before' : 'later than that') +
-          ': ' + esc(c.note) + '</li>');
+
+      var back = (card.rules.cancellation || []).map(function (c) {
+        return (c.daysBefore ? '<b>' + c.daysBefore + ' days or more</b> before: '
+                             : '<b>Later than that</b>: ') +
+          esc(c.note || c.refund);
       });
-      rr.innerHTML = bits.length
-        ? '<h3>The terms</h3><ul class="muted" style="margin-top:10px;padding-left:18px;line-height:1.7">' +
-          bits.join('') + '</ul>'
-        : '';
+
+      var group = function (title, items) {
+        if (!items.length) return '';
+        return '<div class="termcol"><h3>' + title + '</h3><ul>' +
+          items.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>';
+      };
+
+      rr.innerHTML = '<div class="termgrid">' +
+        group('When you have it', when) +
+        group('What you provide', bring) +
+        group('If you cancel', back) +
+        '</div>';
     }
   }
 
@@ -165,7 +224,7 @@
   /* what the quote knows, handed to the contact form so nobody retypes it */
   function enquiry(v, q, usedName, guests) {
     var lines = [
-      'Hall rental enquiry',
+      'Hall rental enquiry (a request, not a booking)',
       'Date: ' + D.fullDate(v),
       'Renting as: ' + (q.member ? 'a club member' : 'not a member'),
       'Using: ' + usedName,
@@ -287,11 +346,26 @@
     drawMonth();
   }
 
-  drawUse();
-  drawOptions();
-  drawWaiver();
-  drawRateCard();
-  drawGuardNote();
+  /* Draw from the seed so the page is never blank, then again from the
+     database the moment it answers.
+
+     Until this call existed the page only ever drew the seed, so a price
+     the board changed in the admin reached the quote and never reached
+     the rate card beside it. The two agreed only because the seed happened
+     to carry the same numbers. */
+  function drawEverything() {
+    drawUse();
+    drawOptions();
+    drawWaiver();
+    drawRateCard();
+    drawGuardNote();
+  }
+
+  drawEverything();
+  R.load().then(function (fresh) {
+    card = fresh;
+    drawEverything();
+  });
 
   if (el('qWho')) {
     el('qWho').addEventListener('change', function () { drawWaiver(); drawGuardNote(); });
@@ -351,7 +425,7 @@
       '<div class="card" style="padding:0;overflow:hidden">' +
       '<div style="padding:20px 22px;border-bottom:1px solid var(--line);display:flex;' +
       'justify-content:space-between;gap:14px;flex-wrap:wrap">' +
-      '<div><span class="eyebrow" style="color:var(--ink-soft)">Estimate</span>' +
+      '<div><span class="eyebrow" style="color:var(--ink-soft)">Estimate, not a booking</span>' +
       '<h3 style="margin-top:4px">' + esc(usedName) + ', ' + guests + ' guests</h3></div>' +
       '<div class="muted" style="text-align:right">Ref. SJ-' + v.replace(/-/g, '') +
       '<br>' + (member ? 'Member rate' : 'Not a member') + '</div></div>' +
@@ -373,9 +447,14 @@
         q.requirements.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') +
         '</ul></div>' : '') +
 
-      '<div style="padding:18px 22px;border-top:1px solid var(--line)">' +
-      '<p style="margin:0"><a class="btn btn-red" href="' +
-      enquiry(v, q, usedName, guests) + '">Request this date</a></p>' +
+      '<div class="notabooking">' +
+      '<p><b>Sending this does not book the hall.</b> It asks the club to consider the ' +
+      'date. Nothing is held until the board has reviewed the application' +
+      (q.deposit ? ' and the deposit has been received' : '') + ', and the club may ' +
+      'decline a date or an event.</p>' +
+      '<p class="muted">You will hear back from a person, not from this page.</p>' +
+      '<p style="margin-top:16px"><a class="btn btn-red" href="' +
+      enquiry(v, q, usedName, guests) + '">Ask about this date</a></p>' +
       '</div></div>' +
 
       (member ? '' : '<p class="muted" style="margin-top:14px">Members pay ' +
