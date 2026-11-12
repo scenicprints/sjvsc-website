@@ -82,7 +82,16 @@ export async function requireBoard(request, env) {
        open, which is exactly the hole described above.) */
     const role = claims?.metadata?.role || claims?.publicMetadata?.role;
 
-    return { ok: true, who: claims.sub, role: role === 'admin' ? 'admin' : 'editor' };
+    /* The history needs a name to show. The Clerk id never changes and is
+       what a row is keyed on; the name is what it was called at the time,
+       and is recorded alongside rather than looked up later, so a board
+       member who leaves does not turn every past change anonymous. */
+    return {
+      ok: true,
+      who: claims.sub,
+      name: claims.name || claims.email || claims.sub,
+      role: role === 'admin' ? 'admin' : 'editor',
+    };
   } catch {
     /* Expired, tampered with, or signed by someone else. The caller gets
        one answer for all three. */

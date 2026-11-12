@@ -356,3 +356,28 @@
 .adm .gtools{display:flex;gap:6px;align-items:center;margin-left:auto}
 .adm .gtools .abtn{padding:6px 11px;font-size:1rem;line-height:1}
 .adm .gtools .abtn[disabled]{opacity:.35;cursor:default}
+
+/* ---- the history ----------------------------------------------------- */
+.adm .hitem{background:var(--white);border:1px solid var(--line);border-radius:6px;
+  margin-bottom:10px}
+.adm .hitem > summary{cursor:pointer;padding:16px 18px;display:flex;flex-wrap:wrap;
+  gap:6px;align-items:baseline;line-height:1.5}
+.adm .hitem > summary:hover{background:var(--cream)}
+.adm .hitem[open] > summary{border-bottom:1px solid var(--line)}
+.adm .hwho{font-weight:700}
+.adm .hwhat{color:var(--ink-2)}
+.adm .htitle{font-weight:600}
+.adm .hwhen{margin-left:auto;color:var(--ink-soft);font-size:.88rem;white-space:nowrap}
+.adm .hbody{padding:16px 18px}
+.adm .hbody > p:first-child{margin-top:0}
+.adm .htbl{margin:0}
+.adm .htbl td,.adm .htbl th{vertical-align:top}
+.adm .hfield{font-family:var(--ui);font-size:.86rem;color:var(--ink-soft);
+  white-space:nowrap;width:1%}
+.adm .hwas{color:var(--ink-soft);text-decoration:line-through}
+.adm .hnow{font-weight:600}
+.adm .hraw{margin-top:14px}
+.adm .hraw summary{cursor:pointer;font-size:.88rem;color:var(--ink-soft)}
+.adm .hjson{margin:10px 0 0;padding:12px 14px;background:var(--cream);
+  border:1px solid var(--line);border-radius:4px;overflow:auto;max-height:340px;
+  font-size:.8rem;line-height:1.5}

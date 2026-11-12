@@ -59,6 +59,48 @@ function pickWritable(body) {
   return out;
 }
 
+/* ---- the history ----------------------------------------------------
+
+   Every write leaves a line here. The whole thing before and the whole
+   thing after go in as JSON, so the screen can work out which fields
+   moved, and so a change stays readable after the row it describes has
+   been deleted.
+
+   Recording must never be the reason a save fails. If the log write
+   throws, the change the board made still stands and the failure goes to
+   the Workers log instead. */
+async function record(env, auth, action, kind, thing, title, before, after) {
+  try {
+    await env.DB.prepare(
+      `INSERT INTO changes (who, who_name, action, kind, thing, title, before, after)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(
+      auth.who,
+      auth.name || null,
+      action,
+      kind,
+      thing == null ? null : String(thing),
+      title == null ? null : String(title),
+      before == null ? null : JSON.stringify(before),
+      after == null ? null : JSON.stringify(after)
+    ).run();
+  } catch (err) {
+    console.error('The change was made but not recorded:', err?.stack || err);
+  }
+}
+
+async function listChanges(env, limit) {
+  const n = Math.min(Math.max(Number(limit) || 100, 1), 500);
+  const { results } = await env.DB.prepare(
+    `SELECT id, at, who, who_name, action, kind, thing, title, before, after
+       FROM changes ORDER BY at DESC, id DESC LIMIT ?`
+  ).bind(n).all();
+  return (results || []).map((r) => {
+    const parse = (v) => { try { return v ? JSON.parse(v) : null; } catch { return null; } };
+    return { ...r, before: parse(r.before), after: parse(r.after) };
+  });
+}
+
 async function listEvents(env, shelf) {
   const { results } = await env.DB
     .prepare('SELECT * FROM events WHERE shelf = ? ORDER BY event_date, title')
@@ -78,7 +120,8 @@ const COLUMNS = [
   'details', 'attachments', 'ticksellers',
 ];
 
-async function createEvent(request, env, who, shelf) {
+async function createEvent(request, env, auth, shelf) {
+  const who = auth.who;
   const body = await readBody(request);
   if (!body) return oops(400, 'That was not JSON.');
 
@@ -95,10 +138,14 @@ async function createEvent(request, env, who, shelf) {
      VALUES (?, ${COLUMNS.map(() => '?').join(', ')}, ?, ?)`
   ).bind(id, ...COLUMNS.map((c) => row[c]), shelf, who).run();
 
-  return json(rowToEvent(await getEvent(env, id)), 201);
+  const made = rowToEvent(await getEvent(env, id));
+  await record(env, auth, 'added', shelf === 1 ? 'saved event' : 'event',
+    id, made.title, null, made);
+  return json(made, 201);
 }
 
-async function updateEvent(request, env, who, id) {
+async function updateEvent(request, env, auth, id) {
+  const who = auth.who;
   const existing = await getEvent(env, id);
   if (!existing) return oops(404, 'There is no event with that id.');
 
@@ -120,12 +167,22 @@ async function updateEvent(request, env, who, id) {
      WHERE id = ?`
   ).bind(...COLUMNS.map((c) => row[c]), who, id).run();
 
-  return json(rowToEvent(await getEvent(env, id)));
+  const now = rowToEvent(await getEvent(env, id));
+  await record(env, auth, 'changed', existing.shelf === 1 ? 'saved event' : 'event',
+    id, now.title, rowToEvent(existing), now);
+  return json(now);
 }
 
-async function deleteEvent(env, id) {
+async function deleteEvent(env, auth, id) {
+  /* read it before it goes, so the history can still show what it was */
+  const existing = await getEvent(env, id);
   const { meta } = await env.DB.prepare('DELETE FROM events WHERE id = ?').bind(id).run();
   if (!meta?.changes) return oops(404, 'There is no event with that id.');
+  if (existing) {
+    const was = rowToEvent(existing);
+    await record(env, auth, 'removed', existing.shelf === 1 ? 'saved event' : 'event',
+      id, was.title, was, null);
+  }
   return new Response(null, { status: 204 });
 }
 
@@ -144,7 +201,8 @@ async function activeRates(env) {
    quote here is never stored — it is worked out in the browser and handed
    to the contact form — so there is nothing to read an old card back
    against, and the old rows were only accumulating. */
-async function putRates(request, env, who) {
+async function putRates(request, env, auth) {
+  const who = auth.who;
   const body = await readBody(request);
   if (!body) return oops(400, 'That was not JSON.');
 
@@ -160,11 +218,14 @@ async function putRates(request, env, who) {
     if (!Array.isArray(body[key])) return oops(422, `The rate card needs a ${key} list.`);
   }
 
+  const before = await activeRates(env);
   await env.DB.batch([
     env.DB.prepare('DELETE FROM rate_cards'),
     env.DB.prepare('INSERT INTO rate_cards (data, active, created_by) VALUES (?, 1, ?)')
       .bind(JSON.stringify(body), who),
   ]);
+  await record(env, auth, 'changed', 'rate card', 'rates', 'Hall rental prices',
+    before, body);
   return json(body);
 }
 
@@ -194,7 +255,8 @@ function pictureKey(slug, type) {
   return `${clean}/${Date.now().toString(36)}-${rand}.${PICTURE_TYPES[type]}`;
 }
 
-async function putPicture(request, env, who, slug) {
+async function putPicture(request, env, auth, slug) {
+  const who = auth.who;
   const type = (request.headers.get('Content-Type') || '').split(';')[0].trim();
   if (!PICTURE_TYPES[type]) {
     return oops(415, 'A picture has to be a JPEG, a PNG or a WebP.');
@@ -211,6 +273,9 @@ async function putPicture(request, env, who, slug) {
     'INSERT INTO pictures (key, bytes, type, slug, created_by) VALUES (?, ?, ?, ?, ?)'
   ).bind(key, [...new Uint8Array(body)], type, slug || null, who).run();
 
+  await record(env, auth, 'added', 'picture', key,
+    'A picture for ' + (slug || 'the club'), null,
+    { src: 'pictures/' + key, bytes: body.byteLength, type });
   return json({ src: 'pictures/' + key, bytes: body.byteLength }, 201);
 }
 
@@ -243,15 +308,24 @@ async function allGallery(env) {
   return out;
 }
 
-async function putGallery(request, env, who, slug) {
+async function putGallery(request, env, auth, slug) {
+  const who = auth.who;
   const body = await readBody(request);
   if (!Array.isArray(body)) return oops(422, 'A gallery is a list of pictures.');
+  const was = await env.DB.prepare('SELECT data FROM gallery WHERE slug = ?')
+    .bind(slug).first();
+  let before = null;
+  if (was) { try { before = JSON.parse(was.data); } catch { before = null; } }
+
   await env.DB.prepare(
     `INSERT INTO gallery (slug, data, updated_by) VALUES (?, ?, ?)
      ON CONFLICT (slug) DO UPDATE SET
        data = excluded.data, updated_by = excluded.updated_by,
        updated_at = datetime('now')`
   ).bind(slug, JSON.stringify(body), who).run();
+
+  await record(env, auth, 'changed', 'pictures', slug,
+    'Pictures on ' + slug, before, body);
   return json(body);
 }
 
@@ -267,6 +341,13 @@ async function route(request, env) {
     if (path === '/api/saved')  return json(await listEvents(env, 1), 200, READ_CACHE);
     if (path === '/api/rates')  return json(await activeRates(env) ?? {}, 200, READ_CACHE);
     if (path === '/api/gallery') return json(await allGallery(env), 200, READ_CACHE);
+
+    /* The history is the board's own record, so it is not public. */
+    if (path === '/api/changes') {
+      const auth = await requireBoard(request, env);
+      if (!auth.ok) return oops(auth.status, auth.message);
+      return json(await listChanges(env, url.searchParams.get('limit')));
+    }
 
     /* A photograph is public: it is on the website. */
     if (path.startsWith('/pictures/')) {
@@ -293,25 +374,24 @@ async function route(request, env) {
   if (writesTo && method !== 'GET' && method !== 'HEAD') {
     const auth = await requireBoard(request, env);
     if (!auth.ok) return oops(auth.status, auth.message);
-    const who = auth.who;
 
-    if (method === 'POST' && path === '/api/events') return createEvent(request, env, who, 0);
-    if (method === 'POST' && path === '/api/saved')  return createEvent(request, env, who, 1);
+    if (method === 'POST' && path === '/api/events') return createEvent(request, env, auth, 0);
+    if (method === 'POST' && path === '/api/saved')  return createEvent(request, env, auth, 1);
 
     const eventId = /^\/api\/(?:events|saved)\/([^/]+)$/.exec(path)?.[1];
     if (eventId) {
-      if (method === 'PUT' || method === 'PATCH') return updateEvent(request, env, who, eventId);
-      if (method === 'DELETE') return deleteEvent(env, eventId);
+      if (method === 'PUT' || method === 'PATCH') return updateEvent(request, env, auth, eventId);
+      if (method === 'DELETE') return deleteEvent(env, auth, eventId);
     }
 
-    if (method === 'PUT' && path === '/api/rates') return putRates(request, env, who);
+    if (method === 'PUT' && path === '/api/rates') return putRates(request, env, auth);
 
     if (method === 'POST' && path === '/api/pictures') {
-      return putPicture(request, env, who, url.searchParams.get('for'));
+      return putPicture(request, env, auth, url.searchParams.get('for'));
     }
 
     const slug = /^\/api\/gallery\/([^/]+)$/.exec(path)?.[1];
-    if (slug && method === 'PUT') return putGallery(request, env, who, slug);
+    if (slug && method === 'PUT') return putGallery(request, env, auth, slug);
 
     return oops(405, `${method} is not something this address does.`);
   }
