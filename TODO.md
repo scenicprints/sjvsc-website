@@ -17,6 +17,18 @@ out of date; this is the live list.
 - [ ] The monthly club meeting is missing from the events data. December's second
       Wednesday falls the day before the AGM — ask whether the club holds both.
 
+## Decide
+
+- [ ] **How a photograph gets uploaded.** The gallery screen can reorder, retitle and
+      remove pictures, and add one by naming a file already in the site. Uploading from
+      a phone needs somewhere to put the file. R2 is the right tool and wants a
+      subscription the club is not taking, which leaves two options: **Workers KV**,
+      which is in the free plan already, holds values up to 25 MB and would do for
+      photographs resized in the browser first; or carrying on as now, with files
+      committed to the repository. Only `add()` in `admin-gallery.js` changes either
+      way — everything else works on a list of `{src, caption}` and does not care
+      where `src` points.
+
 ## Before the domain moves
 
 - [ ] Swap Clerk's development instance for a production one. New issuer, new keys,

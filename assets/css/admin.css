@@ -351,3 +351,8 @@
 
 /* two boxes side by side, as the events screen does it */
 .adm .fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 22px}
+
+/* the up, down and remove buttons on a picture */
+.adm .gtools{display:flex;gap:6px;align-items:center;margin-left:auto}
+.adm .gtools .abtn{padding:6px 11px;font-size:1rem;line-height:1}
+.adm .gtools .abtn[disabled]{opacity:.35;cursor:default}
