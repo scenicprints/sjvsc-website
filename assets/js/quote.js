@@ -101,7 +101,6 @@
     var cards = el('priceCards');
     if (cards) {
       var m = headline(true), n = headline(false);
-      var saving = card.rent.nonmember - card.rent.member;
 
       var detail = function (q) {
         return q.lines.map(function (l) {
@@ -112,7 +111,6 @@
 
       cards.innerHTML =
         '<div class="pricecard feature">' +
-          (saving > 0 ? '<span class="pflag">Saves ' + money(saving) + '</span>' : '') +
           '<span class="eyebrow">As a club member</span>' +
           '<p class="pbig">' + money(m.total) + '</p>' +
           '<div class="plines">' + detail(m) + '</div>' +
