@@ -65,20 +65,24 @@ export async function requireBoard(request, env) {
         .filter(Boolean),
     });
 
-    /* verifyToken checks the signature and the expiry. What it cannot know
-       is whether this club considers the holder a board member, so that is
-       asserted here: Clerk carries the role in publicMetadata, and anyone
-       without it is signed in but not an editor. */
-    const role = claims?.metadata?.role || claims?.publicMetadata?.role;
-    if (role && role !== 'admin' && role !== 'editor') {
-      return { ok: false, status: 403, message: 'Your account cannot make changes.' };
-    }
+    /* An account exists only because the club invited it, so holding a
+       valid token is the permission. No role has to be set on anybody.
 
-    return {
-      ok: true,
-      who: claims.sub,
-      role: role || 'editor',
-    };
+       THIS DEPENDS ON ONE SETTING. The Clerk instance is invite-only:
+       Configure -> Access mode -> Invite-only. Sign-ups are disabled and
+       the only way to get an account is an invitation the club sent. Turn
+       that back to Open and this line hands the club's events to anyone
+       with an email address, because every one of them could then sign up
+       and every one of them would arrive here with a valid token.
+
+       If that setting ever has to change, this is the code that has to
+       change with it: require a role, and put one on each board member.
+
+       (An earlier version read `role || 'editor'` while sign-ups were
+       open, which is exactly the hole described above.) */
+    const role = claims?.metadata?.role || claims?.publicMetadata?.role;
+
+    return { ok: true, who: claims.sub, role: role === 'admin' ? 'admin' : 'editor' };
   } catch {
     /* Expired, tampered with, or signed by someone else. The caller gets
        one answer for all three. */
