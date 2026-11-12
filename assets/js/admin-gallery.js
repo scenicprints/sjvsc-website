@@ -202,7 +202,7 @@
         return chain.then(function () {
           said('Adding ' + (done + 1) + ' of ' + files.length + '...');
           return shrink(file)
-            .then(function (blob) { return window.SJVSC_STORE.upload(blob, page.id); })
+            .then(function (blob) { return window.SJVSC_STORE.upload(blob, page.id, file.name); })
             .then(function (res) {
               pics.push({ src: res.src, caption: '' });
               done++;

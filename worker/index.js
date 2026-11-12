@@ -242,45 +242,58 @@ async function putRates(request, env, auth) {
 
    A key is never reused, so a picture URL can be cached forever. */
 
-const PICTURE_TYPES = {
+const UPLOAD_TYPES = {
   'image/jpeg': 'jpg',
   'image/png': 'png',
   'image/webp': 'webp',
+  /* a flyer, the minutes, a form to fill in */
+  'application/pdf': 'pdf',
 };
-const MAX_PICTURE = 5 * 1024 * 1024;
+const MAX_UPLOAD = 10 * 1024 * 1024;
 
-function pictureKey(slug, type) {
+function uploadKey(slug, type) {
   const clean = String(slug || 'club').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 24) || 'club';
   const rand = Math.random().toString(36).slice(2, 8);
-  return `${clean}/${Date.now().toString(36)}-${rand}.${PICTURE_TYPES[type]}`;
+  return `${clean}/${Date.now().toString(36)}-${rand}.${UPLOAD_TYPES[type]}`;
 }
 
-async function putPicture(request, env, auth, slug) {
+/* The name the file had when it was chosen. It is shown as the link text
+   on an event, so it must not carry a path or anything that would read
+   oddly in a sentence. */
+function tidyName(raw) {
+  const name = String(raw || '').split(/[\\/]/).pop().trim();
+  return name ? name.slice(0, 120) : null;
+}
+
+async function putUpload(request, env, auth, slug, givenName) {
   const who = auth.who;
   const type = (request.headers.get('Content-Type') || '').split(';')[0].trim();
-  if (!PICTURE_TYPES[type]) {
-    return oops(415, 'A picture has to be a JPEG, a PNG or a WebP.');
+  if (!UPLOAD_TYPES[type]) {
+    return oops(415, 'That has to be a JPEG, a PNG, a WebP or a PDF.');
   }
 
   const body = await request.arrayBuffer();
-  if (!body.byteLength) return oops(400, 'That picture was empty.');
-  if (body.byteLength > MAX_PICTURE) {
-    return oops(413, 'That picture is too big. It should be resized before it is sent.');
+  if (!body.byteLength) return oops(400, 'That file was empty.');
+  if (body.byteLength > MAX_UPLOAD) {
+    return oops(413, 'That file is too big. Ten megabytes is the most.');
   }
 
-  const key = pictureKey(slug, type);
+  const key = uploadKey(slug, type);
+  const name = tidyName(givenName);
   await env.DB.prepare(
-    'INSERT INTO pictures (key, bytes, type, slug, created_by) VALUES (?, ?, ?, ?, ?)'
-  ).bind(key, [...new Uint8Array(body)], type, slug || null, who).run();
+    'INSERT INTO files (key, bytes, type, slug, name, created_by) VALUES (?, ?, ?, ?, ?, ?)'
+  ).bind(key, [...new Uint8Array(body)], type, slug || null, name, who).run();
 
-  await record(env, auth, 'added', 'picture', key,
-    'A picture for ' + (slug || 'the club'), null,
-    { src: 'pictures/' + key, bytes: body.byteLength, type });
-  return json({ src: 'pictures/' + key, bytes: body.byteLength }, 201);
+  const isPicture = type.startsWith('image/');
+  await record(env, auth, 'added', isPicture ? 'picture' : 'file', key,
+    name || ((isPicture ? 'A picture for ' : 'A file for ') + (slug || 'the club')),
+    null, { src: 'uploads/' + key, bytes: body.byteLength, type });
+
+  return json({ src: 'uploads/' + key, name: name, bytes: body.byteLength }, 201);
 }
 
-async function getPicture(env, key) {
-  const row = await env.DB.prepare('SELECT bytes, type FROM pictures WHERE key = ?')
+async function getUpload(env, key) {
+  const row = await env.DB.prepare('SELECT bytes, type, name FROM files WHERE key = ?')
     .bind(key).first();
   if (!row) return new Response('Not found', { status: 404 });
 
@@ -290,13 +303,19 @@ async function getPicture(env, key) {
     ? new Uint8Array(row.bytes)
     : Uint8Array.from(row.bytes);
 
-  return new Response(bytes, {
-    headers: {
-      'Content-Type': row.type || 'image/jpeg',
-      /* the key is unique to the upload, so this never goes stale */
-      'Cache-Control': 'public, max-age=31536000, immutable',
-    },
-  });
+  const headers = {
+    'Content-Type': row.type || 'application/octet-stream',
+    /* the key is unique to the upload, so this never goes stale */
+    'Cache-Control': 'public, max-age=31536000, immutable',
+  };
+  /* A PDF offered for download should arrive called what the club called
+     it, not a key. An image is displayed rather than saved, so it needs
+     no disposition. */
+  if (row.name && !String(row.type).startsWith('image/')) {
+    headers['Content-Disposition'] =
+      'inline; filename="' + row.name.replace(/["\\]/g, '') + '"';
+  }
+  return new Response(bytes, { headers });
 }
 
 async function allGallery(env) {
@@ -349,9 +368,9 @@ async function route(request, env) {
       return json(await listChanges(env, url.searchParams.get('limit')));
     }
 
-    /* A photograph is public: it is on the website. */
-    if (path.startsWith('/pictures/')) {
-      return getPicture(env, path.slice('/pictures/'.length));
+    /* An upload is public: it is on the website. */
+    if (path.startsWith('/uploads/')) {
+      return getUpload(env, path.slice('/uploads/'.length));
     }
 
     /* The admin asks this to decide whether to show the form as editable. */
@@ -369,7 +388,7 @@ async function route(request, env) {
     path === '/api/events' || path.startsWith('/api/events/') ||
     path === '/api/saved'  || path.startsWith('/api/saved/')  ||
     path === '/api/rates'  || path.startsWith('/api/gallery/') ||
-    path.startsWith('/api/pictures');
+    path.startsWith('/api/upload');
 
   if (writesTo && method !== 'GET' && method !== 'HEAD') {
     const auth = await requireBoard(request, env);
@@ -386,8 +405,9 @@ async function route(request, env) {
 
     if (method === 'PUT' && path === '/api/rates') return putRates(request, env, auth);
 
-    if (method === 'POST' && path === '/api/pictures') {
-      return putPicture(request, env, auth, url.searchParams.get('for'));
+    if (method === 'POST' && path === '/api/upload') {
+      return putUpload(request, env, auth,
+        url.searchParams.get('for'), url.searchParams.get('name'));
     }
 
     const slug = /^\/api\/gallery\/([^/]+)$/.exec(path)?.[1];

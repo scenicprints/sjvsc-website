@@ -241,6 +241,38 @@
       ? 'A file in the data, ' + size(a.size || 0)
       : (a && a.link) || '';
 
+    /* A flyer, the minutes, a form to fill in. The box can still be typed
+       into for something that lives elsewhere, but the usual case is a
+       file on the phone of whoever is entering the event. */
+    if (canEdit) {
+      var pick = document.createElement('button');
+      pick.type = 'button';
+      pick.className = 'abtn small afpick';
+      pick.textContent = 'Choose a file';
+      pick.addEventListener('click', function () {
+        var chooser = document.createElement('input');
+        chooser.type = 'file';
+        chooser.accept = 'image/*,application/pdf';
+        chooser.addEventListener('change', function () {
+          var file = (chooser.files || [])[0];
+          if (!file) return;
+          pick.disabled = true;
+          said('Uploading ' + file.name + '...');
+          window.SJVSC_STORE.upload(file, 'event', file.name)
+            .then(function (res) {
+              row.querySelector('.alink').textContent = res.src;
+              var nameCell = row.querySelector('.aname');
+              if (!nameCell.textContent.trim()) nameCell.textContent = res.name || file.name;
+              said('Uploaded. Press Save to keep it on this event.');
+            })
+            .catch(function (err) { said(err.message || 'That did not upload.', true); })
+            .then(function () { pick.disabled = false; });
+        });
+        chooser.click();
+      });
+      row.appendChild(pick);
+    }
+
     attachrows.appendChild(row);
     return row;
   }

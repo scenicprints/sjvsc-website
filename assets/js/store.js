@@ -87,18 +87,19 @@ window.SJVSC_STORE = (function () {
 
     /* A picture is bytes, not JSON, so it does not go through send():
        the body is the file itself and the type header describes it. */
-    upload: function (blob, forSlug) {
+    upload: function (blob, forSlug, name) {
       var token = window.SJVSC_TOKEN ? window.SJVSC_TOKEN() : Promise.resolve(null);
       return token.then(function (t) {
         var headers = { 'Content-Type': blob.type || 'image/jpeg' };
         if (t) headers.Authorization = 'Bearer ' + t;
-        return fetch(API + 'pictures?for=' + encodeURIComponent(forSlug || ''), {
+        return fetch(API + 'upload?for=' + encodeURIComponent(forSlug || '') +
+            (name ? '&name=' + encodeURIComponent(name) : ''), {
           method: 'POST', credentials: 'same-origin', headers: headers, body: blob
         });
       }).then(function (r) {
         return r.json().catch(function () { return {}; }).then(function (data) {
           if (r.ok) return data;
-          var err = new Error(data && data.error ? data.error : 'That picture did not upload.');
+          var err = new Error(data && data.error ? data.error : 'That did not upload.');
           err.status = r.status;
           throw err;
         });

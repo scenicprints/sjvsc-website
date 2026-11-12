@@ -381,3 +381,8 @@
 .adm .hjson{margin:10px 0 0;padding:12px 14px;background:var(--cream);
   border:1px solid var(--line);border-radius:4px;overflow:auto;max-height:340px;
   font-size:.8rem;line-height:1.5}
+
+/* the file button on an attachment row */
+.adm .afrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.adm .afrow .val{flex:1 1 180px;min-width:0}
+.adm .afpick{flex:0 0 auto;white-space:nowrap}
