@@ -13,6 +13,10 @@ out of date; this is the live list.
       `/swiss-miss`, `/may-birthday-celebration`, `/eidgenössisches-2022` — are almost
       certainly galleries, and photography is this project's known shortage.
 - [ ] Confirm the board roster and phone numbers in `docs/current-site-audit.md`.
+- [ ] **More photographs for the thin bands.** Every page's side pictures are now in
+      the band at its foot, but `schwingen` and `camp` have one each, so the band shows
+      a single still picture rather than moving. `history`, `hall` and `wcswa` have two.
+      Six fills a band.
 - [ ] Decide what the four empty pages above should redirect to.
 - [ ] The monthly club meeting is missing from the events data. December's second
       Wednesday falls the day before the AGM — ask whether the club holds both.
