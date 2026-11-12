@@ -131,10 +131,22 @@
 
     /* ---- What's included and House rules.
 
-       Both were placeholder blocks on the page and both are written from
-       the card, so the board changing a figure in the admin changes the
-       prose here too. They belong under their own headings rather than
-       repeated beside the prices. ---- */
+       Both are written from the card, so a figure the board changes in the
+       admin changes this prose too. One idea per sentence and the same
+       voice throughout, because these two blocks are read one after the
+       other and anything assembled shows. Notes the club wrote stand as
+       their own sentences rather than being tacked onto mine. ---- */
+
+    /* The club writes some of these strings and they may or may not end in
+       a full stop -- "San Joaquin Valley Swiss Club, Inc." ends in one that
+       belongs to the name. Never add a second. */
+    var stop = function (text) {
+      return /[.!?]$/.test(String(text).trim()) ? text : text + '.';
+    };
+
+    var para = function (list) {
+      return list.filter(Boolean).map(function (x) { return '<p>' + x + '</p>'; }).join('');
+    };
 
     var inc = el('included');
     if (inc) {
@@ -142,68 +154,69 @@
       var kitchen = R.byId(card.options, 'kitchen');
       var paid = card.options.filter(function (o) { return o.price; });
       var a = card.rules.access || {};
+      var said = [];
 
-      var bits = [];
-      if (free.length) {
-        bits.push('<ul class="ticks">' + free.map(function (o) {
-          return '<li>' + esc(o.name) + '</li>';
-        }).join('') + '</ul>');
-      }
-      if (kitchen && kitchen.note) bits.push('<p>' + esc(kitchen.note) + '</p>');
-      if (a.from) {
-        bits.push('<p>The hall is yours from <b>' + esc(a.from) + '</b> on the day until <b>' +
-          esc(a.until) + '</b>, and you have until <b>' + esc(a.clearBy) +
-          '</b> the next day to clear up.</p>');
+      if (kitchen && kitchen.note) said.push(stop(esc(kitchen.note)));
+      if (a.from && a.until) {
+        said.push('The hall is yours from <b>' + esc(a.from) + '</b> until <b>' +
+          esc(a.until) + '</b>' +
+          (a.clearBy ? ', and until <b>' + esc(a.clearBy) + '</b> to clear up' : '') + '.');
       }
       if (a.setupDayBefore) {
-        bits.push('<p>Members can get in the day before to decorate, ' +
-          esc(a.setupDayBefore) + '.</p>');
+        said.push('Members can get in the day before to decorate, ' +
+          esc(a.setupDayBefore) + '.');
       }
       if (paid.length) {
-        bits.push('<p>' + paid.map(function (o) {
+        said.push(paid.map(function (o) {
           return esc(o.name) + ' is ' + money(o.price);
-        }).join('. ') + '.</p>');
+        }).join('. ') + '.');
       }
-      inc.innerHTML = bits.join('');
+
+      inc.innerHTML =
+        (free.length ? '<ul class="ticks">' + free.map(function (o) {
+          return '<li>' + esc(o.name) + '</li>';
+        }).join('') + '</ul>' : '') + para(said);
     }
 
     var hr = el('houserules');
     if (hr) {
       var ins = card.rules.insurance || {};
       var g = card.rules.guards || {};
-      var out = [];
+      var rules = [];
 
-      if (card.rules.noSales) out.push('<p>' + esc(card.rules.noSales) + '</p>');
+      if (card.rules.noSales) rules.push(stop(esc(card.rules.noSales)));
       if (card.rules.minimumAge) {
-        out.push('<p>Whoever signs for the hall must be <b>' + card.rules.minimumAge +
-          '</b> or older.</p>');
+        rules.push('Whoever signs for it must be <b>' + card.rules.minimumAge + '</b> or older.');
       }
       if (ins.amount) {
-        out.push('<p>You need liability cover of at least <b>' + money(ins.amount) + '</b>' +
-          (ins.named ? ', naming ' + esc(ins.named) + ' as additional insured' : '') +
-          (ins.daysBefore ? ', and the certificate has to reach the club ' + ins.daysBefore +
-            ' days before the event' : '') + '. Serving alcohol means liquor liability too.</p>');
+        rules.push(stop('You need liability cover of at least <b>' + money(ins.amount) +
+          '</b>' + (ins.named ? ', naming ' + stop(esc(ins.named)) : '.')) +
+          (ins.daysBefore ? ' The certificate is due ' + ins.daysBefore + ' days before.' : ''));
       }
+      rules.push('Serving alcohol adds liquor liability.');
       if (g.base) {
-        out.push('<p>Non-members hire licensed security guards: <b>' + g.base + '</b> up to ' +
-          g.baseUpTo + ' guests, and one more for every ' + g.perExtra +
-          ' after that. ' + esc(g.note || '') + '</p>');
+        rules.push('Non-members hire licensed guards: <b>' + g.base + '</b> up to ' +
+          g.baseUpTo + ' guests, and one more for every ' + g.perExtra + ' after that' +
+          (g.daysBefore ? '. The contract is due ' + g.daysBefore + ' days before' : '') + '.');
+        if (g.note) rules.push(stop(esc(g.note)));
       }
       if (card.rules.holdHarmless && card.rules.holdHarmless.note) {
-        out.push('<p>' + esc(card.rules.holdHarmless.note) + '</p>');
+        rules.push(stop(esc(card.rules.holdHarmless.note)));
       }
       if (card.rules.memberMonths) {
-        out.push('<p>The member rate is for members of at least <b>' +
-          card.rules.memberMonths + ' months</b>.</p>');
+        rules.push('The member rate is for members of at least <b>' +
+          card.rules.memberMonths + ' months</b>.');
       }
+
       var cancels = (card.rules.cancellation || []).filter(function (c) { return c.note; });
       if (cancels.length) {
-        out.push('<p>If you cancel: ' + cancels.map(function (c) {
-          return (c.daysBefore ? c.daysBefore + ' days or more before, ' : 'later than that, ') +
-            esc(c.note).replace(/^The |^Half of the /, function (m) { return m.toLowerCase(); });
-        }).join(' ') + '</p>');
+        rules.push(cancels.map(function (c) {
+          return (c.daysBefore ? '<b>' + c.daysBefore + ' days or more</b> before: '
+                               : '<b>Later</b>: ') + esc(c.note);
+        }).join('<br>'));
       }
-      hr.innerHTML = out.join('');
+
+      hr.innerHTML = para(rules);
     }
   }
 
@@ -438,11 +451,7 @@
         '</ul></div>' : '') +
 
       '<div class="notabooking">' +
-      '<p><b>Sending this does not book the hall.</b> It asks the club to consider the ' +
-      'date. Nothing is held until the board has reviewed the application' +
-      (q.deposit ? ' and the deposit has been received' : '') + ', and the club may ' +
-      'decline a date or an event.</p>' +
-      '<p class="muted">You will hear back from a person, not from this page.</p>' +
+      '<p><b>This does not book the hall.</b> It goes to the club for review.</p>' +
       '<p style="margin-top:16px"><a class="btn btn-red" href="' +
       enquiry(v, q, usedName, guests) + '">Ask about this date</a></p>' +
       '</div></div>' +
