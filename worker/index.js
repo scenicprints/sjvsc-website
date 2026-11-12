@@ -137,16 +137,31 @@ async function activeRates(env) {
   try { return JSON.parse(row.data); } catch { return null; }
 }
 
-/* A new card rather than an edited one: a quote already given stays
-   readable against the prices that produced it. */
+/* One card, replaced in place.
+
+   This used to keep every version, on the reasoning that a quote already
+   given should stay readable against the prices that produced it. But a
+   quote here is never stored — it is worked out in the browser and handed
+   to the contact form — so there is nothing to read an old card back
+   against, and the old rows were only accumulating. */
 async function putRates(request, env, who) {
   const body = await readBody(request);
   if (!body) return oops(400, 'That was not JSON.');
-  for (const key of ['days', 'spaces', 'extras', 'rules']) {
+
+  if (!body.rent || typeof body.rent !== 'object') {
+    return oops(422, 'The rate card needs a rent, with a member and a non-member price.');
+  }
+  for (const who2 of ['member', 'nonmember']) {
+    if (typeof body.rent[who2] !== 'number' || body.rent[who2] < 0) {
+      return oops(422, `The ${who2} price must be a number.`);
+    }
+  }
+  for (const key of ['fees', 'use', 'options']) {
     if (!Array.isArray(body[key])) return oops(422, `The rate card needs a ${key} list.`);
   }
+
   await env.DB.batch([
-    env.DB.prepare('UPDATE rate_cards SET active = 0 WHERE active = 1'),
+    env.DB.prepare('DELETE FROM rate_cards'),
     env.DB.prepare('INSERT INTO rate_cards (data, active, created_by) VALUES (?, 1, ?)')
       .bind(JSON.stringify(body), who),
   ]);

@@ -1,156 +1,305 @@
-/* The hall rental screen. The card itself lives in rates-data.js, which the
-   rentals page and the quote engine read too, so what is shown here is what a
-   renter is quoted.
+/* The hall rental screen.
 
-   This screen reads data/rates.json and shows what is in it: kinds of day,
-   things to rent, extras and rules, with the price grid drawn from the first
-   two. It does not change the file. The file is changed by editing it in the
-   repository and committing. */
+   The card is two prices, some fees, a few things that are free today, and
+   a page of terms that are not money at all. All of it comes from the
+   database and all of it goes back there, so a number changed here is a
+   number changed on the rate card and in the next quote.
+
+   Signed out the screen reads; signed in it writes. Which of the two is
+   the Worker's answer, not Clerk's — see admin-events.js for why. */
 
 (function () {
   var R = window.SJVSC_RATES;
-  var card = R.card();           // replaced once the repository answers
+  var S = window.SJVSC_STORE;
+  var card = R.card();
+  var canEdit = false;
 
-  var dayrows = document.getElementById('dayrows');
-  var pricegrid = document.getElementById('pricegrid');
-  var extrarows = document.getElementById('extrarows');
-  var rulerows = document.getElementById('rulerows');
-  var daywarn = document.getElementById('daywarn');
+  function el(id) { return document.getElementById(id); }
+  function make(tag, cls) { var n = document.createElement(tag); if (cls) n.className = cls; return n; }
 
-  var DAYNAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-  var WHEN = [
-    ['choose',  'The renter ticks it'],
-    ['always',  'Always on the bill'],
-    ['alcohol', 'Added when alcohol is served']
-  ];
-  var DOES = [
-    ['print',    'Only printed'],
-    ['hours',    'Hours included'],
-    ['hourly',   'Each hour after that'],
-    ['discount', 'Members take off (per cent)']
-  ];
-
-  function el(tag, cls) { var n = document.createElement(tag); if (cls) n.className = cls; return n; }
-
-  /* a value, drawn as the box the field used to be */
-  function value(v, cls) {
-    var n = el('div', cls ? cls + ' val' : 'val');
-    n.textContent = v === undefined || v === null ? '' : v;
-    return n;
+  function said(message, bad) {
+    var box = el('rsaid');
+    if (!box) return;
+    box.textContent = message || '';
+    box.classList.toggle('bad', !!bad);
   }
 
-  /* one of a fixed set: what it says, not the whole list */
-  function named(options, v) {
-    var hit = '';
-    options.forEach(function (o) { if (o[0] === v) hit = o[1]; });
-    return value(hit);
-  }
+  /* ---- rows ----------------------------------------------------------
 
-  /* ---- kinds of day -------------------------------------------------- */
+     Every repeating section is the same shape: a row of labelled boxes
+     built from a spec, so adding a column is adding a line rather than
+     writing another renderer. */
 
-  function drawDays() {
-    dayrows.innerHTML = '';
-    card.days.forEach(function (d) {
-      var row = el('div', 'rrow rday');
-      row.appendChild(value(d.name, 'rname'));
-
-      var ticks = el('span', 'rticks');
-      DAYNAMES.forEach(function (label, n) {
-        var wrap = el('label', 'rtick');
-        var box = el('input');
-        box.type = 'checkbox';
-        box.disabled = true;
-        box.checked = (d.covers || []).indexOf(n) > -1;
-        box.setAttribute('aria-label', label);
-        wrap.appendChild(box);
-        wrap.appendChild(document.createTextNode(label));
-        ticks.appendChild(wrap);
-      });
-      row.appendChild(ticks);
-
-      dayrows.appendChild(row);
+  function row(holder, fields) {
+    var r = make('div', 'rrow');
+    fields.forEach(function (f) {
+      var cell = make('div', 'rcell' + (f.wide ? ' wide' : ''));
+      var lab = make('label');
+      lab.textContent = f.label;
+      var input;
+      if (f.type === 'select') {
+        input = make('select');
+        f.options.forEach(function (o) {
+          var opt = make('option');
+          opt.value = o[0];
+          opt.textContent = o[1];
+          input.appendChild(opt);
+        });
+        input.value = f.value == null ? '' : String(f.value);
+      } else if (f.type === 'check') {
+        input = make('input');
+        input.type = 'checkbox';
+        input.checked = !!f.value;
+      } else {
+        input = make('input');
+        input.type = f.type || 'text';
+        if (f.type === 'number') { input.min = f.min == null ? 0 : f.min; input.step = f.step || 1; }
+        input.value = f.value == null ? '' : f.value;
+      }
+      input.setAttribute('data-key', f.key);
+      if (f.readOnly) input.readOnly = true;
+      lab.appendChild(input);
+      cell.appendChild(lab);
+      r.appendChild(cell);
     });
-    warnDays();
+    holder.appendChild(r);
+    return r;
   }
 
-  /* Every day of the week has to belong to one of these, or a quote for that
-     day has no price to use. Worth saying out loud, because the quote engine
-     refuses the day rather than guessing. */
-  function warnDays() {
-    var missing = R.uncovered(card);
-    daywarn.hidden = !missing.length;
-    daywarn.className = missing.length ? 'warn bad' : 'warn';
-    if (missing.length) {
-      daywarn.textContent = 'Nothing covers ' + missing.join(', ') +
-        '. A quote for one of those days has no price to use, so the hall reads ' +
-        'as unavailable. Give one of the kinds of day above those weekdays in ' +
-        'data/rates.json.';
+  function readRow(r) {
+    var out = {};
+    [].forEach.call(r.querySelectorAll('[data-key]'), function (i) {
+      var k = i.getAttribute('data-key');
+      if (i.type === 'checkbox') out[k] = i.checked;
+      else if (i.type === 'number') out[k] = i.value === '' ? null : Number(i.value);
+      else out[k] = i.value;
+    });
+    return out;
+  }
+
+  var WHO = [['all', 'Everyone'], ['member', 'Members only'], ['nonmember', 'Non-members only']];
+
+  /* ---- drawing -------------------------------------------------------- */
+
+  function draw() {
+    el('rMember').value = card.rent.member;
+    el('rNonMember').value = card.rent.nonmember;
+
+    var fees = el('feerows');
+    fees.innerHTML = '';
+    card.fees.forEach(function (f) {
+      row(fees, [
+        { key: 'id', label: 'Reference', value: f.id, readOnly: true },
+        { key: 'name', label: 'What it is called', value: f.name, wide: true },
+        { key: 'amount', label: 'Amount', value: f.amount, type: 'number' },
+        { key: 'who', label: 'Who pays it', value: f.who, type: 'select', options: WHO },
+        { key: 'refundable', label: 'Returned', value: f.refundable, type: 'check' },
+        { key: 'dueDays', label: 'Days before', value: f.dueDays, type: 'number' },
+        { key: 'note', label: 'What the quote says about it', value: f.note, wide: true }
+      ]);
+    });
+
+    var waivers = el('waiverrows');
+    waivers.innerHTML = '';
+    card.waivers.forEach(function (w) {
+      row(waivers, [
+        { key: 'id', label: 'Reference', value: w.id, readOnly: true },
+        { key: 'name', label: 'The reason', value: w.name, wide: true },
+        { key: 'who', label: 'Who may claim it', value: w.who, type: 'select', options: WHO },
+        { key: 'note', label: 'What the quote says about it', value: w.note, wide: true }
+      ]);
+    });
+
+    [['use', 'userows'], ['options', 'optionrows']].forEach(function (pair) {
+      var holder = el(pair[1]);
+      holder.innerHTML = '';
+      card[pair[0]].forEach(function (o) {
+        row(holder, [
+          { key: 'id', label: 'Reference', value: o.id, readOnly: true },
+          { key: 'name', label: 'What it is called', value: o.name, wide: true },
+          { key: 'price', label: 'Price', value: o.price || 0, type: 'number' }
+        ]);
+      });
+    });
+
+    var g = card.rules.guards || {};
+    el('gBase').value = g.base == null ? '' : g.base;
+    el('gUpTo').value = g.baseUpTo == null ? '' : g.baseUpTo;
+    el('gPer').value = g.perExtra == null ? '' : g.perExtra;
+    el('gDays').value = g.daysBefore == null ? '' : g.daysBefore;
+
+    var i = card.rules.insurance || {};
+    el('iAmount').value = i.amount == null ? '' : i.amount;
+    el('iDays').value = i.daysBefore == null ? '' : i.daysBefore;
+    el('iNamed').value = i.named || '';
+
+    var a = card.rules.access || {};
+    el('tRentDue').value = card.rules.rentDueDays == null ? '' : card.rules.rentDueDays;
+    el('tMonths').value = card.rules.memberMonths == null ? '' : card.rules.memberMonths;
+    el('tAge').value = card.rules.minimumAge == null ? '' : card.rules.minimumAge;
+    el('tFrom').value = a.from || '';
+    el('tUntil').value = a.until || '';
+    el('tClear').value = a.clearBy || '';
+    el('tSetup').value = a.setupDayBefore || '';
+    el('tNoSales').value = card.rules.noSales || '';
+
+    var cancels = el('cancelrows');
+    cancels.innerHTML = '';
+    (card.rules.cancellation || []).forEach(function (c) {
+      row(cancels, [
+        { key: 'daysBefore', label: 'Days before', value: c.daysBefore, type: 'number' },
+        { key: 'refund', label: 'What comes back', value: c.refund, type: 'select',
+          options: [['all', 'All of it'], ['half', 'Half'], ['none', 'Nothing']] },
+        { key: 'less', label: 'Less a fee of', value: c.less || 0, type: 'number' },
+        { key: 'note', label: 'What the quote says about it', value: c.note, wide: true }
+      ]);
+    });
+
+    showExample();
+    lockOrUnlock();
+  }
+
+  /* The guard rule is four numbers and easy to get backwards, so the screen
+     works an example rather than making anyone do it in their head. */
+  function showExample() {
+    var note = el('gExample');
+    if (!note) return;
+    var live = collect();
+    var sizes = [100, 199, 200, 300, 400];
+    note.textContent = 'As set: ' + sizes.map(function (n) {
+      return n + ' guests needs ' + R.guardsFor(live, n);
+    }).join(', ') + '.';
+  }
+
+  function lockOrUnlock() {
+    var form = el('rform');
+    [].forEach.call(form.querySelectorAll('input, textarea, select'), function (i) {
+      if (i.getAttribute('data-key') === 'id') { i.readOnly = true; return; }
+      if (i.tagName === 'SELECT') i.disabled = !canEdit;
+      else i.readOnly = !canEdit;
+      i.classList.toggle('ro', !canEdit);
+    });
+    el('rsave').hidden = !canEdit;
+    el('signedoutnote').hidden = canEdit;
+  }
+
+  /* ---- reading the screen back ---------------------------------------- */
+
+  function collect() {
+    var out = R.clone(card);
+
+    out.rent = {
+      member: Number(el('rMember').value) || 0,
+      nonmember: Number(el('rNonMember').value) || 0
+    };
+
+    out.fees = [].map.call(el('feerows').querySelectorAll('.rrow'), function (r) {
+      var v = readRow(r);
+      return {
+        id: v.id, name: v.name, amount: Number(v.amount) || 0, who: v.who,
+        refundable: !!v.refundable,
+        dueDays: v.dueDays === null ? null : Number(v.dueDays),
+        note: v.note
+      };
+    });
+
+    out.waivers = [].map.call(el('waiverrows').querySelectorAll('.rrow'), function (r) {
+      var v = readRow(r);
+      return { id: v.id, name: v.name, who: v.who, waives: 'rent', note: v.note };
+    });
+
+    [['use', 'userows'], ['options', 'optionrows']].forEach(function (pair) {
+      var before = card[pair[0]];
+      out[pair[0]] = [].map.call(el(pair[1]).querySelectorAll('.rrow'), function (r, n) {
+        var v = readRow(r);
+        var was = before[n] || {};
+        var o = { id: v.id, name: v.name, price: Number(v.price) || 0 };
+        /* flags the screen does not show must survive a save */
+        if (was.requiresLiquorLiability !== undefined) {
+          o.requiresLiquorLiability = was.requiresLiquorLiability;
+        }
+        if (was.note !== undefined) o.note = was.note;
+        return o;
+      });
+    });
+
+    var num = function (id) { return el(id).value === '' ? null : Number(el(id).value); };
+
+    out.rules = out.rules || {};
+    out.rules.guards = Object.assign({}, card.rules.guards, {
+      base: num('gBase'), baseUpTo: num('gUpTo'),
+      perExtra: num('gPer'), daysBefore: num('gDays')
+    });
+    out.rules.insurance = Object.assign({}, card.rules.insurance, {
+      amount: num('iAmount'), daysBefore: num('iDays'), named: el('iNamed').value
+    });
+    out.rules.rentDueDays = num('tRentDue');
+    out.rules.memberMonths = num('tMonths');
+    out.rules.minimumAge = num('tAge');
+    out.rules.access = {
+      from: el('tFrom').value, until: el('tUntil').value,
+      clearBy: el('tClear').value, setupDayBefore: el('tSetup').value
+    };
+    out.rules.noSales = el('tNoSales').value;
+    out.rules.cancellation = [].map.call(el('cancelrows').querySelectorAll('.rrow'), function (r) {
+      var v = readRow(r);
+      var c = { daysBefore: Number(v.daysBefore) || 0, refund: v.refund, note: v.note };
+      if (Number(v.less)) c.less = Number(v.less);
+      return c;
+    });
+
+    return out;
+  }
+
+  /* ---- saving --------------------------------------------------------- */
+
+  function save() {
+    if (!canEdit) return;
+    var next = collect();
+
+    if (!(next.rent.member >= 0) || !(next.rent.nonmember >= 0)) {
+      said('Both prices have to be numbers.', true); return;
     }
-  }
+    /* Somebody will one day type the member price into the wrong box. */
+    if (next.rent.member > next.rent.nonmember) {
+      if (!window.confirm('The member price is higher than the non-member price. Save anyway?')) return;
+    }
 
-  /* ---- the price grid ------------------------------------------------ */
+    var btn = el('rsave');
+    btn.disabled = true;
+    said('Saving...');
 
-  function drawGrid() {
-    pricegrid.innerHTML = '';
-    pricegrid.style.setProperty('--cols', card.days.length);
-
-    var head = el('div', 'rrow rgrid rhead');
-    head.appendChild(el('span'));
-    card.days.forEach(function (d) {
-      var h = el('span', 'rcolname');
-      h.textContent = d.name || 'Untitled';
-      /* the days this column charges for, so the link to the list above is
-         visible without scrolling back to it */
-      var on = (d.covers || []).slice().sort(function (a, b) { return a - b; })
-        .map(function (n) { return DAYNAMES[n]; });
-      var sub = el('i', 'rcoldays');
-      sub.textContent = on.length ? on.join(' ') : 'No days, so nothing uses this';
-      if (!on.length) sub.className += ' rdead';
-      h.appendChild(sub);
-      head.appendChild(h);
-    });
-    pricegrid.appendChild(head);
-
-    card.spaces.forEach(function (s) {
-      var row = el('div', 'rrow rgrid');
-      row.appendChild(value(s.name, 'rname'));
-      card.days.forEach(function (d) {
-        row.appendChild(value(
-          s.prices[d.id] === undefined ? '' : R.money(s.prices[d.id]), 'rprice'));
-      });
-      pricegrid.appendChild(row);
+    S.put('rates', next).then(function (saved) {
+      card = R.tidy(saved);
+      draw();
+      said('Saved. The rate card and the quote show this now.');
+    }).catch(function (err) {
+      said(err.message || 'That did not save.', true);
+    }).then(function () {
+      btn.disabled = false;
     });
   }
 
-  /* ---- extras and rules: the same row, different third column -------- */
+  /* ---- start ---------------------------------------------------------- */
 
-  function drawExtras() {
-    extrarows.innerHTML = '';
-    card.extras.forEach(function (x) {
-      var row = el('div', 'rrow rpair');
-      row.appendChild(value(x.name, 'rname'));
-      row.appendChild(value(R.money(x.price), 'rprice'));
-      row.appendChild(named(WHEN, x.when || 'choose'));
-      extrarows.appendChild(row);
-    });
-  }
-
-  function drawRules() {
-    rulerows.innerHTML = '';
-    card.rules.forEach(function (r) {
-      var row = el('div', 'rrow rpair');
-      row.appendChild(value(r.name, 'rname'));
-      row.appendChild(value(r.value, 'rprice'));
-      row.appendChild(named(DOES, r.does || 'print'));
-      rulerows.appendChild(row);
-    });
-  }
-
-  function drawAll() { drawDays(); drawGrid(); drawExtras(); drawRules(); }
-
-  R.load().then(function (c) {
-    card = c;
-    drawAll();
+  el('rsave').addEventListener('click', save);
+  el('rform').addEventListener('input', function (e) {
+    if (/^g(Base|UpTo|Per)$/.test(e.target.id)) showExample();
   });
+  el('rform').addEventListener('submit', function (e) { e.preventDefault(); save(); });
+
+  function askWhetherWeMayWrite() {
+    return S.me().then(function (me) { canEdit = !!(me && me.signedIn); });
+  }
+
+  Promise.all([R.load(), askWhetherWeMayWrite()]).then(function (r) {
+    card = R.tidy(r[0]);
+    draw();
+  });
+
+  if (window.SJVSC_AUTH) {
+    window.SJVSC_AUTH.onChange(function () {
+      askWhetherWeMayWrite().then(lockOrUnlock);
+    });
+  }
 }());

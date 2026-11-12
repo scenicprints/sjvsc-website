@@ -327,3 +327,27 @@
 .adm .asaid{margin-left:16px;font-size:.9375rem;color:var(--ink-2);align-self:center}
 .adm .asaid.bad{color:var(--red);font-weight:600}
 .adm .eactions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+
+/* ---- the rental card's repeating rows --------------------------------
+
+   One row per fee, waiver, option or cancellation tier. Each cell carries
+   its own small caption, because a row of bare boxes is unreadable once
+   there are six of them and nobody remembers which is which. */
+.adm .rrow{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:flex-end;
+  padding:14px 16px;margin-bottom:12px;background:var(--white);
+  border:1px solid var(--line);border-radius:6px}
+.adm .rcell{flex:0 1 auto;min-width:92px}
+.adm .rcell.wide{flex:1 1 220px;min-width:180px}
+.adm .rcell label{display:block;font-size:.78rem;font-weight:600;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--ink-soft);margin-bottom:5px}
+.adm .rcell input[type=text],
+.adm .rcell input[type=number],
+.adm .rcell select{width:100%;font:inherit;font-family:var(--ui);padding:9px 10px;
+  border:1px solid var(--line-dark);border-radius:4px;background:#fff;color:var(--ink)}
+.adm .rcell input[type=number]{text-align:right;font-variant-numeric:tabular-nums}
+.adm .rcell input[type=checkbox]{width:auto;margin-top:6px}
+.adm .rcell input.ro,
+.adm .rcell select.ro{background:var(--cream);border-style:dashed;color:var(--ink-2)}
+
+/* two boxes side by side, as the events screen does it */
+.adm .fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 22px}

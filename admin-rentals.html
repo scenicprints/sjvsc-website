@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="assets/css/site.css?v=3edd3dc8">
-<link rel="stylesheet" href="assets/css/admin.css?v=ee48793c">
+<link rel="stylesheet" href="assets/css/admin.css?v=948d0314">
 <script>window.SJVSC_ADMIN = true;</script>
 <script src="assets/js/store.js?v=2339f225"></script>
 <script async crossorigin="anonymous"
@@ -41,45 +41,158 @@
     <a class="aback" href="admin.html">&#8592; Back</a>
     <h1>Hall rental</h1>
 
-    <p class="alead">Everything the rate card shows, out of <b>data/rates.json</b>. None of
-      it is fixed in the website: a new thing to rent, a new kind of day, a new extra or a
-      new rule is a line in that file, and the rate card and the quote follow it.</p>
+    <p class="alead">What the club charges, and what it asks a renter to produce. Everything
+      the rate card and the quote show comes from here, so a price changed on this screen is
+      a price changed on the website.</p>
+
+    <p class="alead" id="signedoutnote" hidden>Sign in at the top of the page to change any
+      of it. Until then this screen shows what is set without letting anything be altered.</p>
 
     <form id="rform">
 
       <fieldset class="rsec">
-        <legend>Kinds of day</legend>
-        <p class="hint" style="margin:0 0 14px">Each kind of day and the weekdays it covers.
-          These are the columns of the price list underneath.</p>
-        <div id="dayrows"></div>
-        <p class="warn" id="daywarn" hidden></p>
+        <legend>What the hall costs</legend>
+        <p class="hint" style="margin:0 0 14px">One price for a member and one for everybody
+          else. The same hall, whichever day of the week it is.</p>
+        <div class="fields">
+          <div class="field">
+            <label for="rMember">A member pays</label>
+            <input type="number" id="rMember" min="0" step="1">
+          </div>
+          <div class="field">
+            <label for="rNonMember">Anyone else pays</label>
+            <input type="number" id="rNonMember" min="0" step="1">
+          </div>
+        </div>
       </fieldset>
 
       <fieldset class="rsec">
-        <legend>Prices</legend>
-        <p class="hint" style="margin:0 0 14px">What can be rented, and its price under each
-          kind of day.</p>
-        <div class="gridscroll"><div id="pricegrid"></div></div>
+        <legend>Fees</legend>
+        <p class="hint" style="margin:0 0 14px">Charged on top of the rent. A fee marked
+          <b>returned</b> is a deposit: it is held rather than spent, and the quote keeps it
+          out of the total.</p>
+        <div id="feerows"></div>
       </fieldset>
 
       <fieldset class="rsec">
-        <legend>Extras</legend>
-        <p class="hint" style="margin:0 0 14px">What it is, what it costs, and when it
-          goes on the bill.</p>
-        <div id="extrarows"></div>
+        <legend>When the rent does not apply</legend>
+        <p class="hint" style="margin:0 0 14px">A reason the hall is free. The fees above
+          still apply.</p>
+        <div id="waiverrows"></div>
       </fieldset>
 
       <fieldset class="rsec">
-        <legend>The rules</legend>
-        <p class="hint" style="margin:0 0 14px">What it is called, its number, and what
-          it does to a quote. <b>Only printed</b> puts it on the rate card and leaves the
-          arithmetic alone.</p>
-        <div id="rulerows"></div>
+        <legend>What they are using</legend>
+        <p class="hint" style="margin:0 0 14px">Inside, outside, or both. Put a price on one
+          and the quote starts charging for it.</p>
+        <div id="userows"></div>
       </fieldset>
 
+      <fieldset class="rsec">
+        <legend>Also using</legend>
+        <p class="hint" style="margin:0 0 14px">The kitchen, the stage, the pit, the bar.
+          All free today. Put a number in and it appears on the next quote.</p>
+        <div id="optionrows"></div>
+      </fieldset>
 
-      <div class="aactions">
+      <fieldset class="rsec">
+        <legend>Security guards</legend>
+        <p class="hint" style="margin:0 0 14px">How many a non-member must hire, worked out
+          from the number of guests.</p>
+        <div class="fields">
+          <div class="field">
+            <label for="gBase">To start with</label>
+            <input type="number" id="gBase" min="0" step="1">
+          </div>
+          <div class="field">
+            <label for="gUpTo">Which covers up to</label>
+            <input type="number" id="gUpTo" min="0" step="1">
+          </div>
+        </div>
+        <div class="fields">
+          <div class="field">
+            <label for="gPer">Then one more for every</label>
+            <input type="number" id="gPer" min="1" step="1">
+          </div>
+          <div class="field">
+            <label for="gDays">Contract due, days before</label>
+            <input type="number" id="gDays" min="0" step="1">
+          </div>
+        </div>
+        <p class="hint" id="gExample" style="margin:12px 0 0"></p>
+      </fieldset>
+
+      <fieldset class="rsec">
+        <legend>Insurance</legend>
+        <div class="fields">
+          <div class="field">
+            <label for="iAmount">Cover of at least</label>
+            <input type="number" id="iAmount" min="0" step="1000">
+          </div>
+          <div class="field">
+            <label for="iDays">Certificate due, days before</label>
+            <input type="number" id="iDays" min="0" step="1">
+          </div>
+        </div>
+        <div class="field">
+          <label for="iNamed">Named as additional insured</label>
+          <input type="text" id="iNamed">
+        </div>
+      </fieldset>
+
+      <fieldset class="rsec">
+        <legend>The terms</legend>
+        <div class="fields">
+          <div class="field">
+            <label for="tRentDue">Rent due, days before</label>
+            <input type="number" id="tRentDue" min="0" step="1">
+          </div>
+          <div class="field">
+            <label for="tMonths">Member rate after, months</label>
+            <input type="number" id="tMonths" min="0" step="1">
+          </div>
+        </div>
+        <div class="fields">
+          <div class="field">
+            <label for="tAge">Renter must be at least</label>
+            <input type="number" id="tAge" min="0" step="1">
+          </div>
+          <div class="field">
+            <label for="tFrom">The hall is theirs from</label>
+            <input type="text" id="tFrom">
+          </div>
+        </div>
+        <div class="fields">
+          <div class="field">
+            <label for="tUntil">Until</label>
+            <input type="text" id="tUntil">
+          </div>
+          <div class="field">
+            <label for="tClear">Cleared by</label>
+            <input type="text" id="tClear">
+          </div>
+        </div>
+        <div class="field">
+          <label for="tSetup">Decorating the day before</label>
+          <input type="text" id="tSetup">
+        </div>
+        <div class="field">
+          <label for="tNoSales">What the hall may not be used for</label>
+          <textarea id="tNoSales" rows="2"></textarea>
+        </div>
+      </fieldset>
+
+      <fieldset class="rsec">
+        <legend>Cancelling</legend>
+        <p class="hint" style="margin:0 0 14px">What comes back, and how long before the
+          event it has to be. Longest notice first.</p>
+        <div id="cancelrows"></div>
+      </fieldset>
+
+      <div class="aactions eactions">
         <a class="abtn" href="rentals.html" target="_blank" rel="noopener">See the rate card</a>
+        <button class="abtn solid" type="button" id="rsave" hidden>Save</button>
+        <span class="asaid" id="rsaid" role="status" aria-live="polite"></span>
       </div>
     </form>
 
@@ -87,6 +200,6 @@
 </main>
 
 <script src="assets/js/rates-data.js?v=cf07d874"></script>
-<script src="assets/js/admin-rentals.js?v=94b9b248"></script>
+<script src="assets/js/admin-rentals.js?v=9ad18734"></script>
 </body>
 </html>
