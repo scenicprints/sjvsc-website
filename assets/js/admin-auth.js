@@ -64,7 +64,12 @@ window.SJVSC_AUTH = (function () {
       inbtn.className = 'abtn small';
       inbtn.textContent = 'Sign in to make changes';
       inbtn.addEventListener('click', function () {
-        window.Clerk.openSignIn({ afterSignInUrl: window.location.href });
+        /* Clerk's hosted sign-in page rather than a modal. The browser
+           bundle served for v6 has no UI components in it — openSignIn
+           throws — and a hosted page suits a site of plain HTML anyway:
+           no component to mount, no styling to keep in step, and Clerk
+           looks after the sign-up, the reset and the second factor. */
+        window.Clerk.redirectToSignIn({ redirectUrl: window.location.href });
       });
       box.appendChild(inbtn);
     }
