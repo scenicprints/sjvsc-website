@@ -646,8 +646,6 @@ html.mcalpop-open{overflow:hidden}
 .plines span{display:flex;justify-content:space-between;gap:16px;color:var(--ink-2)}
 .plines b{font-variant-numeric:tabular-nums}
 .pdep{margin:14px 0 0;font-size:.86rem;color:var(--ink-soft)}
-.psave{grid-column:1/-1;margin:6px 0 0;font-size:1.02rem;color:var(--ink-2)}
-.psave a{font-weight:600;white-space:nowrap}
 
 /* One list shape for What's included and House rules. Short lines in a
    single column: these are scanned, not read, and the paragraphs they

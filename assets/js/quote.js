@@ -125,8 +125,7 @@
           (n.deposit ? '<p class="pdep">' + money(n.deposit.amount) +
             ' held as a deposit, returned after the event.</p>' : '') +
         '</div>' +
-        (saving > 0 ? '<p class="psave">Membership is <b>$50 a year</b>. One booking pays ' +
-          'for it twelve times over. <a href="membership.html">Join the club &#8594;</a></p>' : '');
+        '';
     }
 
     /* ---- What's included and House rules.
