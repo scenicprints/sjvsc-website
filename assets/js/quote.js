@@ -93,73 +93,75 @@
   function drawRateCard() {
     var lead = el('rateLead');
     if (lead) {
-      lead.textContent = 'One price, whichever day of the week you take it. ' +
-        'What changes it is whether you are a member.';
+      lead.textContent = 'One price for the hall, whichever day of the week you take it, ' +
+        'and the kitchen, the stage, the pit and the bar come with it.';
     }
 
-    /* ---- the two totals, large ---- */
+    /* ---- the two totals, and the saving as the headline it is ---- */
     var cards = el('priceCards');
     if (cards) {
       var m = headline(true), n = headline(false);
-      var box = function (q, title, feature) {
-        return '<div class="pricecard' + (feature ? ' feature' : '') + '">' +
-          '<span class="eyebrow">' + title + '</span>' +
-          '<p class="pbig">' + money(q.total) + '</p>' +
-          '<p class="pnote">' + q.lines.map(function (l) {
-            return esc(l.label.replace(/,.*$/, '')) + ' ' + money(l.amount);
-          }).join(' &#183; ') + '</p>' +
-          (q.deposit
-            ? '<p class="pdep">plus ' + money(q.deposit.amount) + ' held as a deposit, returned after</p>'
-            : '<p class="pdep">no deposit held</p>') +
-          '</div>';
+      var saving = card.rent.nonmember - card.rent.member;
+
+      var detail = function (q) {
+        return q.lines.map(function (l) {
+          return '<span>' + esc(l.label.replace(/,.*$/, '')) +
+            '<b>' + money(l.amount) + '</b></span>';
+        }).join('');
       };
-      cards.innerHTML = box(m, 'As a member', true) + box(n, 'Not a member', false) +
-        '<p class="psave">Membership is <a href="membership.html">$50 a year</a> and takes ' +
-        money(card.rent.nonmember - card.rent.member) + ' off this.</p>';
+
+      cards.innerHTML =
+        '<div class="pricecard feature">' +
+          (saving > 0 ? '<span class="pflag">Saves ' + money(saving) + '</span>' : '') +
+          '<span class="eyebrow">As a club member</span>' +
+          '<p class="pbig">' + money(m.total) + '</p>' +
+          '<div class="plines">' + detail(m) + '</div>' +
+          '<p class="pdep">Nothing held as a deposit.</p>' +
+        '</div>' +
+        '<div class="pricecard">' +
+          '<span class="eyebrow">Not a member</span>' +
+          '<p class="pbig">' + money(n.total) + '</p>' +
+          '<div class="plines">' + detail(n) + '</div>' +
+          (n.deposit ? '<p class="pdep">' + money(n.deposit.amount) +
+            ' held as a deposit, returned after the event.</p>' : '') +
+        '</div>' +
+        (saving > 0 ? '<p class="psave">Membership is <b>$50 a year</b>. One booking pays ' +
+          'for it twelve times over. <a href="membership.html">Join the club &#8594;</a></p>' : '');
     }
 
-    /* ---- the same thing itemised ---- */
-    var t = el('rateTable');
-    if (t) {
-      var cell = function (f, member) {
-        return R.appliesTo(f.who, member)
-          ? '<td class="num">' + money(f.amount) + '</td>'
-          : '<td class="num muted">&#8212;</td>';
-      };
-      t.innerHTML =
-        '<thead><tr><th></th><th class="num">Member</th><th class="num">Not a member</th></tr></thead>' +
-        '<tbody><tr><td>Hall rental</td><td class="num">' + money(card.rent.member) +
-        '</td><td class="num">' + money(card.rent.nonmember) + '</td></tr>' +
-        card.fees.map(function (f) {
-          return '<tr' + (f.refundable ? ' class="held"' : '') + '><td>' + esc(f.name) +
-            (f.refundable ? ' <span class="muted">held, not spent</span>' : '') +
-            '</td>' + cell(f, true) + cell(f, false) + '</tr>';
-        }).join('') +
-        card.waivers.map(function (w) {
-          return '<tr><td>' + esc(w.name) +
-            (w.note ? ' <span class="muted">' + esc(w.note) + '</span>' : '') + '</td>' +
-            (R.appliesTo(w.who, true) ? '<td class="num">' + money(0) + '</td>' : '<td class="num muted">&#8212;</td>') +
-            (R.appliesTo(w.who, false) ? '<td class="num">' + money(0) + '</td>' : '<td class="num muted">&#8212;</td>') +
-            '</tr>';
-        }).join('') + '</tbody>';
-    }
-
-    /* ---- free today. Alcohol is a permission, not an amenity, so it is
-            not in the list of things thrown in. ---- */
+    /* ---- what comes with it. These are the good bits and they were a
+            muted sentence; a club that throws in a commercial kitchen
+            should say so. ---- */
     var ex = el('rateExtras');
     if (ex) {
       var free = card.options.filter(function (o) { return !o.price && o.id !== 'alcohol'; });
       var paid = card.options.filter(function (o) { return o.price; });
+      var waiver = card.waivers[0];
+
       ex.innerHTML =
-        (free.length ? '<p class="inclusive"><b>At no extra charge:</b> ' +
-          free.map(function (o) { return esc(o.name.toLowerCase()); }).join(', ') + '.</p>' : '') +
-        (paid.length ? '<div class="scroll"><table class="tbl" style="margin-top:14px"><tbody>' +
-          paid.map(function (o) {
-            return '<tr><td>' + esc(o.name) + '</td><td class="num">' + money(o.price) + '</td></tr>';
-          }).join('') + '</tbody></table></div>' : '');
+        (free.length
+          ? '<h3 class="inchead">Included, at no extra charge</h3>' +
+            '<ul class="ticks">' + free.map(function (o) {
+              return '<li>' + esc(o.name) +
+                (o.note ? '<span>' + esc(o.note) + '</span>' : '') + '</li>';
+            }).join('') + '</ul>'
+          : '') +
+        (paid.length
+          ? '<ul class="ticks paid">' + paid.map(function (o) {
+              return '<li>' + esc(o.name) + '<span>' + money(o.price) + '</span></li>';
+            }).join('') + '</ul>'
+          : '') +
+        /* The note on the waiver already says the hall is free, so the
+           sentence around it must not say so a second time. */
+        (waiver
+          ? '<p class="waivernote"><b>' + esc(waiver.name) + ':</b> ' +
+            esc(waiver.note || 'the hall is free to members.') +
+            (R.appliesTo(waiver.who, true) && !R.appliesTo(waiver.who, false)
+              ? ' Members only.' : '') + '</p>'
+          : '');
     }
 
-    /* ---- the terms, in three readable groups rather than one long list ---- */
+    /* ---- the terms. Reference, not sales, so they sit quietly. ---- */
     var rr = el('rateRules');
     if (rr) {
       var a = card.rules.access || {};
@@ -168,10 +170,9 @@
 
       var when = [];
       if (a.from) {
-        when.push('The hall is yours from <b>' + esc(a.from) + '</b> on the day until <b>' +
-          esc(a.until) + '</b>.');
+        when.push('Yours from <b>' + esc(a.from) + '</b> until <b>' + esc(a.until) + '</b>.');
       }
-      if (a.clearBy) when.push('You have until <b>' + esc(a.clearBy) + '</b> to clear up.');
+      if (a.clearBy) when.push('Until <b>' + esc(a.clearBy) + '</b> to clear up.');
       if (a.setupDayBefore) when.push('Members may decorate the day before, ' + esc(a.setupDayBefore) + '.');
       if (card.rules.noSales) when.push(esc(card.rules.noSales));
       if (card.rules.minimumAge) {
@@ -187,7 +188,7 @@
       bring.push('Liquor liability as well, if alcohol is served.');
       if (g.base) {
         bring.push('Non-members: <b>' + g.base + ' licensed guards</b> up to ' + g.baseUpTo +
-          ' guests, and one more for every ' + g.perExtra + ' after that.');
+          ' guests, one more for every ' + g.perExtra + ' after.');
       }
       if (card.rules.holdHarmless) {
         bring.push('A member who would rather not have guards signs the hold harmless statement.');
@@ -198,22 +199,22 @@
       }
 
       var back = (card.rules.cancellation || []).map(function (c) {
-        return (c.daysBefore ? '<b>' + c.daysBefore + ' days or more</b> before: '
-                             : '<b>Later than that</b>: ') +
-          esc(c.note || c.refund);
+        return (c.daysBefore ? '<b>' + c.daysBefore + '+ days</b> before: '
+                             : '<b>Later</b>: ') + esc(c.note || c.refund);
       });
 
       var group = function (title, items) {
         if (!items.length) return '';
-        return '<div class="termcol"><h3>' + title + '</h3><ul>' +
+        return '<div class="termcol"><h4>' + title + '</h4><ul>' +
           items.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>';
       };
 
-      rr.innerHTML = '<div class="termgrid">' +
+      rr.innerHTML = '<details class="terms"><summary>The terms, in full</summary>' +
+        '<div class="termgrid">' +
         group('When you have it', when) +
         group('What you provide', bring) +
         group('If you cancel', back) +
-        '</div>';
+        '</div></details>';
     }
   }
 
