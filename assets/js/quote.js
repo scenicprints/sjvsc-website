@@ -84,48 +84,7 @@
       : '';
   }
 
-  /* What a booking of each kind comes to, so the two numbers a reader
-     actually wants are the two numbers they see first. */
-  function headline(member) {
-    return R.quoteFor(card, { member: member, guests: 0 });
-  }
-
   function drawRateCard() {
-    var lead = el('rateLead');
-    if (lead) {
-      lead.textContent = 'One price for the hall, whichever day of the week you take it, ' +
-        'and the kitchen, the stage, the pit and the bar come with it.';
-    }
-
-    /* ---- the two totals, and the saving as the headline it is ---- */
-    var cards = el('priceCards');
-    if (cards) {
-      var m = headline(true), n = headline(false);
-
-      var detail = function (q) {
-        return q.lines.map(function (l) {
-          return '<span>' + esc(l.label.replace(/,.*$/, '')) +
-            '<b>' + money(l.amount) + '</b></span>';
-        }).join('');
-      };
-
-      cards.innerHTML =
-        '<div class="pricecard feature">' +
-          '<span class="eyebrow">As a club member</span>' +
-          '<p class="pbig">' + money(m.total) + '</p>' +
-          '<div class="plines">' + detail(m) + '</div>' +
-          '<p class="pdep">Nothing held as a deposit.</p>' +
-        '</div>' +
-        '<div class="pricecard">' +
-          '<span class="eyebrow">Not a member</span>' +
-          '<p class="pbig">' + money(n.total) + '</p>' +
-          '<div class="plines">' + detail(n) + '</div>' +
-          (n.deposit ? '<p class="pdep">' + money(n.deposit.amount) +
-            ' held as a deposit, returned after the event.</p>' : '') +
-        '</div>' +
-        '';
-    }
-
     /* ---- What's included and House rules.
 
        Both are short lines in one column, not prose. These are things to

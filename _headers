@@ -1,0 +1,12 @@
+# Pages were being cached for ten minutes, so pressing refresh could hand
+# back the version from before a change -- which wasted a good deal of
+# everyone's time. no-cache does not stop the browser keeping a copy; it
+# makes it ask first, and an unchanged file comes back as a 304.
+#
+# A rule for /assets/* was tried alongside this one and both applied, which
+# produced "no-cache, public, max-age=31536000, immutable" on every asset.
+# Scripts and stylesheets already carry a content hash in their URL, so a
+# revalidation on them is cheap and the long cache was not worth a
+# self-contradicting header.
+/*
+  Cache-Control: no-cache
