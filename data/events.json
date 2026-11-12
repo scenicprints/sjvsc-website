@@ -1,6 +1,6 @@
 [
   {
-    "id": "club-meeting-nov",
+    "id": "jass-fall",
     "title": "Fall Jass Party",
     "note": "Get ready to test your hand at Jass",
     "desc": "If you don't know how to play, we have a learning table! Come learn at 12:00 to get started or just to re-familiarize yourself with the game, so you can join the fun and play with everyone!\n\nNeed to learn how to play beforehand? There are many apps available for your phone. Just keep in mind that some use traditional Jass cards and the rules can be a bit different than playing at the Swiss Club. Just search for \"Swiss Jass\" apps to check them out.\n\nDownload the Cheat Sheet on how to play American Jass (it can be played 4- or 6-handed). This is just to get you started—experienced Jass enthusiasts bring a greater knowledge and skill set to the card table, and are sometimes a little more aggressive! But Jass at the Swiss Club is the gentler version.\n\nFor Jass at the Swiss Club, we play with men on one side and women on the other. After each hand, one side of the table moves down one space, which makes changing partners easy. We play nine hands before lunch, and after lunch, the opposite side moves. You get to visit and play with new people each hand, which makes for a very enjoyable day!\n\nA light lunch is served between rounds, and we also have a raffle and door prizes. Download the .pdf for more information on how the game works at the Swiss Club!",
@@ -24,7 +24,7 @@
     "id": "e1792808398146",
     "title": "Children's Christmas Party",
     "note": "For members and their children/grandchildren a day of fun arts and craft activities, pot luck, and of course singing!",
-    "desc": "Santa and Mrs. Claus will be coming to deliver gifts for the kids, hand-picked by the elves! Look for more information to come out in October. The RSVP cut-off date is November 25, 2025.\n\nA special thank you to Kim Widmer, who successfully ran the Children's Christmas Party for over 10 years! This year, thanks to Marge Betschart and her elves, we will continue the tradition.",
+    "desc": "Santa and Mrs. Claus will be coming to deliver gifts for the kids, hand-picked by the elves! Look for more information to come out in October. The RSVP cut-off date is November 25, 2026.\n\nA special thank you to Kim Widmer, who successfully ran the Children's Christmas Party for over 10 years! This year, thanks to Marge Betschart and her elves, we will continue the tradition.",
     "image": "assets/img/events/childrens-christmas.jpg",
     "date": "2026-12-05",
     "time": "12:00 PM",
@@ -37,18 +37,18 @@
     "ticksellers": [
       {
         "kind": "person",
-        "who": "Marge Bestchart",
+        "who": "Marge Betschart",
         "contact": "(209) 595-6784"
       },
       {
         "kind": "person",
-        "who": "Marge Bestchart",
+        "who": "Marge Betschart",
         "contact": "Mbetschart@aol.com"
       }
     ],
     "tickprice": "$15",
     "tickfrom": "2026-11-07",
-    "tickto": "2026-12-07"
+    "tickto": "2026-11-25"
   },
   {
     "id": "e1792808437801",
@@ -72,12 +72,12 @@
     "title": "Annual General Meeting",
     "note": "Voting of officers and bylaw changes",
     "desc": "",
-    "date": "2026-12-09",
+    "date": "2026-12-10",
     "time": "7:00 PM",
     "page": "",
     "link": "event-agm.html",
     "from": "2026-11-09",
-    "until": "2026-12-10",
+    "until": "2026-12-11",
     "details": [],
     "attachments": [],
     "ticksellers": [],
