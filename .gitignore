@@ -7,3 +7,10 @@ Thumbs.db
 *.log
 artifact-index.html
 recovered/
+
+# wrangler's local state: the local D1 database and build cache
+.wrangler/
+# generated from data/*.json by scripts/seed-from-json.mjs
+db/seed.sql
+# Clerk keys for local dev — never committed
+.dev.vars

@@ -1,0 +1,16 @@
+# Everything here is in the repository but must not be served.
+worker/
+db/
+scripts/
+tools/
+docs/
+node_modules/
+*.md
+wrangler.jsonc
+package.json
+package-lock.json
+.assetsignore
+.dev.vars
+.gitignore
+design/
+artifact-index.html

@@ -1,0 +1,41 @@
+{
+  // The whole site is one Worker: it serves the static pages from the repo
+  // root and answers /api/* itself. No Pages project, no second origin, so
+  // nothing to configure for CORS and one thing to deploy.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "sjvsc",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-11-01",
+
+  "assets": {
+    // The site as it already is: index.html and friends at the repo root.
+    // .assetsignore keeps the source and the notes out of what is served.
+    "directory": ".",
+    "binding": "ASSETS",
+    // Serves calendar.html at /calendar, which is how the old Network
+    // Solutions URLs keep working without redirect rules.
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    // /api/* must reach the Worker even though it is not a file on disk.
+    "run_worker_first": ["/api/*"]
+  },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sjvsc",
+      // Replace after `wrangler d1 create sjvsc`. Local dev ignores this.
+      "database_id": "REPLACE_AFTER_D1_CREATE",
+      "migrations_dir": "db/migrations"
+    }
+  ],
+
+  "observability": { "enabled": true },
+
+  "vars": {
+    // Set CLERK_ISSUER in the dashboard (or .dev.vars locally) once the Clerk
+    // instance exists. Until it is set every write is refused — see
+    // worker/auth.js. Reads never need it.
+    "CLERK_ISSUER": ""
+  }
+}

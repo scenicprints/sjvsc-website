@@ -1,0 +1,24 @@
+{
+  "name": "sjvsc-website",
+  "private": true,
+  "type": "module",
+  "description": "San Joaquin Valley Swiss Club \u2014 the site, and the Worker that lets the board change it.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create sjvsc",
+    "db:migrate:local": "wrangler d1 migrations apply sjvsc --local",
+    "db:migrate": "wrangler d1 migrations apply sjvsc --remote",
+    "db:seed:build": "node scripts/seed-from-json.mjs",
+    "db:seed:local": "wrangler d1 execute sjvsc --local --file db/seed.sql",
+    "db:seed": "wrangler d1 execute sjvsc --remote --file db/seed.sql",
+    "stamp": "python tools/stamp-assets.py",
+    "test": "node scripts/test-shape.mjs"
+  },
+  "dependencies": {
+    "@clerk/backend": "^2.32.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.48.0"
+  }
+}
