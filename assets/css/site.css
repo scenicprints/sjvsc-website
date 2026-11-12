@@ -677,3 +677,8 @@ html.mcalpop-open{overflow:hidden}
 .notabooking{padding:20px 22px;border-top:1px solid var(--line);background:var(--cream-2)}
 .notabooking p{margin:0}
 .notabooking p + p{margin-top:8px}
+
+/* the ticked list inside a prose column, where a paragraph follows it */
+.prose .ticks{margin:14px 0 20px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:8px 20px;max-width:none}
+.prose .ticks li{padding-left:24px}

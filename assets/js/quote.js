@@ -129,92 +129,81 @@
           'for it twelve times over. <a href="membership.html">Join the club &#8594;</a></p>' : '');
     }
 
-    /* ---- what comes with it. These are the good bits and they were a
-            muted sentence; a club that throws in a commercial kitchen
-            should say so. ---- */
-    var ex = el('rateExtras');
-    if (ex) {
-      var free = card.options.filter(function (o) { return !o.price && o.id !== 'alcohol'; });
-      var paid = card.options.filter(function (o) { return o.price; });
-      var waiver = card.waivers[0];
+    /* ---- What's included and House rules.
 
-      ex.innerHTML =
-        (free.length
-          ? '<h3 class="inchead">Included, at no extra charge</h3>' +
-            '<ul class="ticks">' + free.map(function (o) {
-              return '<li>' + esc(o.name) +
-                (o.note ? '<span>' + esc(o.note) + '</span>' : '') + '</li>';
-            }).join('') + '</ul>'
-          : '') +
-        (paid.length
-          ? '<ul class="ticks paid">' + paid.map(function (o) {
-              return '<li>' + esc(o.name) + '<span>' + money(o.price) + '</span></li>';
-            }).join('') + '</ul>'
-          : '') +
-        /* The note on the waiver already says the hall is free, so the
-           sentence around it must not say so a second time. */
-        (waiver
-          ? '<p class="waivernote"><b>' + esc(waiver.name) + ':</b> ' +
-            esc(waiver.note || 'the hall is free to members.') +
-            (R.appliesTo(waiver.who, true) && !R.appliesTo(waiver.who, false)
-              ? ' Members only.' : '') + '</p>'
-          : '');
+       Both were placeholder blocks on the page and both are written from
+       the card, so the board changing a figure in the admin changes the
+       prose here too. They belong under their own headings rather than
+       repeated beside the prices. ---- */
+
+    var inc = el('included');
+    if (inc) {
+      var free = card.options.filter(function (o) { return !o.price && o.id !== 'alcohol'; });
+      var kitchen = R.byId(card.options, 'kitchen');
+      var paid = card.options.filter(function (o) { return o.price; });
+      var a = card.rules.access || {};
+
+      var bits = [];
+      if (free.length) {
+        bits.push('<ul class="ticks">' + free.map(function (o) {
+          return '<li>' + esc(o.name) + '</li>';
+        }).join('') + '</ul>');
+      }
+      if (kitchen && kitchen.note) bits.push('<p>' + esc(kitchen.note) + '</p>');
+      if (a.from) {
+        bits.push('<p>The hall is yours from <b>' + esc(a.from) + '</b> on the day until <b>' +
+          esc(a.until) + '</b>, and you have until <b>' + esc(a.clearBy) +
+          '</b> the next day to clear up.</p>');
+      }
+      if (a.setupDayBefore) {
+        bits.push('<p>Members can get in the day before to decorate, ' +
+          esc(a.setupDayBefore) + '.</p>');
+      }
+      if (paid.length) {
+        bits.push('<p>' + paid.map(function (o) {
+          return esc(o.name) + ' is ' + money(o.price);
+        }).join('. ') + '.</p>');
+      }
+      inc.innerHTML = bits.join('');
     }
 
-    /* ---- the terms. Reference, not sales, so they sit quietly. ---- */
-    var rr = el('rateRules');
-    if (rr) {
-      var a = card.rules.access || {};
+    var hr = el('houserules');
+    if (hr) {
       var ins = card.rules.insurance || {};
       var g = card.rules.guards || {};
+      var out = [];
 
-      var when = [];
-      if (a.from) {
-        when.push('Yours from <b>' + esc(a.from) + '</b> until <b>' + esc(a.until) + '</b>.');
-      }
-      if (a.clearBy) when.push('Until <b>' + esc(a.clearBy) + '</b> to clear up.');
-      if (a.setupDayBefore) when.push('Members may decorate the day before, ' + esc(a.setupDayBefore) + '.');
-      if (card.rules.noSales) when.push(esc(card.rules.noSales));
+      if (card.rules.noSales) out.push('<p>' + esc(card.rules.noSales) + '</p>');
       if (card.rules.minimumAge) {
-        when.push('Whoever rents it must be <b>' + card.rules.minimumAge + '</b> or older.');
+        out.push('<p>Whoever signs for the hall must be <b>' + card.rules.minimumAge +
+          '</b> or older.</p>');
       }
-
-      var bring = [];
       if (ins.amount) {
-        bring.push('Liability cover of at least <b>' + money(ins.amount) + '</b>' +
-          (ins.named ? ', naming ' + esc(ins.named) : '') +
-          (ins.daysBefore ? ', ' + ins.daysBefore + ' days before' : '') + '.');
+        out.push('<p>You need liability cover of at least <b>' + money(ins.amount) + '</b>' +
+          (ins.named ? ', naming ' + esc(ins.named) + ' as additional insured' : '') +
+          (ins.daysBefore ? ', and the certificate has to reach the club ' + ins.daysBefore +
+            ' days before the event' : '') + '. Serving alcohol means liquor liability too.</p>');
       }
-      bring.push('Liquor liability as well, if alcohol is served.');
       if (g.base) {
-        bring.push('Non-members: <b>' + g.base + ' licensed guards</b> up to ' + g.baseUpTo +
-          ' guests, one more for every ' + g.perExtra + ' after.');
+        out.push('<p>Non-members hire licensed security guards: <b>' + g.base + '</b> up to ' +
+          g.baseUpTo + ' guests, and one more for every ' + g.perExtra +
+          ' after that. ' + esc(g.note || '') + '</p>');
       }
-      if (card.rules.holdHarmless) {
-        bring.push('A member who would rather not have guards signs the hold harmless statement.');
+      if (card.rules.holdHarmless && card.rules.holdHarmless.note) {
+        out.push('<p>' + esc(card.rules.holdHarmless.note) + '</p>');
       }
       if (card.rules.memberMonths) {
-        bring.push('The member rate is for members of at least <b>' +
-          card.rules.memberMonths + ' months</b>.');
+        out.push('<p>The member rate is for members of at least <b>' +
+          card.rules.memberMonths + ' months</b>.</p>');
       }
-
-      var back = (card.rules.cancellation || []).map(function (c) {
-        return (c.daysBefore ? '<b>' + c.daysBefore + '+ days</b> before: '
-                             : '<b>Later</b>: ') + esc(c.note || c.refund);
-      });
-
-      var group = function (title, items) {
-        if (!items.length) return '';
-        return '<div class="termcol"><h4>' + title + '</h4><ul>' +
-          items.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>';
-      };
-
-      rr.innerHTML = '<details class="terms"><summary>The terms, in full</summary>' +
-        '<div class="termgrid">' +
-        group('When you have it', when) +
-        group('What you provide', bring) +
-        group('If you cancel', back) +
-        '</div></details>';
+      var cancels = (card.rules.cancellation || []).filter(function (c) { return c.note; });
+      if (cancels.length) {
+        out.push('<p>If you cancel: ' + cancels.map(function (c) {
+          return (c.daysBefore ? c.daysBefore + ' days or more before, ' : 'later than that, ') +
+            esc(c.note).replace(/^The |^Half of the /, function (m) { return m.toLowerCase(); });
+        }).join(' ') + '</p>');
+      }
+      hr.innerHTML = out.join('');
     }
   }
 
