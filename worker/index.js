@@ -168,6 +168,72 @@ async function putRates(request, env, who) {
   return json(body);
 }
 
+/* ---- photographs the board uploads --------------------------------
+
+   They live in D1, beside everything else. R2 is the tool built for files
+   and wants a subscription the club is not taking; the database is here
+   already and a club gallery is nowhere near its limits.
+
+   The browser resizes before sending, so what arrives is a few hundred
+   kilobytes of JPEG rather than whatever came off a phone. The ceiling
+   below is a backstop against a page that forgets to, not the expected
+   size.
+
+   A key is never reused, so a picture URL can be cached forever. */
+
+const PICTURE_TYPES = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+};
+const MAX_PICTURE = 5 * 1024 * 1024;
+
+function pictureKey(slug, type) {
+  const clean = String(slug || 'club').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 24) || 'club';
+  const rand = Math.random().toString(36).slice(2, 8);
+  return `${clean}/${Date.now().toString(36)}-${rand}.${PICTURE_TYPES[type]}`;
+}
+
+async function putPicture(request, env, who, slug) {
+  const type = (request.headers.get('Content-Type') || '').split(';')[0].trim();
+  if (!PICTURE_TYPES[type]) {
+    return oops(415, 'A picture has to be a JPEG, a PNG or a WebP.');
+  }
+
+  const body = await request.arrayBuffer();
+  if (!body.byteLength) return oops(400, 'That picture was empty.');
+  if (body.byteLength > MAX_PICTURE) {
+    return oops(413, 'That picture is too big. It should be resized before it is sent.');
+  }
+
+  const key = pictureKey(slug, type);
+  await env.DB.prepare(
+    'INSERT INTO pictures (key, bytes, type, slug, created_by) VALUES (?, ?, ?, ?, ?)'
+  ).bind(key, [...new Uint8Array(body)], type, slug || null, who).run();
+
+  return json({ src: 'pictures/' + key, bytes: body.byteLength }, 201);
+}
+
+async function getPicture(env, key) {
+  const row = await env.DB.prepare('SELECT bytes, type FROM pictures WHERE key = ?')
+    .bind(key).first();
+  if (!row) return new Response('Not found', { status: 404 });
+
+  /* D1 hands a BLOB back as an array of byte values rather than as an
+     ArrayBuffer, so it is rebuilt here. */
+  const bytes = row.bytes instanceof ArrayBuffer
+    ? new Uint8Array(row.bytes)
+    : Uint8Array.from(row.bytes);
+
+  return new Response(bytes, {
+    headers: {
+      'Content-Type': row.type || 'image/jpeg',
+      /* the key is unique to the upload, so this never goes stale */
+      'Cache-Control': 'public, max-age=31536000, immutable',
+    },
+  });
+}
+
 async function allGallery(env) {
   const { results } = await env.DB.prepare('SELECT slug, data FROM gallery').all();
   const out = {};
@@ -202,6 +268,11 @@ async function route(request, env) {
     if (path === '/api/rates')  return json(await activeRates(env) ?? {}, 200, READ_CACHE);
     if (path === '/api/gallery') return json(await allGallery(env), 200, READ_CACHE);
 
+    /* A photograph is public: it is on the website. */
+    if (path.startsWith('/pictures/')) {
+      return getPicture(env, path.slice('/pictures/'.length));
+    }
+
     /* The admin asks this to decide whether to show the form as editable. */
     if (path === '/api/me') {
       const auth = await requireBoard(request, env);
@@ -216,7 +287,8 @@ async function route(request, env) {
   const writesTo =
     path === '/api/events' || path.startsWith('/api/events/') ||
     path === '/api/saved'  || path.startsWith('/api/saved/')  ||
-    path === '/api/rates'  || path.startsWith('/api/gallery/');
+    path === '/api/rates'  || path.startsWith('/api/gallery/') ||
+    path.startsWith('/api/pictures');
 
   if (writesTo && method !== 'GET' && method !== 'HEAD') {
     const auth = await requireBoard(request, env);
@@ -233,6 +305,10 @@ async function route(request, env) {
     }
 
     if (method === 'PUT' && path === '/api/rates') return putRates(request, env, who);
+
+    if (method === 'POST' && path === '/api/pictures') {
+      return putPicture(request, env, who, url.searchParams.get('for'));
+    }
 
     const slug = /^\/api\/gallery\/([^/]+)$/.exec(path)?.[1];
     if (slug && method === 'PUT') return putGallery(request, env, who, slug);

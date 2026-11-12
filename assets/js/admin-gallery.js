@@ -135,31 +135,89 @@
     draw();
   }
 
-  /* A picture is added by naming a file that is already in the site.
+  /* ---- adding a picture ----------------------------------------------
 
-     Uploading one from a phone needs somewhere to put it, and the two
-     places Cloudflare offers are R2, which wants a subscription the club
-     is not taking, and KV, which is in the free plan already. Until that
-     is decided this stays a path, and whichever way it goes only this
-     function changes: everything else on the screen works on a list of
-     {src, caption} and does not care where src points. */
+     A photograph off a phone is several megabytes and far larger than any
+     band will ever show, so it is resized here, in the browser, before it
+     is sent. What leaves the device is a few hundred kilobytes.
+
+     It goes to Workers KV, which is in the Cloudflare plan the club
+     already has. R2 is the better tool for files and wants a subscription
+     the club is not taking. */
+
+  var LONG_EDGE = 1600;
+  var QUALITY = 0.82;
+
+  function shrink(file) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () {
+        URL.revokeObjectURL(url);
+        var w = img.naturalWidth, h = img.naturalHeight;
+        var scale = Math.min(1, LONG_EDGE / Math.max(w, h));
+        var cw = Math.round(w * scale), ch = Math.round(h * scale);
+        var canvas = document.createElement('canvas');
+        canvas.width = cw; canvas.height = ch;
+        canvas.getContext('2d').drawImage(img, 0, 0, cw, ch);
+        canvas.toBlob(function (blob) {
+          /* A canvas that will not encode is better reported than silently
+             sending the original, which could be twelve megabytes. */
+          if (blob) resolve(blob); else reject(new Error('That picture could not be read.'));
+        }, 'image/jpeg', QUALITY);
+      };
+      img.onerror = function () {
+        URL.revokeObjectURL(url);
+        reject(new Error('That file is not a picture this browser can open.'));
+      };
+      img.src = url;
+    });
+  }
+
   function add() {
-    var src = window.prompt(
-      'Where is the picture? A path inside the site, such as\n' +
-      'assets/img/gallery/jass/1.jpg');
-    if (!src) return;
-    src = src.trim().replace(/^\/+/, '');
-    if (!/\.(jpe?g|png|webp|gif|avif)$/i.test(src)) {
-      said('That does not look like a picture file.', true);
-      return;
-    }
+    if (!canEdit || !page) return;
     if (pics.length >= G.MAX_PER_PAGE) {
       said('This page already holds ' + G.MAX_PER_PAGE + ' pictures.', true);
       return;
     }
-    pics.push({ src: src, caption: '' });
-    said('');
-    draw();
+
+    var chooser = document.createElement('input');
+    chooser.type = 'file';
+    chooser.accept = 'image/*';
+    chooser.multiple = true;
+    chooser.addEventListener('change', function () {
+      var files = [].slice.call(chooser.files || []);
+      if (!files.length) return;
+      var room = G.MAX_PER_PAGE - pics.length;
+      if (files.length > room) {
+        said('Only ' + room + ' more will fit on this page.', true);
+        files = files.slice(0, room);
+      }
+
+      var btn = document.getElementById('gadd');
+      btn.disabled = true;
+      var done = 0;
+
+      files.reduce(function (chain, file) {
+        return chain.then(function () {
+          said('Adding ' + (done + 1) + ' of ' + files.length + '...');
+          return shrink(file)
+            .then(function (blob) { return window.SJVSC_STORE.upload(blob, page.id); })
+            .then(function (res) {
+              pics.push({ src: res.src, caption: '' });
+              done++;
+              draw();
+            });
+        });
+      }, Promise.resolve())
+        .then(function () {
+          said(done + (done === 1 ? ' picture added' : ' pictures added') +
+            '. Press Save to put them on the page.');
+        })
+        .catch(function (err) { said(err.message || 'That did not upload.', true); })
+        .then(function () { btn.disabled = false; });
+    });
+    chooser.click();
   }
 
   function save() {

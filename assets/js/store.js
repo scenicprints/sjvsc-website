@@ -85,6 +85,26 @@ window.SJVSC_STORE = (function () {
         .catch(function () { return { signedIn: false }; });
     },
 
+    /* A picture is bytes, not JSON, so it does not go through send():
+       the body is the file itself and the type header describes it. */
+    upload: function (blob, forSlug) {
+      var token = window.SJVSC_TOKEN ? window.SJVSC_TOKEN() : Promise.resolve(null);
+      return token.then(function (t) {
+        var headers = { 'Content-Type': blob.type || 'image/jpeg' };
+        if (t) headers.Authorization = 'Bearer ' + t;
+        return fetch(API + 'pictures?for=' + encodeURIComponent(forSlug || ''), {
+          method: 'POST', credentials: 'same-origin', headers: headers, body: blob
+        });
+      }).then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (data) {
+          if (r.ok) return data;
+          var err = new Error(data && data.error ? data.error : 'That picture did not upload.');
+          err.status = r.status;
+          throw err;
+        });
+      });
+    },
+
     create: function (name, body) { return send('POST', name, body); },
     update: function (name, id, body) { return send('PUT', name + '/' + encodeURIComponent(id), body); },
     remove: function (name, id) { return send('DELETE', name + '/' + encodeURIComponent(id)); },

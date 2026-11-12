@@ -16,8 +16,9 @@
     // Solutions URLs keep working without redirect rules.
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page",
-    // /api/* must reach the Worker even though it is not a file on disk.
-    "run_worker_first": ["/api/*"]
+    // Neither /api/* nor an uploaded photograph is a file on disk, so both
+    // have to reach the Worker rather than the asset handler.
+    "run_worker_first": ["/api/*", "/pictures/*"]
   },
 
   "d1_databases": [
