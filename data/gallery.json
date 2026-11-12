@@ -17,6 +17,10 @@
     {
       "src": "assets/img/gallery/echoes/490833321_10160881230237115_8635471491323325700_n.jpg",
       "caption": "The chorus singing in front of the painted chalet"
+    },
+    {
+      "src": "assets/img/swiss-echoes-chorus.jpg",
+      "caption": "The Swiss Echoes in Swiss costume, standing on risers on the hall stage in front of a painted chalet backdrop"
     }
   ],
   "almond": [
@@ -35,6 +39,124 @@
     {
       "src": "assets/img/gallery/almond/641311169_10162113973727115_7673311204173951468_n.jpg",
       "caption": "Two of the girls in front of the float"
+    },
+    {
+      "src": "assets/img/almond-volunteers.jpg",
+      "caption": "Volunteers on parade day."
+    },
+    {
+      "src": "assets/img/almond-dance.jpg",
+      "caption": "The hall floor crowded with people dancing under coloured lights"
+    },
+    {
+      "src": "assets/img/almond-float.jpg",
+      "caption": "The Swiss Club float on a trailer, hung with cantonal shields and a banner reading Almond Blossom Dance"
+    }
+  ],
+  "history": [
+    {
+      "src": "assets/img/hall-interior.jpg",
+      "caption": "The inside of the hall, with the painted alpine backdrop on the stage"
+    },
+    {
+      "src": "assets/img/hall-sign.jpg",
+      "caption": "The carved sign over the hall door reading San Joaquin Valley Swiss Club, Est. 1926, Inc. 1941"
+    }
+  ],
+  "schwingfests": [
+    {
+      "src": "assets/img/junior-winners.jpg",
+      "caption": "Juniors with their awards."
+    },
+    {
+      "src": "assets/img/schwingen-kids.jpg",
+      "caption": "Two boys in burlap breeches taking hold of each other in the sawdust"
+    },
+    {
+      "src": "assets/img/schwingen-seniors.jpg",
+      "caption": "Two men wrestling in the sawdust ring in front of spectators"
+    }
+  ],
+  "camp": [
+    {
+      "src": "assets/img/buebe-wrestling.jpg",
+      "caption": "Two boys wrestling in the sawdust ring"
+    }
+  ],
+  "kochbuch": [
+    {
+      "src": "assets/img/nusstorte.jpg",
+      "caption": "Bündner Nusstorte."
+    },
+    {
+      "src": "assets/img/cheese-fondue.jpg",
+      "caption": "Cheese fondue."
+    },
+    {
+      "src": "assets/img/aelplermagronen.jpg",
+      "caption": "Älplermagronen."
+    },
+    {
+      "src": "assets/img/linzertorte.jpg",
+      "caption": "Linzertorte."
+    },
+    {
+      "src": "assets/img/braetzli.jpg",
+      "caption": "Braetzli."
+    }
+  ],
+  "bbq": [
+    {
+      "src": "assets/img/buebe-winners.jpg",
+      "caption": "The Buebe Schwingfest winners."
+    },
+    {
+      "src": "assets/img/buebe-wrestling.jpg",
+      "caption": "Two boys wrestling in the sawdust ring at the Buebe Schwingfest"
+    },
+    {
+      "src": "assets/img/bbq-grill.jpg",
+      "caption": "Members grilling chicken over a long barbecue at the hall"
+    }
+  ],
+  "hall": [
+    {
+      "src": "assets/img/hall-banquet.jpg",
+      "caption": "The hall set for a banquet with long tables of guests filling the room"
+    },
+    {
+      "src": "assets/img/hall-dancefloor.jpg",
+      "caption": "The hall dance floor with the wooden bar, cantonal crests on the wall and string lights overhead"
+    }
+  ],
+  "schwingen": [
+    {
+      "src": "assets/img/schwingen-kids.jpg",
+      "caption": "The Buebe Schwingfest, held each July with the Members' BBQ."
+    }
+  ],
+  "schwingers": [
+    {
+      "src": "assets/img/schwingen-seniors.jpg",
+      "caption": "Two men wrestling in the sawdust ring in front of spectators"
+    },
+    {
+      "src": "assets/img/dessert-auction.jpg",
+      "caption": "The silent dessert auction."
+    },
+    {
+      "src": "assets/img/schwinger-dinner.jpg",
+      "caption": "About 300 people come to the Schwinger Dinner."
+    }
+  ],
+  "wcswa": [
+    {
+      "src": "assets/img/schwingen-seniors.jpg",
+      "caption": "Two men wrestling in the sawdust ring in front of spectators"
+    },
+    {
+      "src": "assets/img/wcswa-emblem.jpg",
+      "caption": "The association emblem: a wrestler in a shirt bearing the Swiss cross, within a wreath of oak leaves and mountains"
     }
   ]
 }

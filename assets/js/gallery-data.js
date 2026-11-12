@@ -27,7 +27,11 @@ window.SJVSC_GALLERY = (function () {
     { id: 'bbq',          name: 'Members’ BBQ',                 page: 'members-bbq.html' },
     { id: 'oktoberfest',  name: 'Oktoberfest',                       page: 'event-oktoberfest.html' },
     { id: 'jass',         name: 'Jass',                              page: 'event-jass.html' },
-    { id: 'almond',       name: 'Almond Blossom Parade and Dance',   page: 'almond-blossom.html' }
+    { id: 'almond',       name: 'Almond Blossom Parade and Dance',   page: 'almond-blossom.html' },
+    { id: 'history',      name: 'Club history',                      page: 'club-history.html' },
+    { id: 'kochbuch',     name: 'Chuchichäschtli Chochbuech',          page: 'kochbuch.html' },
+    { id: 'hall',         name: 'Hall rental',                       page: 'rentals.html' },
+    { id: 'wcswa',        name: 'West Coast Swiss Wrestling',        page: 'wcswa.html' }
   ];
 
   /* The club's own photographs, which ship with the site so the galleries are
@@ -65,10 +69,17 @@ window.SJVSC_GALLERY = (function () {
   function all() { return MAP; }
 
   function load() {
+    /* A page that forgot to load store.js used to take the whole module
+       down with a TypeError, and the band never drew at all. The seed is
+       a perfectly good answer when there is nothing to ask. */
+    if (!window.SJVSC_STORE) {
+      console.warn('No store on this page; the bands are showing the seed.');
+      return Promise.resolve(MAP);
+    }
     return window.SJVSC_STORE.read('gallery', SEED).then(function (m) {
       MAP = m && typeof m === 'object' ? m : clone(SEED);
       return MAP;
-    });
+    }).catch(function () { return MAP; });
   }
 
 
