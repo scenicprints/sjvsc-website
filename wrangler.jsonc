@@ -39,9 +39,16 @@
   "observability": { "enabled": true },
 
   "vars": {
-    // Set CLERK_ISSUER in the dashboard (or .dev.vars locally) once the Clerk
-    // instance exists. Until it is set every write is refused — see
-    // worker/auth.js. Reads never need it.
-    "CLERK_ISSUER": ""
+    // The Clerk instance the admin signs in against. This is the development
+    // instance; a production one gets its own issuer when the club's domain
+    // is live, and this value changes with it.
+    //
+    // The keys themselves are secrets, not vars: CLERK_JWT_KEY, which the
+    // Worker checks session tokens against, and CLERK_AUTHORIZED_PARTIES,
+    // the origins a token may have been minted for. Both are set with
+    // `wrangler secret put` and neither is in this file. Without
+    // CLERK_JWT_KEY every write is refused — see worker/auth.js.
+    "CLERK_ISSUER": "https://pumped-lab-6919.clerk.accounts.dev",
+    "CLERK_PUBLISHABLE_KEY": "pk_test_cHVtcGVkLWxhYi02OTE5LmNsZXJrLmFjY291bnRzLmRldiQ"
   }
 }
