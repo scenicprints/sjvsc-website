@@ -1,122 +1,85 @@
 {
-  "days": [
-    {
-      "id": "sat",
-      "name": "Saturday",
-      "covers": [
-        6
-      ]
-    },
-    {
-      "id": "frisun",
-      "name": "Friday / Sunday",
-      "covers": [
-        5,
-        0
-      ]
-    },
-    {
-      "id": "week",
-      "name": "Weekday",
-      "covers": [
-        1,
-        2,
-        3,
-        4
-      ]
-    }
-  ],
-  "spaces": [
-    {
-      "id": "hall",
-      "name": "Hall only",
-      "prices": {
-        "sat": 1800,
-        "frisun": 1400,
-        "week": 900
-      }
-    },
-    {
-      "id": "both",
-      "name": "Hall and grounds",
-      "prices": {
-        "sat": 2200,
-        "frisun": 1750,
-        "week": 1200
-      }
-    },
-    {
-      "id": "grounds",
-      "name": "Grounds only",
-      "prices": {
-        "sat": 700,
-        "frisun": 600,
-        "week": 450
-      }
-    }
-  ],
-  "extras": [
-    {
-      "id": "kitchen",
-      "name": "Commercial kitchen",
-      "price": 250,
-      "when": "choose"
-    },
-    {
-      "id": "linens",
-      "name": "Linens",
-      "price": 200,
-      "when": "choose"
-    },
-    {
-      "id": "av",
-      "name": "Sound system and projector",
-      "price": 150,
-      "when": "choose"
-    },
+  "rent": {
+    "member": 600,
+    "nonmember": 1200
+  },
+  "fees": [
     {
       "id": "cleaning",
-      "name": "End-of-night cleaning",
-      "price": 300,
-      "when": "choose"
+      "name": "Cleaning fee",
+      "amount": 500,
+      "who": "all",
+      "refundable": false,
+      "dueDays": 10,
+      "note": "Not refundable. Due ten days before the event."
     },
     {
-      "id": "bar",
-      "name": "Licensed bartender",
-      "price": 240,
-      "when": "alcohol"
+      "id": "deposit",
+      "name": "Security and damage deposit",
+      "amount": 800,
+      "who": "nonmember",
+      "refundable": true,
+      "dueDays": null,
+      "note": "Due with the application, and it holds the date. Returned in full within fifteen days if the hall is left in order."
     }
   ],
-  "rules": [
+  "waivers": [
     {
-      "id": "hours",
-      "name": "Hours included",
-      "value": 8,
-      "does": "hours"
-    },
-    {
-      "id": "hourly",
-      "name": "Each hour after that",
-      "value": 150,
-      "does": "hourly"
-    },
-    {
-      "id": "discount",
-      "name": "Members take off",
-      "value": 25,
-      "does": "discount"
-    },
-    {
-      "id": "booking",
-      "name": "Booking deposit (credited against the total)",
-      "value": 500,
-      "does": "print"
-    },
-    {
-      "id": "damage",
-      "name": "Damage deposit (refundable)",
-      "value": 500,
-      "does": "print"
+      "id": "funeral",
+      "name": "Funeral or celebration of life",
+      "who": "member",
+      "waives": "rent",
+      "note": "The hall is free. The cleaning fee still applies."
     }
-  ]
+  ],
+  "use": [
+    { "id": "inside", "name": "Inside only", "price": 0 },
+    { "id": "outside", "name": "Outside only", "price": 0 },
+    { "id": "both", "name": "Inside and outside", "price": 0 }
+  ],
+  "options": [
+    { "id": "kitchen", "name": "Kitchen", "price": 0,
+      "note": "Stove, refrigerator, the kitchen side of the walk-in, and the washing up. No utensils are provided." },
+    { "id": "stage", "name": "Outside stage", "price": 0 },
+    { "id": "bbq", "name": "Outside BBQ pit", "price": 0 },
+    { "id": "outsidebar", "name": "Outside bar", "price": 0 },
+    { "id": "alcohol", "name": "Alcohol will be served", "price": 0, "requiresLiquorLiability": true }
+  ],
+  "rules": {
+    "rentDueDays": 30,
+    "memberMonths": 24,
+    "access": {
+      "from": "9:00 am",
+      "until": "1:00 am",
+      "clearBy": "noon the next day",
+      "setupDayBefore": "9:00 am to 8:00 pm, on request"
+    },
+    "insurance": {
+      "amount": 1000000,
+      "daysBefore": 10,
+      "named": "San Joaquin Valley Swiss Club, Inc."
+    },
+    "guards": {
+      "who": "nonmember",
+      "base": 2,
+      "baseUpTo": 199,
+      "perExtra": 100,
+      "daysBefore": 10,
+      "note": "State of California licensed, from a company the Swiss Club Manager has approved. On site one hour before and one hour after, and the premises are vacated when they leave."
+    },
+    "holdHarmless": {
+      "who": "member",
+      "note": "A member who chooses not to have security guards signs the club's hold harmless statement instead."
+    },
+    "cancellation": [
+      { "daysBefore": 60, "refund": "all", "less": 50,
+        "note": "The deposit is returned less a $50 processing fee." },
+      { "daysBefore": 30, "refund": "half",
+        "note": "Half of the deposit is returned." },
+      { "daysBefore": 0, "refund": "none",
+        "note": "The deposit is not returned." }
+    ],
+    "noSales": "The hall is for private parties. It is not open to the public and no beverages may be sold.",
+    "minimumAge": 21
+  }
 }
