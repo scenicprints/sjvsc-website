@@ -466,6 +466,25 @@ a.evt:hover .dt b,a.evt:hover .dt span{color:#fff}
   letter-spacing:.15em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px}
 .erows span{display:block;line-height:1.55;overflow-wrap:anywhere}
 
+/* What happens through the day. It takes the whole width of the row grid
+   rather than one 210px column of it, because a schedule is only worth
+   having if the times line up, and they cannot line up in a column that
+   narrow. The time keeps its own column, sized to the longest one there,
+   so "Saturday 11am" and "noon" still start in the same place. */
+.erow-sked{grid-column:1/-1}
+.esked{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:8px 20px}
+.esked-at{font-family:var(--ui);font-weight:700;font-size:.84rem;
+  line-height:1.6;white-space:nowrap}
+.esked-what{line-height:1.6;overflow-wrap:anywhere}
+
+@media(max-width:520px){
+  /* a phone cannot hold a time column and a sentence beside it without
+     squeezing the sentence to two words a line */
+  .esked{grid-template-columns:1fr;gap:0}
+  .esked-at{margin-top:11px}
+  .esked-at:first-child{margin-top:0}
+}
+
 @media(max-width:860px){
   /* on a narrow screen they stack, and the headings take the rule back */
   .ecard-body.both{grid-template-columns:1fr;gap:0}

@@ -1,0 +1,12 @@
+-- What happens through the day, for an event that is not one thing at one
+-- time. Oktoberfest opens at eleven, serves at twelve, wrestles at two and
+-- dances until midnight, and until now the only place to say so was a
+-- details heading, where it came out as a paragraph of times run together.
+--
+-- A list of {at, what}. `at` is free text rather than a time, because an
+-- event that runs over a weekend needs to say "Saturday 11am", and because
+-- "after the parade" is a real answer the club gives.
+--
+-- Nullable and absent on every row that already exists: an event with no
+-- schedule reads exactly as it did.
+ALTER TABLE events ADD COLUMN schedule TEXT;

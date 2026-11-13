@@ -292,6 +292,16 @@ window.SJVSC = (function () {
   }
 
   /* One line per price, for the Tickets row on the event's own card. */
+  /* What happens through the day. A line with nothing in it at all is
+     dropped; a line with only a time, or only a thing, is kept, because
+     "noon" against an empty right-hand side is a reader's problem and
+     not ours to guess at. */
+  function schedule(e) {
+    return (e && e.schedule || []).map(function (s) {
+      return { at: String(s && s.at || '').trim(), what: String(s && s.what || '').trim() };
+    }).filter(function (s) { return s.at || s.what; });
+  }
+
   function priceLines(e) {
     return prices(e).map(function (p) {
       return p.who ? p.who + ' — ' + p.price : p.price;
@@ -421,7 +431,8 @@ window.SJVSC = (function () {
     });
     var t = tickets(e);
     var hasFiles = filesFor(e).length > 0;
-    if (!details.length && !t && !hasFiles) return card;   // the description may be all there is
+    var sked = schedule(e);
+    if (!details.length && !t && !hasFiles && !sked.length) return card;   // the description may be all there is
     /* beside a photograph there is no room to split this again */
     if (e.desc && !picture) body.className = 'ecard-body both';
 
@@ -439,6 +450,32 @@ window.SJVSC = (function () {
       });
       li.appendChild(b);
       li.appendChild(span);
+      ul.appendChild(li);
+    }
+
+    /* The schedule goes first and takes the full width of the row grid.
+       It is the thing somebody reads when they have already decided to
+       come, and times only help if they line up, which they cannot do
+       inside a 210px column shared with three other headings. */
+    if (sked.length) {
+      var li = document.createElement('li');
+      li.className = 'erow-sked';
+      var b = document.createElement('b');
+      b.textContent = 'Schedule';
+      var grid = document.createElement('div');
+      grid.className = 'esked';
+      sked.forEach(function (s) {
+        var at = document.createElement('div');
+        at.className = 'esked-at';
+        at.textContent = s.at;
+        var what = document.createElement('div');
+        what.className = 'esked-what';
+        what.textContent = s.what;
+        grid.appendChild(at);
+        grid.appendChild(what);
+      });
+      li.appendChild(b);
+      li.appendChild(grid);
       ul.appendChild(li);
     }
 
@@ -633,7 +670,7 @@ window.SJVSC = (function () {
            showing: showing,
            href: href, TIED: TIED, blocks: blocks, onPage: onPage,
            renderPages: renderPages, render: render, at: at,
-           tickets: tickets, prices: prices, contactText: contactText,
+           tickets: tickets, prices: prices, schedule: schedule, contactText: contactText,
            priceText: priceText,
            today: today, pretty: pretty, fullDate: fullDate, longDate: longDate,
            MONTH: MONTH };

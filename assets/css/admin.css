@@ -413,6 +413,18 @@
 
 
 /* ------------------------------------------------------------------ */
+/* the day hour by hour: when, and what happens then. The narrow column
+   is the time, which is the short one and the one worth lining up. */
+.srow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2.4fr) auto;gap:10px;
+  margin-bottom:10px;align-items:center}
+.srow .sat{font-weight:600}
+@media(max-width:760px){
+  .srow{grid-template-columns:minmax(0,1fr) auto}
+  .srow .sat{grid-column:1/-1}
+}
+
+
+/* ------------------------------------------------------------------ */
 /* Taking a row off again. The cross is pinned to the row's last column
    rather than left to fall where it lands: a ticket seller hides two of
    its boxes when nobody is being named, and without this the cross would

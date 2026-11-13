@@ -23,6 +23,7 @@
   var tickrows = document.getElementById('tickrows');
   var attachrows = document.getElementById('attachrows');
   var pricerows = document.getElementById('pricerows');
+  var skedrows = document.getElementById('skedrows');
   var saved = D.savedAll();
 
   /* set from /api/me once the Worker has answered */
@@ -262,6 +263,34 @@
     dropper(row, 'Take this price off', pricerows, '.prow',
             'No price is set, so there are no tickets.');
     return row;
+  }
+
+  /* ---- what happens through the day ----------------------------------
+
+     One row per thing: when, and what. Both are free text. An event that
+     is one thing at one time has none of these and reads as it always
+     did; the Day and Time above it are still where the event itself is
+     dated. */
+
+  function addSkedRow(item) {
+    var row = document.createElement('div');
+    row.className = 'srow';
+    row.innerHTML = '<div class="sat val"></div><div class="swhat val"></div>';
+    editable(row.querySelector('.sat'), 'When').textContent = (item && item.at) || '';
+    editable(row.querySelector('.swhat'), 'What happens').textContent = (item && item.what) || '';
+    skedrows.appendChild(row);
+    dropper(row, 'Take this line off', skedrows, '.srow',
+            'Nothing is set out hour by hour.');
+    return row;
+  }
+
+  function readSked() {
+    return [].map.call(skedrows.querySelectorAll('.srow'), function (r) {
+      return {
+        at: r.querySelector('.sat').textContent.trim(),
+        what: r.querySelector('.swhat').textContent.trim(),
+      };
+    }).filter(function (s) { return s.at || s.what; });
   }
 
   /* ---- where to get a ticket -----------------------------------------
@@ -527,6 +556,11 @@
     if (files.length) files.forEach(function (a) { addAttachRow(a); });
     else nothing(attachrows, 'Nothing is attached.');
 
+    skedrows.innerHTML = '';
+    var sked = (e && e.schedule) || [];
+    if (sked.length) sked.forEach(function (x) { addSkedRow(x); });
+    else nothing(skedrows, 'Nothing is set out hour by hour.');
+
     pricerows.innerHTML = '';
     var cost = (e && e.tickprices) || [];
     /* an event saved before a price could be a list carries one price and
@@ -604,6 +638,7 @@
     out.attachments = readAttachments();
     out.ticksellers = readSellers();
     out.tickprices = readPrices();
+    out.schedule = readSked();
     /* the old single field is left behind rather than kept in step: the
        pages read it only when the list is empty, and from here on it
        never is. */
@@ -623,6 +658,11 @@
         var empty = attachrows.querySelector('.eempty');
         if (empty) empty.remove();
         addAttachRow({});
+      }],
+     [skedrows, 'Add a time', function () {
+        var empty = skedrows.querySelector('.eempty');
+        if (empty) empty.remove();
+        addSkedRow({});
       }],
      [pricerows, 'Add a price', function () {
         var empty = pricerows.querySelector('.eempty');

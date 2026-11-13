@@ -26,7 +26,7 @@ export const WRITABLE = [
   'title', 'note', 'desc', 'image', 'link', 'page',
   'date', 'time', 'from', 'until',
   'tickprice', 'tickfrom', 'tickto',
-  'details', 'attachments', 'ticksellers', 'tickprices',
+  'details', 'attachments', 'ticksellers', 'tickprices', 'schedule',
 ];
 
 export function rowToEvent(row) {
@@ -44,6 +44,7 @@ export function rowToEvent(row) {
     attachments: parseList(row.attachments),
     ticksellers: parseList(row.ticksellers),
     tickprices: parseList(row.tickprices),
+    schedule: parseList(row.schedule),
     tickprice: row.tickprice || '',
     tickfrom: row.tickfrom || '',
     tickto: row.tickto || '',
@@ -80,6 +81,7 @@ export function eventToRow(body) {
     attachments: list(body.attachments),
     ticksellers: list(body.ticksellers),
     tickprices: list(body.tickprices),
+    schedule: list(body.schedule),
   };
 }
 
@@ -146,7 +148,7 @@ export function validateEvent(body, { shelf = false } = {}) {
     }
   }
 
-  for (const key of ['details', 'attachments', 'ticksellers', 'tickprices']) {
+  for (const key of ['details', 'attachments', 'ticksellers', 'tickprices', 'schedule']) {
     if (body[key] != null && !Array.isArray(body[key])) {
       problems.push(`${key} must be a list.`);
     }

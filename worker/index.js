@@ -117,7 +117,7 @@ const COLUMNS = [
   'title', 'note', 'description', 'image', 'link', 'page',
   'event_date', 'event_time', 'adv_from', 'adv_until',
   'tickprice', 'tickfrom', 'tickto',
-  'details', 'attachments', 'ticksellers', 'tickprices',
+  'details', 'attachments', 'ticksellers', 'tickprices', 'schedule',
 ];
 
 async function createEvent(request, env, auth, shelf) {

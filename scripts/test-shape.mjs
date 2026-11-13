@@ -5,7 +5,7 @@
  */
 
 import assert from 'node:assert/strict';
-import { rowToEvent, eventToRow, validateEvent, withWindow } from '../worker/shape.js';
+import { rowToEvent, eventToRow, validateEvent, withWindow, WRITABLE } from '../worker/shape.js';
 
 let pass = 0;
 const test = (name, fn) => {
@@ -145,6 +145,47 @@ test('prices sent as something other than a list are refused', () => {
     title: 'A', date: '2027-01-01', tickprices: '$20',
   });
   assert.ok(problems.some((q) => q.includes('tickprices')), problems.join(' '));
+});
+
+console.log('what happens through the day');
+
+test('a schedule survives the round trip', () => {
+  const sked = [
+    { at: '11am', what: 'Doors open' },
+    { at: 'noon', what: 'Lunch is served' },
+    { at: 'after the parade', what: 'Schwingen in the ring' },
+  ];
+  const after = rowToEvent({ id: 'x', ...eventToRow({
+    title: 'Oktoberfest', date: '2027-10-02', schedule: sked,
+  }) });
+  assert.deepEqual(after.schedule, sked);
+});
+
+/* Every event written before the column existed has NULL in it, and an
+   event that is one thing at one time still does. Neither may throw. */
+test('an event with no schedule comes back with an empty list', () => {
+  const after = rowToEvent({ id: 'x', ...eventToRow({ title: 'A', date: '2027-01-01' }) });
+  assert.deepEqual(after.schedule, []);
+});
+
+test('a schedule column holding rubbish does not take the event down', () => {
+  const after = rowToEvent({ id: 'x', title: 'A', event_date: '2027-01-01',
+                             schedule: 'not json at all' });
+  assert.deepEqual(after.schedule, []);
+  assert.equal(after.title, 'A');
+});
+
+test('a schedule sent as something other than a list is refused', () => {
+  const problems = validateEvent({
+    title: 'A', date: '2027-01-01', schedule: '11am doors',
+  });
+  assert.ok(problems.some((q) => q.includes('schedule')), problems.join(' '));
+});
+
+/* The admin sends it; if it is not on this list the Worker drops it
+   silently and the club's schedule is lost on save with no error. */
+test('the client may set a schedule, so it is not dropped on the way in', () => {
+  assert.ok(WRITABLE.includes('schedule'), WRITABLE.join(', '));
 });
 
 console.log(`\n${pass} checks passed`);
