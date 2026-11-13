@@ -54,6 +54,19 @@ window.SJVSC_FLYER = (function () {
 
   var CROP = { top: 'center top', middle: 'center center', bottom: 'center bottom' };
 
+  var IS_PICTURE = /\.(jpe?g|png|webp|gif|avif)(\?|$)/i;
+
+  function isPicture(url) { return IS_PICTURE.test(String(url || '')); }
+
+  /* What the band is cut from. A cover if the club gave one; otherwise the
+     flyer itself, but only when it is a picture -- a browser cannot crop a
+     page out of a PDF, and asking the board to install something to make a
+     thumbnail is not a plan. With neither, the band goes without artwork. */
+  function artFor(f) {
+    if (f.cover) return f.cover;
+    return isPicture(f.src) ? f.src : '';
+  }
+
   /* ---- the band on the home page ------------------------------------ */
 
   function band(f) {
@@ -63,11 +76,14 @@ window.SJVSC_FLYER = (function () {
 
     /* inside a wrap, so the band lines up with everything above it rather
        than running the full width of the window */
+    var art = artFor(f);
     holder.innerHTML =
       '<div class="wrap">' +
-      '<a class="flyer" href="flyer.html">' +
-        '<span class="flyer-art" style="background-image:url(' + esc(f.src) +
-          ');background-position:' + (CROP[f.crop] || CROP.top) + '"></span>' +
+      '<a class="flyer' + (art ? '' : ' flyer-plain') + '" href="flyer.html">' +
+        (art
+          ? '<span class="flyer-art" style="background-image:url(' + esc(art) +
+            ');background-position:' + (CROP[f.crop] || CROP.top) + '"></span>'
+          : '<span class="flyer-art flyer-art-none" aria-hidden="true"></span>') +
         '<span class="flyer-said">' +
           '<span class="eyebrow">This year</span>' +
           '<b>' + esc(f.title) + '</b>' +
@@ -100,14 +116,34 @@ window.SJVSC_FLYER = (function () {
       '<div class="shead"><span class="eyebrow">The flyer</span><h1>' + esc(f.title) + '</h1></div>' +
       (said(f) ? '<p class="lead" style="margin-top:8px">' + esc(said(f)) + '</p>' : '') +
       (f.note ? '<p class="lead">' + esc(f.note) + '</p>' : '') +
-      '<figure class="flyer-sheet">' +
-        '<img src="' + esc(f.src) + '" alt="' + esc(f.title) + ' flyer">' +
-      '</figure>' +
+      sheet(f) +
       '<p class="flyer-acts">' +
-        (f.link ? '<a class="btn btn-red" href="' + esc(f.link) +
-          '" target="_blank" rel="noopener">More about it</a> ' : '') +
-        '<a class="btn" href="' + esc(f.src) + '" download>Download the flyer</a>' +
+        '<a class="btn btn-red" href="' + esc(f.src) +
+          '" target="_blank" rel="noopener">Open the flyer</a> ' +
+        '<a class="btn" href="' + esc(f.src) + '" download>Download it</a>' +
+        (f.link ? ' <a class="btn" href="' + esc(f.link) +
+          '" target="_blank" rel="noopener">More about it</a>' : '') +
       '</p>';
+  }
+
+  /* A picture is shown. A document is embedded on a screen with room for
+     it, and on a phone it is not: a PDF in an iframe on a small screen is
+     a scrolling box inside a scrolling page, and several mobile browsers
+     will only draw its first page anyway. There, the cover and the two
+     buttons do the job. */
+  function sheet(f) {
+    if (isPicture(f.src)) {
+      return '<figure class="flyer-sheet">' +
+        '<img src="' + esc(f.src) + '" alt="' + esc(f.title) + ' flyer">' +
+        '</figure>';
+    }
+    return (f.cover
+        ? '<figure class="flyer-sheet flyer-sheet-cover">' +
+          '<img src="' + esc(f.cover) + '" alt="The first page of the ' +
+          esc(f.title) + '"></figure>'
+        : '') +
+      '<div class="flyer-doc"><iframe src="' + esc(f.src) +
+        '" title="' + esc(f.title) + '" loading="lazy"></iframe></div>';
   }
 
   function load() {

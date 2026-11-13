@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=4b5e2012">
+<link rel="stylesheet" href="assets/css/site.css?v=8ab824f1">
 <link rel="stylesheet" href="assets/css/admin.css?v=78632a88">
 <script>window.SJVSC_ADMIN = true;</script>
 <script src="assets/js/store.js?v=64c910ed"></script>
@@ -49,12 +49,25 @@
 
     <form id="fform">
       <fieldset class="rsec">
-        <legend>The poster</legend>
-        <p class="hint" style="margin:0 0 14px">A picture or a PDF page saved as a picture.
-          Whatever shape it is, the band on the home page stays the same height.</p>
+        <legend>The flyer</legend>
+        <p class="hint" style="margin:0 0 14px">The newsletter or poster itself. A PDF of
+          any number of pages, or a single picture.</p>
         <div id="fpreview"></div>
         <div class="aactions eactions" style="margin-top:14px">
-          <button class="abtn" type="button" id="fpick" hidden>Choose a poster</button>
+          <button class="abtn" type="button" id="fpick" hidden>Choose the flyer</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="rsec">
+        <legend>The picture for the home page</legend>
+        <p class="hint" style="margin:0 0 14px">The band on the home page is cut from a
+          picture. A browser cannot take one out of a PDF, so if the flyer is a PDF,
+          save its front page as a picture and choose it here. Leave it empty and the
+          band appears without artwork, which is tidy but plainer.</p>
+        <div id="fcoverview"></div>
+        <div class="aactions eactions" style="margin-top:14px">
+          <button class="abtn" type="button" id="fcoverpick" hidden>Choose a picture</button>
+          <button class="abtn" type="button" id="fcoverclear" hidden>No picture</button>
         </div>
       </fieldset>
 
@@ -104,6 +117,6 @@
   </div>
 </main>
 
-<script src="assets/js/admin-flyer.js?v=8f5ea645"></script>
+<script src="assets/js/admin-flyer.js?v=648e685c"></script>
 </body>
 </html>

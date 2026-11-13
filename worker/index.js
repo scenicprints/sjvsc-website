@@ -326,7 +326,7 @@ async function getUpload(env, key) {
 
 async function getFlyer(env) {
   const row = await env.DB.prepare(
-    'SELECT title, happens, place, note, src, link, crop FROM flyer WHERE id = 1'
+    'SELECT title, happens, place, note, src, cover, link, crop FROM flyer WHERE id = 1'
   ).first();
   return row || null;
 }
@@ -348,15 +348,16 @@ async function putFlyer(request, env, auth) {
 
   const before = await getFlyer(env);
   await env.DB.prepare(
-    `INSERT INTO flyer (id, title, happens, place, note, src, link, crop, updated_by)
-     VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?)
+    `INSERT INTO flyer (id, title, happens, place, note, src, cover, link, crop, updated_by)
+     VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT (id) DO UPDATE SET
        title = excluded.title, happens = excluded.happens, place = excluded.place,
-       note = excluded.note, src = excluded.src, link = excluded.link,
-       crop = excluded.crop, updated_by = excluded.updated_by,
+       note = excluded.note, src = excluded.src, cover = excluded.cover,
+       link = excluded.link, crop = excluded.crop, updated_by = excluded.updated_by,
        updated_at = datetime('now')`
   ).bind(title, happens || null, String(body.place || '').trim() || null,
          String(body.note || '').trim() || null, src,
+         String(body.cover || '').trim() || null,
          String(body.link || '').trim() || null, crop, auth.who).run();
 
   const after = await getFlyer(env);
