@@ -11,8 +11,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=2fa37d82">
-<link rel="stylesheet" href="assets/css/admin.css?v=78632a88">
+<link rel="stylesheet" href="assets/css/site.css?v=8cf7757a">
+<link rel="stylesheet" href="assets/css/admin.css?v=9334dc6e">
 <script>window.SJVSC_ADMIN = true;</script>
 <script src="assets/js/store.js?v=64c910ed"></script>
 <script async crossorigin="anonymous"
@@ -50,8 +50,8 @@
       <ul class="elist" id="elist"></ul>
 
       <h2 class="ahead">The month</h2>
-      <p class="alead" style="margin-bottom:18px">Every event on the calendar, and the days
-        the hall is tied up around each one. Pick a day to see what is on it.</p>
+      <p class="alead" style="margin-bottom:18px">Every event on the calendar. Pick a day to
+        see what is on it.</p>
       <div class="amonth">
         <div class="amonth-top">
           <button class="abtn small" type="button" id="moprev" aria-label="The month before">&#8592;</button>
@@ -64,13 +64,13 @@
         <div class="amonth-grid" id="mogrid"></div>
         <ul class="amonth-key">
           <li><span class="sw sw-on"></span>An event</li>
-          <li><span class="sw sw-near"></span>Setting up or clearing away</li>
         </ul>
       </div>
 
-      <h2 class="ahead">Saved events</h2>
-      <p class="alead" style="margin-bottom:18px">Events the club runs again, from
-        <b>data/saved.json</b>. Nothing here is on the website.</p>
+      <h2 class="ahead">Templates</h2>
+      <p class="alead" style="margin-bottom:18px">Events the club runs every year. Nothing
+        here is on the website: <b>Use this</b> starts a new event from one, and all you
+        have to add is the day.</p>
       <ul class="elist" id="slist"></ul>
     </section>
 
@@ -184,6 +184,7 @@
         <div class="eactions">
           <button class="abtn" type="button" id="cancelbtn">Back to the list</button>
           <button class="abtn solid" type="button" id="savebtn" hidden>Save</button>
+          <button class="abtn" type="button" id="tplbtn" hidden>Save as a template</button>
           <button class="abtn danger" type="button" id="delbtn" hidden>Delete this event</button>
           <span class="asaid" id="saidwhat" role="status" aria-live="polite"></span>
         </div>
@@ -195,6 +196,6 @@
 </main>
 
 <script src="assets/js/events-data.js?v=67cb2ebd"></script>
-<script src="assets/js/admin-events.js?v=d29e7017"></script>
+<script src="assets/js/admin-events.js?v=f5eb7392"></script>
 </body>
 </html>

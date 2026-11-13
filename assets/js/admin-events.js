@@ -280,8 +280,13 @@
   /* ---- the month -----------------------------------------------------
 
      The same events as the list above, laid out as a month so a clash is
-     obvious. The days either side of an event are marked too, because that
-     is when the hall is tied up. */
+     obvious. An event marks its own day and nothing else.
+
+     It used to shade the day before and the day after as well, on the
+     reasoning that the hall is tied up around an event. That is true, and
+     it is why the hall rental calendar refuses those days -- but it is a
+     rental question. On this screen it only made every event look like it
+     lasted three days. D.blocks() still does it for the quote. */
 
   var mogrid = document.getElementById('mogrid');
   var moAt = null;
@@ -307,12 +312,11 @@
     cells.forEach(function (d) {
       var out = d.getMonth() !== first.getMonth();
       var on = events.filter(function (e) { return e.date === iso(d); });
-      var near = !on.length && D.blocks(d);
 
       var cell = document.createElement(on.length ? 'button' : 'div');
       if (on.length) cell.type = 'button';
       cell.className = 'amo-cell' + (out ? ' amo-out' : '') +
-        (on.length ? ' amo-on' : (near ? ' amo-near' : '')) +
+        (on.length ? ' amo-on' : '') +
         (iso(d) === iso(now) ? ' amo-today' : '');
 
       var n = document.createElement('b');
@@ -324,11 +328,6 @@
         tag.textContent = e.title;
         cell.appendChild(tag);
       });
-      if (near) {
-        var why = document.createElement('i');
-        why.textContent = near.title;
-        cell.appendChild(why);
-      }
       if (on.length) {
         cell.setAttribute('aria-label', D.fullDate(iso(d)) + ': ' +
           on.map(function (e) { return e.title; }).join(', '));
@@ -357,7 +356,9 @@
     if (!saved.length) {
       var empty = document.createElement('li');
       empty.className = 'eempty';
-      empty.textContent = 'There is nothing in data/saved.json.';
+      empty.textContent = canEdit
+        ? 'No templates yet. Open an event and press Save as a template.'
+        : 'No templates yet.';
       slist.appendChild(empty);
       return;
     }
@@ -366,10 +367,27 @@
       li.className = 'eitem';
       li.innerHTML =
         '<span class="ebody"><b></b><span class="enote"></span></span>' +
-        '<button class="abtn" type="button">Open</button>';
+        '<span class="eacts"></span>';
       li.querySelector('.ebody b').textContent = e.title || 'Untitled';
       li.querySelector('.enote').textContent = e.note || '';
-      li.querySelector('button').addEventListener('click', function () { open(e, true); });
+
+      var acts = li.querySelector('.eacts');
+      var add = function (label, cls, go) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'abtn ' + cls;
+        b.textContent = label;
+        b.addEventListener('click', go);
+        acts.appendChild(b);
+      };
+
+      if (canEdit) {
+        add('Use this', 'solid', function () { useTemplate(e); });
+      }
+      add('Open', '', function () { open(e, true); });
+      if (canEdit) {
+        add('\u00d7', 'small danger', function () { dropTemplate(e); });
+      }
       slist.appendChild(li);
     });
   }
@@ -430,6 +448,9 @@
     }
     said('');
     document.getElementById('savebtn').hidden = !canEdit;
+    /* a template made from a template is just a copy, so the button is
+       offered on events only */
+    document.getElementById('tplbtn').hidden = !canEdit || onShelf;
     /* nothing to delete until it has been saved once */
     document.getElementById('delbtn').hidden = !canEdit || !current;
     show('form');
@@ -528,6 +549,70 @@
     });
   }
 
+  /* ---- templates -----------------------------------------------------
+
+     An event the club runs every year is worth keeping without its date:
+     the Jass party is the same event each November but for the day it
+     falls on. A template is a shelved event -- the same row with
+     shelf = 1 -- so it carries every field an event carries, including
+     its details, its ticket sellers and its attachments.
+
+     What it does not carry is anything that ties it to one year. Dates
+     and ticket windows are dropped on the way in, because a template
+     with last year's date is a trap. */
+
+  /* The id goes too. Without that, a new event started from a template
+     still carries the template's id, open() takes it for an existing
+     event, and Delete offers to remove what is actually the template. */
+  var NOT_IN_A_TEMPLATE = ['id', 'date', 'from', 'until', 'tickfrom', 'tickto'];
+
+  function asTemplate(body) {
+    var out = {};
+    Object.keys(body).forEach(function (k) {
+      if (NOT_IN_A_TEMPLATE.indexOf(k) < 0) out[k] = body[k];
+    });
+    return out;
+  }
+
+  function saveAsTemplate() {
+    if (!canEdit) return;
+    var body = asTemplate(collect());
+    if (!body.title) { said('A template needs a name.', true); return; }
+
+    var btn = document.getElementById('tplbtn');
+    btn.disabled = true;
+    said('Saving the template...');
+
+    window.SJVSC_STORE.create('saved', body)
+      .then(function () {
+        said('Kept as a template. It is under Templates on the events screen.');
+        return reload();
+      })
+      .catch(function (err) { said(err.message || 'That did not save.', true); })
+      .then(function () { btn.disabled = false; });
+  }
+
+  /* Opens the form as a new event carrying the template's words. Nothing
+     is written until Save, and Save makes an event rather than touching
+     the template it came from. */
+  function useTemplate(t) {
+    onShelf = false;
+    current = null;
+    open(asTemplate(t));
+    document.getElementById('formhead').textContent = 'A new event, from ' + (t.title || 'a template');
+    said('Put a day on it and press Save.');
+  }
+
+  function dropTemplate(t) {
+    if (!canEdit) return;
+    if (!window.confirm('Remove the template "' + (t.title || 'Untitled') + '"? ' +
+      'Events already made from it are not affected.')) return;
+    window.SJVSC_STORE.remove('saved', t.id)
+      .then(function () { return reload(); })
+      .then(function () { said('Template removed.'); })
+      .catch(function (err) { said(err.message || 'That did not work.', true); });
+  }
+
   function save() {
     if (!canEdit) return;
     var body = collect();
@@ -576,6 +661,7 @@
   document.getElementById('backbtn').addEventListener('click', function () { show('list'); });
   document.getElementById('savebtn').addEventListener('click', save);
   document.getElementById('delbtn').addEventListener('click', remove);
+  document.getElementById('tplbtn').addEventListener('click', saveAsTemplate);
   document.getElementById('addbtn').addEventListener('click', function () {
     onShelf = false;
     open(null);

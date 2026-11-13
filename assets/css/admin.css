@@ -392,3 +392,7 @@
   background-size:cover;background-repeat:no-repeat;background-color:var(--cream)}
 .adm .fsheet{display:block;max-width:300px;width:100%;height:auto;
   border:1px solid var(--line);border-radius:6px}
+
+/* the buttons on a template row */
+.adm .eacts{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.adm .eacts .abtn.small{padding:8px 12px;font-size:1rem;line-height:1}
