@@ -181,12 +181,25 @@ window.SJVSC = (function () {
     bbq: 'members-bbq.html',
     oktoberfest: 'event-oktoberfest.html',
     jass: 'event-jass.html',
-    almond: 'almond-blossom.html'
+    almond: 'almond-blossom.html',
+    christmas: 'event-childrens-christmas.html',
+    agm: 'event-agm.html'
   };
   /* Where an event opens. Either it belongs to something the club already
      has a page for, and that page carries it, or it has a page of its own
      and says so in link. One or the other, never neither. */
   function href(e) { return TIED[e.page] || e.link || ''; }
+
+  /* The club writes its links as event-agm.html, and the host serves that
+     page at /event-agm -- it redirects the one to the other. So the address
+     a visitor is actually standing on never equals the link that sent them
+     there, and a page matching on the two being equal always decided the
+     event was not on. Compare the bare names instead, which is the same
+     answer however the page happens to be served. */
+  function pageName(s) {
+    var name = String(s || '').split('?')[0].split('#')[0].split('/').pop();
+    return name ? name.replace(/\.html$/i, '') : 'index';
+  }
 
   /* An event can be tied to one of the standing pages. That page carries it
      while it is being advertised, and carries every tied event at once, so a
@@ -382,8 +395,8 @@ window.SJVSC = (function () {
        whichever event points at it and needs no editing when next year's
        comes round. */
     [].forEach.call(document.querySelectorAll('[data-eventpage]'), function (el) {
-      var here = (location.pathname.split('/').pop() || 'index.html');
-      var list = showing().filter(function (e) { return e.link === here; });
+      var here = pageName(location.pathname);
+      var list = showing().filter(function (e) { return pageName(e.link) === here; });
       if (!list.length) return;
       el.innerHTML = '';
       list.forEach(function (e) { el.appendChild(box(e)); });
