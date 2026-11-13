@@ -18,7 +18,30 @@
     "not_found_handling": "404-page",
     // Neither /api/* nor an uploaded file is on disk, so both
     // have to reach the Worker rather than the asset handler.
-    "run_worker_first": ["/api/*", "/uploads/*"]
+    //
+    // The rest are the old site's addresses that did not survive the
+    // move. Nothing is on disk at any of them, so without this the
+    // asset handler would answer 404 and the Worker's redirect map
+    // would never be consulted. The two German pages are globbed
+    // because a browser may send them encoded or decoded.
+    "run_worker_first": [
+      "/api/*",
+      "/uploads/*",
+
+      "/hall-rental",
+      "/oktoberfest",
+      "/jass",
+      "/children-s-christmas-party",
+      "/almond-blossom-dance",
+      "/west-coast-swiss-wrestling-association",
+      "/k*-kochbuch",
+
+      "/schwingfests",
+      "/eidgen*-2022",
+      "/playground",
+      "/swiss-miss",
+      "/may-birthday-celebration"
+    ]
   },
 
   "d1_databases": [

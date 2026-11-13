@@ -409,10 +409,51 @@ async function putGallery(request, env, auth, slug) {
   return json(body);
 }
 
+/* ---- where the old site's addresses went ---------------------------
+
+   Seventeen of the old site's twenty-four pages kept their address, so
+   most links into the club's site still land. These are the ones that
+   did not, and a link to any of them -- a bookmark, a Facebook post
+   from 2019, Google's index -- would otherwise reach a 404 on the day
+   the domain moves.
+
+   The first seven are renames and are not in doubt. The last four are
+   pages that held almost nothing; each goes to the standing page that
+   covers its subject, which is a judgement rather than a fact, and any
+   of them is one line to change.
+
+   301 rather than 302: these moves are permanent and search engines
+   should carry the old page's standing over to the new one. */
+
+const MOVED = {
+  '/hall-rental': '/rentals',
+  '/oktoberfest': '/event-oktoberfest',
+  '/jass': '/event-jass',
+  '/children-s-christmas-party': '/event-childrens-christmas',
+  '/almond-blossom-dance': '/almond-blossom',
+  '/west-coast-swiss-wrestling-association': '/wcswa',
+  '/küche-kästle-kochbuch': '/kochbuch',
+
+  '/schwingfests': '/schwingen',
+  '/eidgenössisches-2022': '/schwingen',
+  '/playground': '/rentals',
+  '/swiss-miss': '/club-history',
+  '/may-birthday-celebration': '/calendar'
+};
+
 async function route(request, env) {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/, '') || '/';
   const method = request.method.toUpperCase();
+
+  /* The old addresses arrive percent-encoded -- /k%c3%bcche-... -- and
+     decoding is what makes the two German pages match. A malformed
+     escape throws rather than matching, so it falls through to the
+     asset handler and its 404, which is the right answer anyway. */
+  let asked = path;
+  try { asked = decodeURIComponent(path).toLowerCase(); } catch (e) { /* leave it */ }
+  const movedTo = MOVED[asked];
+  if (movedTo) return Response.redirect(new URL(movedTo, url).toString(), 301);
 
   /* ---- reads, open to anyone ---- */
 

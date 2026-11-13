@@ -1,4 +1,6 @@
 # Everything here is in the repository but must not be served.
+.git/
+.wrangler/
 worker/
 db/
 scripts/
