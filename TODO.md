@@ -58,11 +58,29 @@ step whose only purpose is to make cancelling the builder plan safe.
       renames; four are judgement calls (`/playground` → `/rentals`,
       `/swiss-miss` → `/club-history`, `/may-birthday-celebration` → `/calendar`,
       `/eidgenössisches-2022` → `/schwingen`) and are one line each to change.
-- [ ] Point the nameservers at Cloudflare, add the zone, give the Worker the custom
-      domain. **Needs the Network Solutions login.**
-- [ ] Transfer the registration off Network Solutions **before** cancelling the
-      builder plan, which can take a bundled domain with it. Needs the lock removed
-      and an auth code, both from that same account.
+- [x] ~~Point the nameservers at Cloudflare and give the Worker the domain.~~ Done
+      13 Nov 2026. sjvscriponswiss.com serves the new site; www 301s to the bare
+      domain; the old addresses redirect; workers.dev still works.
+
+- [ ] **Move the registration to Cloudflare. Deadline: April 2027.**
+
+      The website has left Network Solutions but the *name* has not. It is still
+      registered through their registrar arm (PDR Ltd), paid to **12 June 2027**,
+      on an account whose card has expired and which the club has stopped paying.
+
+      Nothing breaks until that date. On that date, if nobody has paid, the domain
+      lapses quietly, sits in a grace period, and is then released for anyone to
+      register. Domains belonging to established organisations are watched for
+      exactly this.
+
+      Moving it costs about $10.44 a year at Cloudflare, which is less than
+      Network Solutions charges and is a bill the club already pays; the transfer
+      adds a year, taking it to June 2028. It needs the domain unlocked and an
+      auth code, both from the Network Solutions account.
+
+      April 2027 rather than June because transfers take about five days and
+      registrars block them close to expiry — and because the real risk is losing
+      access to that account, not missing the date.
 - [ ] Decide whether to keep the workers.dev address as a staging copy or switch it off.
 - [ ] Delete `data/*.json` once D1 is the only source. They are still read as a
       fallback when there is no API, which is what keeps the GitHub demo alive.
