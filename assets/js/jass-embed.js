@@ -43,7 +43,7 @@
 
     var frame = document.createElement('iframe');
     frame.className = 'jframe';
-    frame.src = 'jass-game.html';
+    frame.src = 'jass-table';
     frame.title = 'Schieber Jass';
 
     var bar = document.createElement('div');
@@ -51,7 +51,7 @@
 
     var full = document.createElement('a');
     full.className = 'btn btn-cream';
-    full.href = 'jass-game.html';
+    full.href = 'jass-table';
     full.textContent = 'Open it full screen';
 
     var leave = document.createElement('button');

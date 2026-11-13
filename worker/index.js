@@ -417,10 +417,10 @@ async function putGallery(request, env, auth, slug) {
    from 2019, Google's index -- would otherwise reach a 404 on the day
    the domain moves.
 
-   The first seven are renames and are not in doubt. The last four are
+   The first seven are renames and are not in doubt. The next four are
    pages that held almost nothing; each goes to the standing page that
    covers its subject, which is a judgement rather than a fact, and any
-   of them is one line to change.
+   of them is one line to change. The last is a rename of our own.
 
    301 rather than 302: these moves are permanent and search engines
    should carry the old page's standing over to the new one. */
@@ -438,7 +438,18 @@ const MOVED = {
   '/eidgenössisches-2022': '/schwingen',
   '/playground': '/rentals',
   '/swiss-miss': '/club-history',
-  '/may-birthday-celebration': '/calendar'
+  '/may-birthday-celebration': '/calendar',
+
+  /* The Jass table was at /jass-game for a few days. A phone could not
+     reach it there while every other page came down fine, and a filter
+     on the word is the likeliest reason -- plenty of networks a club
+     member might be on block anything that looks like a game. The page
+     is the same page; only its address changed. */
+  '/jass-game': '/jass-table',
+  /* And the address with the extension on it, which is how every link
+     on the site is written. There is no file there any more, so the
+     asset handler would answer 404 before the Worker saw it. */
+  '/jass-game.html': '/jass-table'
 };
 
 async function route(request, env) {

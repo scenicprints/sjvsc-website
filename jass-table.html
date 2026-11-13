@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+  <title>Schieber Jass</title>
+  <meta name="description" content="Schieber Jass against the computer. Thirty-six Swiss cards, a trump you name yourself, and the Under on top.">
+
+  <!-- The game draws its own dark table and does its own theming. Chrome on
+       Android otherwise decides a light page needs darkening and turns the
+       board into a negative. -->
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#0B0F15">
+
+  <link rel="stylesheet" href="assets/jass/styles.css">
+
+  <!-- Only for the note below, which shows when the game's own files did
+       not arrive and its stylesheet is therefore not to be relied on. -->
+  <style>
+    .gone { display: none }
+    #nogame {
+      max-width: 30rem;
+      margin: 0 auto;
+      padding: 18vh 24px 24px;
+      color: #D8DEE8;
+      font: 500 16px/1.5 ui-rounded, -apple-system, "Segoe UI", system-ui, sans-serif;
+    }
+    #nogame h1 { font-size: 1.4rem; margin: 0 0 14px }
+    #nogame p { margin: 0 0 14px }
+    #nogame a { color: #E7B24B }
+    .nogame-do { display: flex; flex-wrap: wrap; gap: 10px }
+    .nogame-do button {
+      flex: 1 1 10rem;
+      padding: 13px 16px;
+      border: 1px solid #2A3441;
+      border-radius: 11px;
+      background: #161D27;
+      color: inherit;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<!-- The frame the hub used to build. The game fills the stage and the
+     panel; the bar is its own. -->
+<div id="app">
+  <div id="screen-game" class="screen">
+    <header class="bar">
+      <a class="iconb" id="btn-back" href="event-jass#jtable" aria-label="Back to the Jass page">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 5l-7 7 7 7"/>
+        </svg>
+      </a>
+      <div class="seatbar" id="seatbar"></div>
+      <div class="score" id="score">—</div>
+      <button class="iconb" id="btn-menu" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
+        </svg>
+      </button>
+    </header>
+    <div class="stage" id="game-stage"></div>
+    <footer class="panel" id="game-panel"></footer>
+  </div>
+</div>
+
+<!-- Every menu -- how it plays, the players, the skill, a new game --
+     rises into this. Without it the menu button throws and nothing opens. -->
+<div id="sheet-root"></div>
+
+<div id="nogame" class="gone">
+  <h1>The table did not arrive</h1>
+  <p>The game is a few files of its own, and one of them did not come
+    down. That is almost always the connection rather than the game.</p>
+  <p class="nogame-do">
+    <button type="button" id="again">Try again</button>
+    <button type="button" id="fresh">Deal a fresh hand</button>
+  </p>
+  <p><a href="event-jass#jtable">Back to the Jass page</a></p>
+</div>
+
+<script>
+  /* When the table is set inside the club's Jass page there is already
+     a page around it, so the arrow out is the page's job, not the
+     game's. */
+  if (window.self !== window.top) {
+    document.getElementById('btn-back').classList.add('hidden');
+  }
+</script>
+
+<script type="module">
+  import { play } from './assets/jass/host.js';
+
+  /* A board half written -- the phone shut the tab in the middle of a
+     move -- is read back on the way in and would poison every visit
+     after it. Throw it away and deal again rather than sit on a dark
+     empty table. */
+  try {
+    play();
+  } catch (e) {
+    try { localStorage.removeItem('sjvsc.jass.board'); } catch (e2) { /* nothing to clear */ }
+    play();
+  }
+  window.jassDealt = true;
+</script>
+
+<script>
+  /* A module that never arrives says nothing at all: no error, no blank
+     page the browser will own up to, just the dark frame above with
+     nothing in it. Wait long enough for a slow phone, then say so, and
+     give the two things worth trying. */
+  setTimeout(function () {
+    if (window.jassDealt) return;
+    /* #app is a full viewport-height column, so hiding only the screen
+       inside it would leave the note sitting below the fold. */
+    document.getElementById('app').classList.add('hidden');
+    document.getElementById('nogame').classList.remove('gone');
+    document.getElementById('again').addEventListener('click', function () {
+      location.reload();
+    });
+    document.getElementById('fresh').addEventListener('click', function () {
+      try { localStorage.removeItem('sjvsc.jass.board'); } catch (e) { /* nothing to clear */ }
+      location.reload();
+    });
+  }, 6000);
+</script>
+
+</body>
+</html>
