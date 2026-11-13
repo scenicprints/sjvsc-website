@@ -86,6 +86,27 @@ step whose only purpose is to make cancelling the builder plan safe.
 - [ ] Delete `data/*.json` once D1 is the only source. They are still read as a
       fallback when there is no API, which is what keeps the GitHub demo alive.
 
+## How the board gets in
+
+Adding a board member is one step: Clerk dashboard, Users, Create user, their
+Gmail address. They then go to `/admin` and press **Continue with Google**.
+No invitation email, no password.
+
+Three accounts hold this between them, and all three are the club's, on
+**sjvscwebmaster@gmail.com** — nothing depends on a personal login:
+
+- **Cloudflare** — the domain, the Worker, the database
+- **Clerk** — sign-in, invite-only, production instance on `clerk.sjvscriponswiss.com`
+- **Google Cloud** — project `sjvsc-website`, the OAuth client behind the
+  Google button. Published, so there is no test-user list to keep and no
+  unverified-app warning.
+
+Clerk's invitation emails do **not** reliably arrive: they are sent from
+`invitations@sjvscriponswiss.com`, a domain only days old at the time of
+writing, and Gmail drops them without a bounce. DMARC is now published, which
+should improve with age. Until then, create accounts directly rather than
+inviting — which is why Google sign-in exists, since it needs no email at all.
+
 ## Watch
 
 - [ ] Authorization rests entirely on Clerk being invite-only. If that setting ever
