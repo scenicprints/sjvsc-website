@@ -97,6 +97,30 @@
     return el;
   }
 
+  /* Every repeating row can be taken off again. Putting in one too many
+     is as easy a mistake as putting in one too few, and until this the
+     only way back was to leave the form without saving and open the
+     event again, losing everything else typed along with it.
+
+     The button is pinned to the last column rather than left to fall
+     where it lands, because a ticket seller hides two of its boxes when
+     nobody is being named and the cross would otherwise jump about. */
+  function dropper(row, what, holder, rowSel, emptyWords) {
+    if (!canEdit) return null;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'abtn small danger arowdrop';
+    b.textContent = '×';
+    b.title = what;
+    b.setAttribute('aria-label', what);
+    b.addEventListener('click', function () {
+      row.remove();
+      if (!holder.querySelector(rowSel)) nothing(holder, emptyWords);
+    });
+    row.appendChild(b);
+    return b;
+  }
+
   /* a heading with nothing under it, or no headings at all */
   function nothing(where, what) {
     where.innerHTML = '';
@@ -164,7 +188,33 @@
     if (group.querySelector('.drow') === row) {     // the heading box lives here
       row.replaceChild(group.querySelector('.dlabel'), row.querySelector('.dspacer'));
     }
+    dropLine(group, row);
     return row;
+  }
+
+  /* Taking a line off a heading. The heading box sits in the group's
+     first line, so when that is the line going the heading is handed
+     down to the one below it. With no line below, the heading had
+     nothing left to say and goes too. */
+  function dropLine(group, row) {
+    if (!canEdit) return;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'abtn small danger arowdrop';
+    b.textContent = '×';
+    b.title = 'Take this line off';
+    b.setAttribute('aria-label', 'Take this line off');
+    b.addEventListener('click', function () {
+      var label = row.querySelector('.dlabel');
+      row.remove();
+      var next = group.querySelector('.drow');
+      if (!next) group.remove();
+      else if (label) next.replaceChild(label, next.querySelector('.dspacer'));
+      if (!drows.querySelector('.dgroup')) {
+        nothing(drows, 'Nothing else is set on this event.');
+      }
+    });
+    row.appendChild(b);
   }
 
   function addGroup(label, values) {
@@ -176,6 +226,21 @@
     group.appendChild(box);                      // picked up by the first line
     drows.appendChild(group);
     (values && values.length ? values : ['']).forEach(function (v) { addLine(group, v); });
+
+    /* A heading can say more than one thing -- it always could, and an
+       event imported with two lines under one heading showed both -- but
+       there was no way to write the second one here. Now there is, which
+       also means a line taken off by mistake can be put back. */
+    if (canEdit) {
+      var more = document.createElement('button');
+      more.type = 'button';
+      more.className = 'abtn small dmore';
+      more.textContent = 'Another line under this heading';
+      more.addEventListener('click', function () {
+        group.insertBefore(addLine(group, ''), more);
+      });
+      group.appendChild(more);
+    }
     return group;
   }
 
@@ -194,6 +259,8 @@
     editable(row.querySelector('.pprice'), 'Price').textContent =
       canEdit ? cost : D.priceText(cost);
     pricerows.appendChild(row);
+    dropper(row, 'Take this price off', pricerows, '.prow',
+            'No price is set, so there are no tickets.');
     return row;
   }
 
@@ -245,6 +312,8 @@
     }
 
     tickrows.appendChild(row);
+    dropper(row, 'Take this way of getting one off', tickrows, '.trow',
+            'Nowhere is set to get one.');
     return row;
   }
 
@@ -296,6 +365,8 @@
     }
 
     attachrows.appendChild(row);
+    dropper(row, 'Take this attachment off', attachrows, '.afrow',
+            'Nothing is attached.');
     return row;
   }
 

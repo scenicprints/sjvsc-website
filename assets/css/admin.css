@@ -145,12 +145,13 @@
 /* details the club writes itself: a heading and what it says */
 .abtn.small{font-size:.95rem;padding:10px 15px;border-width:2px}
 .dgroup{margin-bottom:10px}
-.drow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:10px;
+.drow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr) auto;gap:10px;
   margin-bottom:10px;align-items:start}
 .drow .dlabel{font-weight:600}
 @media(max-width:620px){
-  .drow{grid-template-columns:minmax(0,1fr)}
+  .drow{grid-template-columns:minmax(0,1fr) auto}
   .drow .dspacer{display:none}
+  .drow .dlabel{grid-column:1/-1}
 }
 
 /* ------------------------------------------------------------------ */
@@ -211,11 +212,12 @@
 }
 
 /* where a ticket can be had: as many ways as there are */
-.trow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr);
+.trow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr) auto;
   gap:10px;margin-bottom:10px;align-items:start}
 .trow [hidden]{display:none !important}
 @media(max-width:760px){
-  .trow{grid-template-columns:1fr}
+  .trow{grid-template-columns:minmax(0,1fr) auto}
+  .trow .tkind,.trow .twho{grid-column:1/-1}
 }
 
 /* the saved list sits under the calendar's own */
@@ -242,13 +244,16 @@
 }
 
 /* ------------------------------------------------------------------ */
-/* attachments: a name, then either a file or an address */
-.afrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:10px;
-  margin-bottom:10px;align-items:center}
+/* attachments: a name, then either a file or an address, then the button
+   that chooses one and the cross that takes the row off. A flex row and
+   not a grid, so the name and the address share whatever width there is
+   and take their own lines when there is not enough of it. */
+.afrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}
+.afrow .val{flex:1 1 180px;min-width:0}
 .afrow .aname{font-weight:600}
-@media(max-width:760px){
-  .afrow{grid-template-columns:1fr}
-}
+.afpick{flex:0 0 auto;white-space:nowrap}
+/* to the end of the line, rather than wherever it happens to wrap */
+.afrow .arowdrop{margin-left:auto}
 
 /* the month: the same events as the list, laid out so a clash is obvious */
 .amonth{background:var(--white);border:2px solid var(--line);border-radius:6px;padding:20px}
@@ -385,11 +390,6 @@
   border:1px solid var(--line);border-radius:4px;overflow:auto;max-height:340px;
   font-size:.8rem;line-height:1.5}
 
-/* the file button on an attachment row */
-.adm .afrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.adm .afrow .val{flex:1 1 180px;min-width:0}
-.adm .afpick{flex:0 0 auto;white-space:nowrap}
-
 /* ---- the flyer screen ------------------------------------------------ */
 .adm .fband{display:block;height:150px;border:1px solid var(--line);border-radius:8px;
   background-size:cover;background-repeat:no-repeat;background-color:var(--cream)}
@@ -403,9 +403,20 @@
 
 /* ------------------------------------------------------------------ */
 /* ticket prices: who it is for, and what they pay */
-.prow{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:10px;
+.prow{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) auto;gap:10px;
   margin-bottom:10px;align-items:center}
 .prow .pprice{font-weight:600}
 @media(max-width:760px){
-  .prow{grid-template-columns:1fr}
+  .prow{grid-template-columns:minmax(0,1fr) auto}
+  .prow .pwho{grid-column:1/-1}
 }
+
+
+/* ------------------------------------------------------------------ */
+/* Taking a row off again. The cross is pinned to the row's last column
+   rather than left to fall where it lands: a ticket seller hides two of
+   its boxes when nobody is being named, and without this the cross would
+   slide up the row and sit against the dropdown. */
+.arowdrop{grid-column:-2/-1;justify-self:end;align-self:center;
+  line-height:1;padding:9px 14px;font-size:1.05rem}
+.dmore{margin:0 0 14px}
