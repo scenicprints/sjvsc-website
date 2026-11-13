@@ -1,0 +1,1131 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Parchís — a bronze-rimmed board on a dark table, gold where it
+   matters, and nothing else competing for attention. Sized so the
+   board is the biggest thing on a phone.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Keeps Android's auto-dark theme off the board. Chrome will happily
+     invert a page it decides is light, which rendered the printed white
+     board as a near-black negative on a real phone while leaving the
+     saturated colours alone. Declaring a scheme opts out of all that. */
+  color-scheme: dark;
+
+  --bg:        #0B0F15;
+  --bg-soft:   #131A23;
+  --line:      #1E2632;
+  --ink:       #E8EDF4;
+  --ink-dim:   #8794A6;
+
+  --red:       #E4443A;
+  --red-deep:  #8E241D;
+  --blue:      #3D8BFD;
+  --blue-deep: #1B4C96;
+  --green:     #3FAE63;
+  --yellow:    #E3B23C;
+
+  --gold:      #D6A93B;
+  --pop:       #F2C14E;
+  --radius:    16px;
+  --tap:       cubic-bezier(.2,.8,.3,1);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+/* The table the board sits on: lit faintly from above, darker at the
+   edges, so the bronze rim has something to stand against. */
+body {
+  background:
+    radial-gradient(120% 85% at 50% 0%, #1B2433 0%, rgba(27,36,51,0) 55%),
+    radial-gradient(130% 100% at 50% 115%, #141B27 0%, rgba(20,27,39,0) 55%),
+    var(--bg);
+  color: var(--ink);
+  font: 500 16px/1.4 ui-rounded, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.hidden { display: none !important; }
+
+/* ── Frame ───────────────────────────────────────────────────────── */
+
+#app {
+  height: 100dvh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+           env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* The lobby and whichever game is open are both full-height columns. Only
+   one is ever on the page at a time. */
+.screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 46px 10px 46px;
+  border-bottom: 1px solid rgba(30,38,50,.8);
+  flex: none;
+}
+
+/* One chip per colour in the game. Two names sit comfortably; four have to
+   share the same bar, so they lose their labels and keep their chips. */
+.seatbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+.seatbar.four { gap: 10px; }
+.seatbar.four .nm { font-size: 11px; max-width: 52px; }
+
+.seat { display: flex; align-items: center; gap: 7px; min-width: 0; }
+
+.seat .nm {
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: .5;
+  transition: opacity .2s;
+}
+.seat.active .nm { opacity: 1; }
+
+/* Chips read as small glass beads: colour below, a curve of light above. */
+.chip {
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  flex: none;
+  background-color: var(--ink-dim);
+  background-image: linear-gradient(160deg, rgba(255,255,255,.45), rgba(255,255,255,0) 55%);
+  box-shadow: inset 0 -2px 2px rgba(0,0,0,.4), 0 1px 2px rgba(0,0,0,.5);
+  transition: box-shadow .2s, transform .2s;
+}
+.chip.red    { background-color: var(--red);    }
+.chip.blue   { background-color: var(--blue);   }
+.chip.green  { background-color: var(--green);  }
+.chip.yellow { background-color: var(--yellow); }
+
+.seat.active .chip {
+  transform: scale(1.18);
+  box-shadow: inset 0 -2px 2px rgba(0,0,0,.4), 0 0 0 3px rgba(242,193,78,.3),
+              0 0 10px rgba(242,193,78,.35);
+}
+
+.score {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: var(--ink-dim);
+  flex: none;
+}
+
+/* Back on the left, menu on the right, both out of the way of the names. */
+.iconb {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border: 0; border-radius: 10px;
+  background: transparent;
+  color: var(--ink-dim);
+  cursor: pointer;
+}
+.iconb:active { background: var(--bg-soft); }
+#btn-back { left: 8px; }
+#btn-menu { right: 8px; }
+
+/* ── The lobby ────────────────────────────────────────────────────── */
+
+.hubtitle {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  flex: none;
+}
+/* Shrinks and trails off rather than shoving the bar wider than the phone,
+   which took the whole page with it and cut every card off at the edge. */
+.hubrec {
+  flex: 1;
+  min-width: 0;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-dim);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#screen-lobby .bar { padding: 12px 18px; }
+
+.lobby {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 14px calc(20px + env(safe-area-inset-bottom));
+}
+
+.gamelist { display: grid; gap: 12px; max-width: 560px; margin: 0 auto; }
+
+.gamecard {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  padding: 16px 16px 14px;
+  text-align: left;
+  border: 1px solid rgba(40,50,64,.9);
+  border-radius: 16px;
+  background: linear-gradient(#161D27, #121821);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  transition: transform .12s, border-color .12s;
+}
+.gamecard:active { transform: scale(.985); }
+/* A game already on the table gets the gold edge, so the one thing you are
+   most likely to want is the one thing that stands out. */
+.gamecard.live { border-color: rgba(242,193,78,.55); }
+
+.gamecard .gt { font-size: 18px; font-weight: 800; letter-spacing: -.01em; }
+.gamecard .gb { font-size: 13.5px; color: var(--ink-dim); }
+.gamecard .gmeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+}
+.gamecard .grec {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink-dim);
+  font-variant-numeric: tabular-nums;
+}
+.gamecard .gbadge { font-size: 12px; font-weight: 800; color: var(--ink-dim); }
+.gamecard .gbadge.on {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+}
+.gamecard .gbadge.yours {
+  background: linear-gradient(#F5CC63, #D8A32F);
+  color: #3A2B06;
+}
+
+.soon {
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--ink-dim);
+  opacity: .7;
+  padding: 10px 0 4px;
+}
+
+/* ── Board ───────────────────────────────────────────────────────── */
+
+.stage {
+  flex: 1;
+  display: grid;
+  /* Explicit tracks, both able to shrink, so the board is measured against
+     the space it actually has rather than against a track that sized itself
+     to the board. Belt and braces: it behaved before, but only by luck of
+     how the auto track happened to resolve. */
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  place-items: center;
+  padding: 12px;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* The rim, the surface and every tile are drawn inside the SVG now; the
+   page only hangs the shadow that seats the board on the table. */
+#board {
+  width: min(100%, 560px);
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 1;
+  display: block;
+  border-radius: var(--radius);
+  box-shadow: 0 22px 50px rgba(0,0,0,.55), 0 4px 14px rgba(0,0,0,.4);
+  overflow: visible;
+}
+
+/* Pawns glide rather than teleport. An SVG transform attribute is just the
+   CSS transform property wearing a hat, so it transitions like anything. */
+.pawn {
+  transition: transform .3s var(--tap);
+  cursor: default;
+}
+
+/* Crossing the board square by square. Each hop is short and even-paced, so
+   the eye can follow the pawn round the track instead of losing it. */
+.pawn.walking {
+  transition: transform .07s linear;
+  filter: drop-shadow(0 0 5px rgba(0,0,0,.45));
+}
+.pawn.mine.live { cursor: pointer; }
+
+.pawn.pick   { filter: drop-shadow(0 0 6px rgba(199,120,0,.95)); }
+
+/* A pawn that can move wears a pulsing gold halo. The old signal was the
+   whole piece fading in and out, which reads as "loading", not "press me",
+   and is invisible at arm's length. */
+.pawn .halo { display: none; }
+.pawn.live .halo {
+  display: block;
+  stroke: #C77800;
+  stroke-width: .1;
+  animation: beckon 1.4s ease-in-out infinite;
+}
+
+@keyframes beckon {
+  0%, 100% { stroke-opacity: 1;  }
+  50%      { stroke-opacity: .3; }
+}
+
+.marker {
+  cursor: pointer;
+  animation: pop .22s var(--tap) both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes pop {
+  from { opacity: 0; transform: scale(.5); }
+  to   { opacity: 1; transform: scale(1); }
+}
+/* Destinations are the only gold discs on the board — the safe-square rings
+   that used to compete with them are stamped stars instead. Kept part-way
+   transparent on purpose: a marker can land on an occupied square, and a
+   solid coin would hide the pawn it is sitting on. */
+.marker circle { fill: rgba(243,195,79,.62); stroke: #7A5A0C; stroke-width: .1; }
+
+/* The oversized tap targets are there to be hit, never to be seen. A fill is
+   still needed to catch the tap, so it has to be transparent rather than
+   none, and the rule has to be here: a CSS fill beats the attribute on the
+   element, which is what was quietly drawing every target as a second ring. */
+.marker circle.hit,
+.pawn circle.hit { fill: transparent; stroke: none; }
+.marker text {
+  fill: #3D2A05;
+  font: 800 .46px/1 ui-rounded, system-ui, sans-serif;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.marker.eat circle { fill: rgba(228,68,58,.45); stroke: #8E241D; }
+.marker.eat text   { fill: #fff; }
+
+/* ── Bottom panel ────────────────────────────────────────────────── */
+
+.panel {
+  flex: none;
+  padding: 12px 16px calc(14px + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(34,43,56,.9);
+  background: linear-gradient(#141B24, #10151C);
+}
+
+.status {
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  min-height: 21px;
+  margin-bottom: 10px;
+  letter-spacing: .01em;
+}
+.status.you  { color: var(--pop); text-shadow: 0 0 16px rgba(242,193,78,.35); }
+.status.over { color: var(--ink); font-size: 18px; }
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  min-height: 52px;
+}
+
+.dicebar { display: flex; gap: 8px; align-items: center; }
+
+/* Ivory dice with a little thickness to them. */
+.die {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(#FFFDF6, #E9E1D0);
+  box-shadow: 0 3px 0 #B4AC9C, 0 6px 14px rgba(0,0,0,.45),
+              inset 0 1px 0 #FFF;
+  display: block;
+  flex: none;
+  transition: opacity .2s, transform .2s;
+}
+.die.spent { opacity: .25; transform: scale(.86); }
+.die.rolling { animation: tumble .5s var(--tap); }
+
+@keyframes tumble {
+  0%   { transform: rotate(0)       scale(1);   }
+  35%  { transform: rotate(-18deg)  scale(1.16);}
+  70%  { transform: rotate(14deg)   scale(.94); }
+  100% { transform: rotate(0)       scale(1);   }
+}
+
+.bonus {
+  height: 44px;
+  padding: 0 13px;
+  border-radius: 12px;
+  display: grid; place-items: center;
+  background: linear-gradient(#FFDE85, #F2BC45 50%, #D89E28);
+  color: #3A2B06;
+  font-weight: 900;
+  font-size: 16px;
+  box-shadow: 0 3px 0 #96700F, 0 6px 14px rgba(0,0,0,.45),
+              inset 0 1px 0 rgba(255,255,255,.6);
+  flex: none;
+}
+
+.roll {
+  height: 48px;
+  padding: 0 26px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(#FFDE85, #F2BC45 50%, #D89E28);
+  color: #3A2B06;
+  font: 800 17px/1 inherit;
+  letter-spacing: .01em;
+  box-shadow: 0 4px 0 #96700F, 0 9px 20px rgba(0,0,0,.35),
+              inset 0 1px 0 rgba(255,255,255,.6);
+  cursor: pointer;
+  transition: transform .1s, box-shadow .1s, opacity .2s;
+}
+.roll:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #96700F, inset 0 1px 0 rgba(255,255,255,.4);
+}
+.roll:disabled {
+  background: var(--line);
+  color: var(--ink-dim);
+  box-shadow: none;
+  cursor: default;
+  opacity: .6;
+}
+
+.lastline {
+  margin-top: 9px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--ink-dim);
+  min-height: 17px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Seat picker and sheets ──────────────────────────────────────── */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(6,9,13,.84);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.card {
+  width: 100%;
+  max-width: 380px;
+  background: linear-gradient(#171E29, #121822);
+  border: 1px solid #242E3C;
+  border-radius: 22px;
+  padding: 24px 22px;
+  box-shadow: 0 24px 70px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+.card h1 { margin: 0 0 6px; font-size: 26px; letter-spacing: -.01em; }
+.card .sub { margin: 0 0 20px; color: var(--ink-dim); font-size: 14px; }
+
+.field { display: block; margin-bottom: 18px; }
+.field span {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--ink-dim);
+  margin-bottom: 7px;
+}
+.field input {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  font: 600 16px inherit;
+  -webkit-user-select: text;
+  user-select: text;
+}
+.field input:focus { outline: 2px solid var(--pop); outline-offset: -1px; }
+
+.seats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.seatbtn {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  padding: 18px 10px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: linear-gradient(#12181f, #0e1218);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  transition: transform .12s, border-color .12s;
+}
+.seatbtn:active { transform: scale(.97); }
+.seatbtn.red:not(:disabled)  { border-color: var(--red-deep);  }
+.seatbtn.blue:not(:disabled) { border-color: var(--blue-deep); }
+.seatbtn:disabled { opacity: .42; cursor: default; }
+/* Somebody is on this side, but it is still pressable: that is the way back
+   in for a phone whose stored identity has gone. */
+.seatbtn.taken { opacity: .66; }
+.seatbtn.taken .who::after { content: ' · tap to take'; opacity: .75; }
+.seatbtn.busy { opacity: .4; pointer-events: none; }
+
+.seatbtn .chip { width: 26px; height: 26px; }
+.seatbtn.red  .chip { background-color: var(--red);  }
+.seatbtn.blue .chip { background-color: var(--blue); }
+.seatbtn .lbl { font-weight: 800; font-size: 15px; }
+.seatbtn .who { font-size: 12px; color: var(--ink-dim); }
+
+.err {
+  margin-top: 14px;
+  color: var(--red);
+  font-size: 13px;
+  text-align: center;
+  min-height: 18px;
+}
+
+/* ── Menu sheet ──────────────────────────────────────────────────── */
+
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(6,9,13,.72);
+  animation: fade .18s both;
+}
+@keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+
+.sheet .inner {
+  width: 100%;
+  background: linear-gradient(#161D27, #121821);
+  border-radius: 22px 22px 0 0;
+  border-top: 1px solid #242E3C;
+  padding: 10px 18px calc(22px + env(safe-area-inset-bottom));
+  animation: rise .26s var(--tap) both;
+  box-shadow: 0 -12px 40px rgba(0,0,0,.5);
+}
+@keyframes rise { from { transform: translateY(100%) } to { transform: none } }
+
+.grab {
+  width: 40px; height: 4px;
+  border-radius: 2px;
+  background: #2A3441;
+  margin: 6px auto 16px;
+}
+
+.row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 4px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  color: var(--ink);
+  font: 600 16px inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.row:last-child { border-bottom: 0; }
+.row .val { color: var(--ink-dim); font-weight: 500; font-size: 14px; }
+.row.danger { color: var(--red); }
+
+/* A line of explanation at the top of a sheet of choices, so what you are
+   picking between is said before you pick. */
+.row.note {
+  display: block;
+  color: var(--ink-dim);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  padding-top: 2px;
+}
+
+.rules {
+  font-size: 13.5px;
+  line-height: 1.62;
+  color: var(--ink-dim);
+  max-height: 58dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 4px;
+}
+.rules b { color: var(--ink); font-weight: 700; }
+.rules li { margin-bottom: 9px; }
+.rules ol { padding-left: 20px; margin: 0; }
+
+/* ── Boot and fatal ──────────────────────────────────────────────── */
+
+#boot {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  transition: opacity .3s;
+}
+#boot.gone { opacity: 0; pointer-events: none; }
+#boot .wm {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  background: linear-gradient(#F6D889, #D8A32F);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: breathe 1.6s ease-in-out infinite;
+}
+
+#fatal {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  padding: 30px 24px;
+  background: var(--bg);
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-user-select: text;
+  user-select: text;
+}
+#fatal h2 { font-size: 19px; margin: 0 0 12px; }
+#fatal code {
+  display: block;
+  white-space: pre-wrap;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 12px;
+  font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--pop);
+}
+
+/* Landscape on a phone: put the panel beside the board instead of under it */
+@media (orientation: landscape) and (max-height: 520px) {
+  #app { flex-direction: row; flex-wrap: wrap; }
+  .bar { width: 100%; }
+  .stage { flex: 1 1 auto; padding: 8px; }
+  .panel { width: 240px; border-top: 0; border-left: 1px solid var(--line);
+           display: grid; align-content: center; }
+  .controls { flex-wrap: wrap; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SCHIEBER JASS — a green table under the same dark room. The cards are
+   the only bright thing on the screen, which is the point: everything
+   else is furniture around nine pieces of paper.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.jass {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── The slate ───────────────────────────────────────────────────── */
+/* Two totals and what they are heading for. Sits above everything
+   because it is the thing you look up at between tricks. */
+.jslate {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 16px;
+  padding: 2px 4px 6px;
+  font-variant-numeric: tabular-nums;
+}
+.jteam { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.jteam.right { justify-content: flex-end; }
+.jt-n {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-dim);
+  max-width: 86px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.jt-s { font-size: 21px; font-weight: 800; letter-spacing: -.01em; }
+.jteam.red  .jt-s { color: var(--red);  }
+.jteam.blue .jt-s { color: var(--blue); }
+.jgoal { font-size: 11px; font-weight: 600; color: var(--ink-dim); flex: none; }
+
+/* ── The three seats whose cards you cannot see ──────────────────── */
+
+/* The table and the three fans around it, held together and centred as one
+   group. Left to fill the stage on their own they drift apart and the top
+   fan ends up floating a long way above the table it belongs to. */
+.jboard {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+
+.jmid {
+  flex: 0 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px;
+}
+
+.jseat { display: grid; justify-items: center; gap: 5px; }
+.jseat.top { flex: none; }
+/* The two side seats are pinned to one width so the table between them
+   stays put instead of sliding a few pixels every time a name is longer
+   or somebody plays a card. */
+.jseat.left, .jseat.right { align-content: center; width: 54px; }
+
+.jwho {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink-dim);
+  opacity: .65;
+  transition: opacity .2s;
+  max-width: 96px;
+}
+.jwho span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jseat.active .jwho { opacity: 1; color: var(--pop); }
+.jseat.left .jwho, .jseat.right .jwho { max-width: 60px; font-size: 10.5px; }
+
+/* A fan of backs, tight enough that nine of them still fit beside the
+   table on the narrowest phone. */
+.jfan { display: flex; }
+.jb { flex: none; line-height: 0; }
+.jseat.top .jfan { flex-direction: row; }
+.jseat.top .jb + .jb { margin-left: -19px; }
+.jseat.left .jfan, .jseat.right .jfan { flex-direction: column; }
+.jseat.left .jb + .jb, .jseat.right .jb + .jb { margin-top: -27px; }
+
+/* ── The table ───────────────────────────────────────────────────── */
+
+/* Four cards meet in the middle and take about 170px of it. Filling the
+   whole stage turns the table into a long empty green corridor, so it is
+   given a shape of its own instead and the room left over goes to the fans. */
+.jtable {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.16;
+  min-height: 180px;
+  max-height: 340px;
+  align-self: center;
+  border-radius: 20px;
+  /* A trick on its way to the winner leaves the table, and without this it
+     carries on across the trump bar and the status line underneath. */
+  overflow: hidden;
+  background:
+    radial-gradient(75% 70% at 50% 42%, #22503C 0%, #17392A 62%, #102A1F 100%);
+  box-shadow: inset 0 0 0 1px rgba(214,169,59,.16),
+              inset 0 12px 40px rgba(0,0,0,.42);
+}
+
+/* What is being played for, tucked into the corner so it never sits under
+   a card. */
+.jcontract {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px 4px 5px;
+  border-radius: 999px;
+  background: rgba(8,14,11,.62);
+  border: 1px solid rgba(214,169,59,.28);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.jcontract .jc-x { color: var(--pop); font-weight: 800; }
+.jarrow { font-size: 15px; font-weight: 900; color: var(--pop); line-height: 1; }
+.jarrow.big { font-size: 24px; }
+
+/* Tricks taken and what they were worth, this hand. Both sides played
+   their cards face up, so this is only saving the addition. */
+.jtally {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink-dim);
+}
+.jtally .jw.red  { color: var(--red);  }
+.jtally .jw.blue { color: var(--blue); }
+.jtally .jsep { opacity: .5; font-weight: 600; }
+/* Two bare pairs of numbers in a corner say nothing about what they count. */
+.jtally .jcap {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  opacity: .6;
+}
+.jtally .jcap.on {
+  margin-left: 3px;
+  padding-left: 7px;
+  border-left: 1px solid rgba(255,255,255,.14);
+}
+.jtally .jp { font-size: 12px; font-weight: 700; }
+
+/* The four cards, laid where the people who played them are sitting. */
+.jtrick { position: absolute; inset: 0; }
+.jplay {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  line-height: 0;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.45));
+  animation: jland .18s var(--tap) both;
+}
+.jplay.bottom { transform: translate(-50%, -4%)  rotate(2deg);  }
+.jplay.top    { transform: translate(-50%, -96%) rotate(-2deg); }
+.jplay.left   { transform: translate(-98%, -50%) rotate(-5deg); }
+.jplay.right  { transform: translate(-2%,  -50%) rotate(5deg);  }
+
+@keyframes jland { from { opacity: 0; } to { opacity: 1; } }
+
+/* Whichever card is taking the trick wears the gold, so the moment the
+   fourth one lands you can see who won without counting. */
+.jplay.winning .cardface {
+  outline: 2.5px solid var(--pop);
+  outline-offset: -1px;
+  border-radius: 7px;
+}
+
+/* A finished trick goes to whoever took it, rather than blinking out of
+   existence. All four converge on that seat, so the direction is the
+   answer to who won it. */
+.jplay.sweeping {
+  transition: transform .45s var(--tap), opacity .45s ease-in;
+  z-index: 3;
+}
+.jplay.sweeping.to-bottom { transform: translate(-50%,  300%) scale(.5); opacity: 0; }
+.jplay.sweeping.to-top    { transform: translate(-50%, -400%) scale(.5); opacity: 0; }
+.jplay.sweeping.to-left   { transform: translate(-460%, -50%) scale(.5); opacity: 0; }
+.jplay.sweeping.to-right  { transform: translate( 360%, -50%) scale(.5); opacity: 0; }
+
+/* ── Saying it out loud ──────────────────────────────────────────── */
+/* The contract, a Weis, a Stöck, who took the hand. Across the middle of
+   the table for a couple of seconds, and never in the way of a tap. */
+.jsay {
+  position: absolute;
+  left: 8px; right: 8px;
+  top: 50%;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 11px 14px;
+  border-radius: 16px;
+  background: linear-gradient(rgba(24,32,26,.97), rgba(14,22,17,.97));
+  border: 1px solid rgba(214,169,59,.45);
+  box-shadow: 0 12px 34px rgba(0,0,0,.6);
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-50%) scale(.9);
+  transition: opacity .2s, transform .28s var(--tap);
+}
+.jsay.on { opacity: 1; transform: translateY(-50%) scale(1); }
+.jsay b {
+  display: block;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  line-height: 1.2;
+}
+.jsay i {
+  display: block;
+  margin-top: 3px;
+  font-style: normal;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--pop);
+}
+
+/* ── The panel ───────────────────────────────────────────────────── */
+
+.jstatus {
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  min-height: 21px;
+  margin-bottom: 8px;
+  letter-spacing: .01em;
+}
+.jstatus.you  { color: var(--pop); text-shadow: 0 0 16px rgba(242,193,78,.35); }
+.jstatus.over { color: var(--ink); font-size: 18px; }
+
+.jlast {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--ink-dim);
+  min-height: 17px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Your hand ───────────────────────────────────────────────────── */
+/* The width and the overlap are set from JavaScript against the room
+   there actually is, so nine cards fit whatever phone this is instead of
+   running off the side of it. */
+.jhand {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  min-height: 84px;
+}
+/* Between hands there are no cards, and an empty 84px reserved for them
+   leaves a hole under the scoreboard. */
+.jhand:empty { min-height: 0; }
+.jcard {
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  line-height: 0;
+  cursor: pointer;
+  transition: transform .13s var(--tap), opacity .13s;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,.5));
+}
+.jcard.live:active { transform: translateY(-9px); }
+
+/* Which of your cards are trumps, said on the cards themselves. The bottom
+   edge is the one part of a card in a fan the next card never covers, so
+   that is where the gold goes. */
+.jcard { position: relative; }
+.jcard.trump::after {
+  content: '';
+  position: absolute;
+  left: 6%; right: 6%; bottom: 3.5px;
+  height: 5px;
+  border-radius: 2.5px;
+  background: linear-gradient(90deg, #FFDE85, #E9B33C);
+  box-shadow: 0 0 8px rgba(242,193,78,.9), 0 0 2px rgba(0,0,0,.5);
+  pointer-events: none;
+}
+.jcard.dud.trump::after { opacity: .5; }
+/* A card you may not play sinks and dims rather than vanishing, so you can
+   still see what you are holding. */
+.jcard.dud { transform: translateY(7px); opacity: .46; cursor: default; }
+.jcard.refused { animation: jnope .34s; }
+
+@keyframes jnope {
+  0%, 100% { transform: translateX(0);   }
+  25%      { transform: translateX(-5px); }
+  75%      { transform: translateX(5px);  }
+}
+
+/* ── What is trumps ──────────────────────────────────────────────── */
+/* Directly above your own cards. The badge on the table is for glancing at
+   the trick; this one is for the moment you are choosing what to play. */
+
+.jtrump {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-bottom: 9px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: linear-gradient(rgba(214,169,59,.14), rgba(214,169,59,.07));
+  border: 1px solid rgba(214,169,59,.32);
+}
+.jt-lab { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+.jt-lab b { font-size: 16px; font-weight: 800; letter-spacing: -.01em; }
+.jt-lab i {
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+.jt-x {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--pop);
+  padding-left: 9px;
+  border-left: 1px solid rgba(214,169,59,.3);
+}
+
+/* ── Naming the contract ─────────────────────────────────────────── */
+
+.jbid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-bottom: 10px;
+}
+.jbidb {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 3px;
+  padding: 9px 4px 8px;
+  min-height: 74px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: linear-gradient(#171E29, #121822);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  transition: transform .1s, border-color .12s;
+}
+.jbidb:active { transform: scale(.96); border-color: var(--gold); }
+.jb-l { font-size: 11.5px; font-weight: 700; }
+.jb-x { font-size: 11px; font-weight: 800; color: var(--pop); }
+
+.jshove {
+  grid-column: 1 / -1;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--bg-soft);
+  color: var(--ink-dim);
+  font: 700 14px inherit;
+  cursor: pointer;
+}
+.jshove:active { transform: scale(.98); color: var(--ink); }
+
+/* ── What the hand came to ───────────────────────────────────────── */
+
+.jresult {
+  max-height: 48dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 8px;
+}
+.jrhead, .jrow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 58px 58px;
+  gap: 8px;
+  align-items: baseline;
+  padding: 7px 2px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.jrhead {
+  color: var(--ink-dim);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.jrow .jr-l { color: var(--ink-dim); }
+.jr-a, .jr-b { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+.jrhead .jr-a, .jrhead .jr-b { text-transform: none; letter-spacing: 0; }
+.jrow.strong {
+  border-bottom: 0;
+  font-size: 17px;
+  color: var(--pop);
+}
+.jrow.strong .jr-a, .jrow.strong .jr-b { font-weight: 800; }
+
+.jschneider {
+  padding: 8px 2px 0;
+  font-size: 12.5px;
+  color: var(--ink-dim);
+}
+
+.jnext {
+  width: 100%;
+  height: 48px;
+  margin-top: 12px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(#FFDE85, #F2BC45 50%, #D89E28);
+  color: #3A2B06;
+  font: 800 17px/1 inherit;
+  box-shadow: 0 4px 0 #96700F, 0 9px 20px rgba(0,0,0,.35),
+              inset 0 1px 0 rgba(255,255,255,.6);
+  cursor: pointer;
+}
+.jnext:active { transform: translateY(3px); box-shadow: 0 1px 0 #96700F; }
+
+/* ── This hand, in the menu ──────────────────────────────────────── */
+
+.jlog {
+  max-height: 52dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.jlogline {
+  padding: 7px 2px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-dim);
+}
+.jlogline:first-child { color: var(--ink); }
+
+/* Short phones: give the table back the room the fans were taking. */
+@media (max-height: 700px) {
+  .jtable { min-height: 150px; }
+  .jseat.top .jb + .jb { margin-left: -21px; }
+  .jbidb { min-height: 64px; }
+  .jhand { min-height: 72px; }
+}
