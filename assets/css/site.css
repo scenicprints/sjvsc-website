@@ -689,15 +689,12 @@ html.mcalpop-open{overflow:hidden}
   .flyer-plain{grid-template-columns:12px 1fr auto}
   .flyer-plain .flyer-art-none{min-height:100%}
 }
-/* the document itself, on a screen with room for it */
-.flyer-doc{margin-top:26px;border:1px solid var(--line);border-radius:8px;overflow:hidden;
-  background:var(--cream-2)}
-.flyer-doc iframe{display:block;width:100%;height:min(80vh,900px);border:0}
-.flyer-sheet-cover img{max-width:520px}
-@media (max-width:759px){ .flyer-doc{display:none} }
 
-/* With a document, the cover and the embed both show its first page. The
-   embed shows all nine, so on a screen with room for it the cover is just
-   the same page twice; on a phone the embed is hidden and the cover is
-   what there is. */
-@media (min-width:760px){ .flyer-sheet-cover{display:none} }
+
+/* the flyer's pages, laid out as pages rather than inside a viewer */
+.flyer-pages{margin-top:26px;display:grid;gap:22px}
+.flyer-page{margin:0;position:relative}
+.flyer-page img{display:block;width:100%;height:auto;border:1px solid var(--line);
+  border-radius:6px;background:#fff}
+.flyer-page figcaption{margin-top:8px;font-family:var(--ui);font-size:.78rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);text-align:right}

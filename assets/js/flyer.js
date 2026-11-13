@@ -126,24 +126,42 @@ window.SJVSC_FLYER = (function () {
       '</p>';
   }
 
-  /* A picture is shown. A document is embedded on a screen with room for
-     it, and on a phone it is not: a PDF in an iframe on a small screen is
-     a scrolling box inside a scrolling page, and several mobile browsers
-     will only draw its first page anyway. There, the cover and the two
-     buttons do the job. */
+  /* How the flyer is shown.
+
+     Its pages are pictures, rendered when it was uploaded, and they are
+     laid out as pages: one under the next, the full width of the column,
+     nothing around them. Embedding the PDF instead put the browser's own
+     viewer in the middle of the site -- grey chrome, a toolbar, its own
+     scrollbar inside the page's scrollbar -- which looked like somebody
+     else's software wedged in, because it was.
+
+     A single-image flyer is just that one picture. The PDF itself stays
+     downloadable either way, because that is the thing worth printing. */
   function sheet(f) {
+    var pages = Array.isArray(f.pages) ? f.pages : [];
+
+    if (pages.length) {
+      return '<div class="flyer-pages">' + pages.map(function (src, i) {
+        return '<figure class="flyer-page">' +
+          '<img src="' + esc(src) + '" loading="' + (i ? 'lazy' : 'eager') +
+            '" alt="Page ' + (i + 1) + ' of ' + esc(f.title) + '">' +
+          '<figcaption>' + (i + 1) + ' of ' + pages.length + '</figcaption>' +
+          '</figure>';
+      }).join('') + '</div>';
+    }
+
     if (isPicture(f.src)) {
       return '<figure class="flyer-sheet">' +
-        '<img src="' + esc(f.src) + '" alt="' + esc(f.title) + ' flyer">' +
+        '<img src="' + esc(f.src) + '" alt="' + esc(f.title) + '">' +
         '</figure>';
     }
-    return (f.cover
-        ? '<figure class="flyer-sheet flyer-sheet-cover">' +
-          '<img src="' + esc(f.cover) + '" alt="The first page of the ' +
-          esc(f.title) + '"></figure>'
-        : '') +
-      '<div class="flyer-doc"><iframe src="' + esc(f.src) +
-        '" title="' + esc(f.title) + '" loading="lazy"></iframe></div>';
+
+    /* A document with no pages rendered: all that can honestly be offered
+       is the cover, if there is one, and the buttons below. */
+    return f.cover
+      ? '<figure class="flyer-sheet"><img src="' + esc(f.cover) +
+        '" alt="The first page of the ' + esc(f.title) + '"></figure>'
+      : '';
   }
 
   function load() {

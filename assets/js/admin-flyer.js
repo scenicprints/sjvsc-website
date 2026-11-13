@@ -22,6 +22,7 @@
   var pendingSrc = null;        // uploaded, not yet saved
   var pendingCover = null;
   var coverCleared = false;
+  var pendingPages = null;
 
   function el(id) { return document.getElementById(id); }
 
@@ -37,6 +38,11 @@
   function isPicture(url) { return IS_PICTURE.test(String(url || '')); }
 
   function src() { return pendingSrc || (flyer && flyer.src) || ''; }
+
+  function pages() {
+    if (pendingPages) return pendingPages;
+    return (flyer && Array.isArray(flyer.pages)) ? flyer.pages : [];
+  }
 
   function cover() {
     if (coverCleared) return '';
@@ -58,8 +64,13 @@
       } else if (isPicture(url)) {
         holder.innerHTML = '<img class="fsheet" src="' + url + '" alt="">';
       } else {
-        holder.innerHTML = '<p class="fdoc">A document. <a href="' + url +
-          '" target="_blank" rel="noopener">Open it</a> to check it is the right one.</p>';
+        var n = pages().length;
+        holder.innerHTML = '<p class="fdoc">A document of ' +
+          (n ? n + (n === 1 ? ' page' : ' pages') : 'unknown length') +
+          '. <a href="' + url + '" target="_blank" rel="noopener">Open it</a> to check ' +
+          'it is the right one.' +
+          (n ? '' : '<br><b>No pages have been rendered, so the flyer page will have ' +
+            'nothing to show.</b> Choose the file again.') + '</p>';
       }
     }
 
@@ -137,6 +148,67 @@
     });
   }
 
+  /* ---- turning a PDF into pages --------------------------------------
+
+     The flyer page shows pictures, not a PDF, so the pages are rendered
+     here when the file is chosen. pdf.js does the rendering: it is the
+     one dependency in the project and it is loaded only on this screen,
+     only when somebody picks a PDF. A visitor never fetches it.
+
+     Pinned to an exact version rather than a range, because a renderer
+     that changes under the club without warning is a renderer that
+     breaks on the one evening a year anybody uses it. */
+
+  var PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/';
+  var pdfjs = null;
+
+  function loadPdfJs() {
+    if (pdfjs) return Promise.resolve(pdfjs);
+    return import(PDFJS + 'pdf.min.mjs').then(function (lib) {
+      lib.GlobalWorkerOptions.workerSrc = PDFJS + 'pdf.worker.min.mjs';
+      pdfjs = lib;
+      return lib;
+    });
+  }
+
+  /* 150 dots to the inch: a letter page comes out about 1275 wide, which
+     reads on a laptop and stands being pinched into on a phone. */
+  var PAGE_DPI = 150;
+
+  function renderPages(file, onProgress) {
+    return loadPdfJs()
+      .then(function (lib) { return file.arrayBuffer().then(function (buf) {
+        return lib.getDocument({ data: buf }).promise;
+      }); })
+      .then(function (doc) {
+        var out = [];
+        var chain = Promise.resolve();
+        for (var n = 1; n <= doc.numPages; n++) {
+          (function (number) {
+            chain = chain.then(function () {
+              onProgress(number, doc.numPages);
+              return doc.getPage(number).then(function (page) {
+                var view = page.getViewport({ scale: PAGE_DPI / 72 });
+                var canvas = document.createElement('canvas');
+                canvas.width = Math.round(view.width);
+                canvas.height = Math.round(view.height);
+                return page.render({
+                  canvasContext: canvas.getContext('2d'), viewport: view
+                }).promise.then(function () {
+                  return new Promise(function (resolve) {
+                    canvas.toBlob(resolve, 'image/jpeg', 0.8);
+                  });
+                }).then(function (blob) {
+                  return S.upload(blob, 'flyer', 'Page ' + number + '.jpg');
+                }).then(function (res) { out.push(res.src); });
+              });
+            });
+          }(n));
+        }
+        return chain.then(function () { return out; });
+      });
+  }
+
   function choose(what) {
     var forCover = what === 'cover';
     var button = el(forCover ? 'fcoverpick' : 'fpick');
@@ -158,11 +230,23 @@
       ready
         .then(function (blob) { return S.upload(blob, 'flyer', file.name); })
         .then(function (res) {
-          if (forCover) { pendingCover = res.src; coverCleared = false; }
-          else { pendingSrc = res.src; }
+          if (forCover) { pendingCover = res.src; coverCleared = false; return null; }
+          pendingSrc = res.src;
+          pendingPages = [];
+          if (file.type === 'application/pdf') {
+            said('Rendering the pages…');
+            return renderPages(file, function (n, of) {
+              said('Rendering page ' + n + ' of ' + of + '…');
+            }).then(function (pages) { pendingPages = pages; });
+          }
+          return null;
+        })
+        .then(function () {
           drawPreview();
           lockOrUnlock();
-          said('Uploaded. Press Save to put it up.');
+          said(pendingPages && pendingPages.length
+            ? pendingPages.length + ' pages ready. Press Save to put it up.'
+            : 'Uploaded. Press Save to put it up.');
         })
         .catch(function (err) { said(err.message || 'That did not upload.', true); })
         .then(function () { button.disabled = false; });
@@ -182,7 +266,8 @@
       link: el('fLink').value.trim(),
       crop: el('fCrop').value,
       src: src(),
-      cover: cover()
+      cover: cover(),
+      pages: pages()
     };
     if (!body.title) { said('The flyer needs a name.', true); return; }
     if (!body.src) { said('Choose the flyer first.', true); return; }
@@ -193,6 +278,7 @@
       flyer = saved;
       pendingSrc = null;
       pendingCover = null;
+      pendingPages = null;
       coverCleared = false;
       fill();
       said('Saved. It is on the home page now.');
