@@ -318,6 +318,61 @@ async function getUpload(env, key) {
   return new Response(bytes, { headers });
 }
 
+/* ---- the flyer that stands all year --------------------------------
+
+   One row, or none. getFlyer answers null rather than an error when the
+   club has not put one up, because a home page with no flyer is a normal
+   state and not a fault. */
+
+async function getFlyer(env) {
+  const row = await env.DB.prepare(
+    'SELECT title, happens, place, note, src, link, crop FROM flyer WHERE id = 1'
+  ).first();
+  return row || null;
+}
+
+async function putFlyer(request, env, auth) {
+  const body = await readBody(request);
+  if (!body) return oops(400, 'That was not JSON.');
+
+  const title = String(body.title || '').trim();
+  const src = String(body.src || '').trim();
+  if (!title) return oops(422, 'The flyer needs a name.');
+  if (!src) return oops(422, 'The flyer needs a poster.');
+
+  const happens = String(body.happens || '').trim();
+  if (happens && !/^\d{4}-\d{2}-\d{2}$/.test(happens)) {
+    return oops(422, 'The day must be yyyy-mm-dd.');
+  }
+  const crop = ['top', 'middle', 'bottom'].includes(body.crop) ? body.crop : 'top';
+
+  const before = await getFlyer(env);
+  await env.DB.prepare(
+    `INSERT INTO flyer (id, title, happens, place, note, src, link, crop, updated_by)
+     VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT (id) DO UPDATE SET
+       title = excluded.title, happens = excluded.happens, place = excluded.place,
+       note = excluded.note, src = excluded.src, link = excluded.link,
+       crop = excluded.crop, updated_by = excluded.updated_by,
+       updated_at = datetime('now')`
+  ).bind(title, happens || null, String(body.place || '').trim() || null,
+         String(body.note || '').trim() || null, src,
+         String(body.link || '').trim() || null, crop, auth.who).run();
+
+  const after = await getFlyer(env);
+  await record(env, auth, before ? 'changed' : 'added', 'flyer', 'flyer', title,
+    before, after);
+  return json(after);
+}
+
+async function clearFlyer(env, auth) {
+  const before = await getFlyer(env);
+  if (!before) return new Response(null, { status: 204 });
+  await env.DB.prepare('DELETE FROM flyer WHERE id = 1').run();
+  await record(env, auth, 'removed', 'flyer', 'flyer', before.title, before, null);
+  return new Response(null, { status: 204 });
+}
+
 async function allGallery(env) {
   const { results } = await env.DB.prepare('SELECT slug, data FROM gallery').all();
   const out = {};
@@ -360,6 +415,7 @@ async function route(request, env) {
     if (path === '/api/saved')  return json(await listEvents(env, 1), 200, READ_CACHE);
     if (path === '/api/rates')  return json(await activeRates(env) ?? {}, 200, READ_CACHE);
     if (path === '/api/gallery') return json(await allGallery(env), 200, READ_CACHE);
+    if (path === '/api/flyer')   return json(await getFlyer(env), 200, READ_CACHE);
 
     /* The history is the board's own record, so it is not public. */
     if (path === '/api/changes') {
@@ -388,7 +444,8 @@ async function route(request, env) {
     path === '/api/events' || path.startsWith('/api/events/') ||
     path === '/api/saved'  || path.startsWith('/api/saved/')  ||
     path === '/api/rates'  || path.startsWith('/api/gallery/') ||
-    path.startsWith('/api/upload');
+    path.startsWith('/api/upload') ||
+    path === '/api/flyer';
 
   if (writesTo && method !== 'GET' && method !== 'HEAD') {
     const auth = await requireBoard(request, env);
@@ -404,6 +461,11 @@ async function route(request, env) {
     }
 
     if (method === 'PUT' && path === '/api/rates') return putRates(request, env, auth);
+
+    if (path === '/api/flyer') {
+      if (method === 'PUT') return putFlyer(request, env, auth);
+      if (method === 'DELETE') return clearFlyer(env, auth);
+    }
 
     if (method === 'POST' && path === '/api/upload') {
       return putUpload(request, env, auth,

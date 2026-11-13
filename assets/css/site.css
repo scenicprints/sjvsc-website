@@ -647,3 +647,38 @@ html.mcalpop-open{overflow:hidden}
 .notabooking p{margin:0}
 .notabooking p + p{margin-top:8px}
 
+
+/* ---- the flyer that stands all year ---------------------------------
+
+   The poster is a tall portrait sheet. It suits a phone and makes a
+   skyscraper of a desktop screen, so it never goes in the flow of the
+   home page: a short band does, cut from the poster's own artwork, and
+   clicking it opens the sheet on a page of its own. The band is the same
+   height whatever shape the poster is, because it is a crop. */
+.flyersec{padding-top:0}
+.flyer{display:grid;grid-template-columns:minmax(0,1fr);align-items:stretch;
+  text-decoration:none;color:inherit;border:1.5px solid var(--line);border-radius:10px;
+  overflow:hidden;background:var(--white);transition:border-color .15s,transform .15s}
+.flyer:hover{border-color:var(--red);transform:translateY(-2px)}
+.flyer-art{display:block;min-height:132px;background-size:cover;
+  background-repeat:no-repeat;background-color:var(--cream-2)}
+.flyer-said{display:block;padding:20px 22px}
+.flyer-said b{display:block;font-family:var(--display);
+  font-size:clamp(1.35rem,3.4vw,1.85rem);line-height:1.15;margin-top:6px}
+.flyer-when{display:block;margin-top:8px;color:var(--ink-2)}
+.flyer-note{display:block;margin-top:4px;color:var(--ink-soft);font-size:.95rem}
+.flyer-go{display:block;padding:0 22px 20px;font-family:var(--ui);font-weight:600;
+  color:var(--red)}
+
+@media (min-width:760px){
+  .flyer{grid-template-columns:minmax(260px,34%) 1fr auto;align-items:center}
+  .flyer-art{height:100%;min-height:168px}
+  .flyer-said{padding:24px 26px}
+  .flyer-go{padding:0 26px 0 0;white-space:nowrap}
+}
+
+/* the sheet itself, on its own page */
+.flyer-sheet{margin:26px 0 0}
+.flyer-sheet img{display:block;width:100%;height:auto;border:1px solid var(--line);
+  border-radius:8px}
+.flyer-acts{margin-top:20px;display:flex;gap:12px;flex-wrap:wrap}

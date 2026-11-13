@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<!-- Pages serves HTML with max-age=600, so a board member pressing refresh can be
+     handed yesterday's admin screen. These pages are not public; always revalidate. -->
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+<title>The flyer &#183; Website admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/css/site.css?v=4b5e2012">
+<link rel="stylesheet" href="assets/css/admin.css?v=78632a88">
+<script>window.SJVSC_ADMIN = true;</script>
+<script src="assets/js/store.js?v=64c910ed"></script>
+<script async crossorigin="anonymous"
+  data-clerk-publishable-key="pk_test_cHVtcGVkLWxhYi02OTE5LmNsZXJrLmFjY291bnRzLmRldiQ"
+  src="https://pumped-lab-6919.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js"></script>
+<script src="assets/js/admin-auth.js?v=746f500d"></script>
+
+</head>
+<body class="adm">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="abar">
+  <div class="awrap">
+    <span class="abrand">
+      <svg viewBox="0 0 32 34" aria-hidden="true"><path d="M1 1h30v17c0 7.5-6.5 13-15 15.5C7.5 31 1 25.5 1 18Z" fill="#C8102E"/><path d="M13.2 6h5.6v6.2H25v5.6h-6.2V24h-5.6v-6.2H7v-5.6h6.2Z" fill="#fff"/></svg>
+      <span><b>Ripon Swiss Club</b><i>Website admin</i></span>
+    </span>
+    <span class="awho">
+      <a href="index.html">Back to the website</a>
+    </span>
+  </div>
+</header>
+
+<main id="main">
+  <div class="awrap">
+    <a class="aback" href="admin.html">&#8592; Back</a>
+    <h1>The flyer</h1>
+
+    <p class="alead">One poster, up all year, changed when the next one arrives. It does
+      not go on the home page itself &#8212; a short band does, cut from the poster, and
+      clicking that opens the poster on a page of its own.</p>
+
+    <p class="alead" id="signedoutnote" hidden>Sign in at the top of the page to change it.</p>
+
+    <form id="fform">
+      <fieldset class="rsec">
+        <legend>The poster</legend>
+        <p class="hint" style="margin:0 0 14px">A picture or a PDF page saved as a picture.
+          Whatever shape it is, the band on the home page stays the same height.</p>
+        <div id="fpreview"></div>
+        <div class="aactions eactions" style="margin-top:14px">
+          <button class="abtn" type="button" id="fpick" hidden>Choose a poster</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="rsec">
+        <legend>What it is</legend>
+        <div class="field">
+          <label for="fTitle">Name of the event</label>
+          <input type="text" id="fTitle" autocomplete="off">
+        </div>
+        <div class="fields">
+          <div class="field">
+            <label for="fHappens">The day it happens</label>
+            <input type="date" id="fHappens">
+            <p class="hint">The band comes off the home page the day after. Leave it empty
+              and the flyer stands until it is replaced.</p>
+          </div>
+          <div class="field">
+            <label for="fPlace">Where <span class="opt">optional</span></label>
+            <input type="text" id="fPlace" autocomplete="off">
+          </div>
+        </div>
+        <div class="field">
+          <label for="fNote">One line under the name <span class="opt">optional</span></label>
+          <input type="text" id="fNote" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="fLink">A link for more about it <span class="opt">optional</span></label>
+          <input type="text" id="fLink" autocomplete="off" placeholder="https://">
+        </div>
+        <div class="field">
+          <label for="fCrop">Which part of the poster the band shows</label>
+          <select id="fCrop">
+            <option value="top">The top</option>
+            <option value="middle">The middle</option>
+            <option value="bottom">The bottom</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <div class="aactions eactions">
+        <a class="abtn" href="flyer.html" target="_blank" rel="noopener">See the flyer page</a>
+        <button class="abtn solid" type="button" id="fsave" hidden>Save</button>
+        <button class="abtn danger" type="button" id="fclear" hidden>Take it down</button>
+        <span class="asaid" id="fsaid" role="status" aria-live="polite"></span>
+      </div>
+    </form>
+  </div>
+</main>
+
+<script src="assets/js/admin-flyer.js?v=8f5ea645"></script>
+</body>
+</html>
