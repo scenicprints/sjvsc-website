@@ -446,6 +446,16 @@ async function route(request, env) {
   const path = url.pathname.replace(/\/+$/, '') || '/';
   const method = request.method.toUpperCase();
 
+  /* One address, not two. The site answers on www because old links and
+     old habits point there, but it does not live at two addresses: www is
+     sent to the bare domain, path and query intact, before anything else
+     is decided. */
+  if (url.hostname === 'www.sjvscriponswiss.com') {
+    const to = new URL(url);
+    to.hostname = 'sjvscriponswiss.com';
+    return Response.redirect(to.toString(), 301);
+  }
+
   /* The old addresses arrive percent-encoded -- /k%c3%bcche-... -- and
      decoding is what makes the two German pages match. A malformed
      escape throws rather than matching, so it falls through to the

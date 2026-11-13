@@ -57,6 +57,18 @@
   // moves. Preview URLs are off: every deployed version would otherwise get
   // its own public address, and there is no reason for several public copies
   // of the club's site to exist at once.
+  // The club's own address. A custom domain hands the whole hostname to
+  // this Worker and keeps the certificate renewed; www is here too so an
+  // old link or a typed "www." still arrives, and the Worker sends it on
+  // to the bare domain so there is one canonical address rather than two
+  // copies of the site.
+  "routes": [
+    { "pattern": "sjvscriponswiss.com", "custom_domain": true },
+    { "pattern": "www.sjvscriponswiss.com", "custom_domain": true }
+  ],
+
+  // Kept on. It is how the board reached the site before the domain moved,
+  // and it stays useful as a way in if the domain is ever mid-change.
   "workers_dev": true,
   "preview_urls": false,
 
