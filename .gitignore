@@ -14,3 +14,6 @@ recovered/
 db/seed.sql
 # Clerk keys for local dev — never committed
 .dev.vars
+
+# the archived old site, built by tools/old-site (79 MB, not source)
+archive/*.exe
