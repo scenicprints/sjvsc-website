@@ -9,7 +9,22 @@
   --display:"Fraunces",Georgia,serif;
   --ui:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
   --cross:polygon(40% 0,60% 0,60% 40%,100% 40%,100% 60%,60% 60%,60% 100%,40% 100%,40% 60%,0 60%,0 40%,40% 40%);
-  color-scheme:light;
+  /* "only light", not "light". Chrome on Android offers to darken web
+     pages that do not have a dark theme of their own, and a phone with
+     that on repaints this site: the cream goes to brown, the ink goes
+     pale, and most of the page survives it. Inline SVG does not. The
+     browser recolours CSS backgrounds and text but leaves an SVG fill
+     where it found it, so on the other-clubs map the club names stayed
+     near-black on a background that had just turned near-black, and
+     disappeared. The same would happen to any drawing we add later.
+
+     Plain "light" does not opt out of that -- it is what tells the
+     browser the page is a light page, which is precisely what it offers
+     to darken. "only light" is the one that declines. The club's
+     identity is cream and red, printed; it is not a theme the browser
+     should be inventing a second version of. A dark theme of our own,
+     if it is ever wanted, is a real piece of work and goes here. */
+  color-scheme:only light;
 }
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
