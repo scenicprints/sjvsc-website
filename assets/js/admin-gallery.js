@@ -97,6 +97,8 @@
       if (canEdit) {
         cap.contentEditable = 'true';
         cap.classList.add('edit');
+        /* An empty box says what belongs in it rather than "Type here". */
+        cap.setAttribute('data-hint', 'A line about this photograph');
         cap.addEventListener('input', function () { pics[i].caption = cap.textContent.trim(); });
 
         /* The first picture leads the band, so which one is first is a
