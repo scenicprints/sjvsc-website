@@ -326,11 +326,32 @@ window.SJVSC = (function () {
       holder.className = 'ecard-said';
       var fig = document.createElement('div');
       fig.className = 'ecard-pic';
+
+      /* A flyer is a thing to be read, and at the width of this column it
+         is a thumbnail of one. Worse, the picture being shown here is the
+         reason it is kept out of the attachments underneath, so until now
+         there was no way to the full size of it at all. The picture opens
+         itself: the flyer alone, as big as the screen is, to pinch into,
+         save or hand to a printer. */
+      var open = document.createElement('a');
+      open.className = 'ecard-open';
+      open.href = picture;
+      open.target = '_blank';
+      open.rel = 'noopener';
+      open.setAttribute('aria-label', 'Open the picture for ' + e.title + ' full size');
+
       var pic = document.createElement('img');
       pic.src = picture;
       pic.alt = e.title;
       pic.loading = 'lazy';
-      fig.appendChild(pic);
+      open.appendChild(pic);
+
+      var say = document.createElement('span');
+      say.className = 'ecard-open-say';
+      say.textContent = 'Open it full size';
+      open.appendChild(say);
+
+      fig.appendChild(open);
       card.appendChild(fig);
       card.appendChild(holder);
     }

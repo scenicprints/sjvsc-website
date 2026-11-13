@@ -595,11 +595,18 @@ html.mcalpop-open{overflow:hidden}
 /* An event that carries a photograph of itself. The picture takes a column
    of its own beside the words, upright or not, and goes above them on a
    phone where there is only ever one column. */
-.ecard-shot{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);
+.ecard-shot{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);
   gap:26px 30px;align-items:start}
 .ecard-shot .ecard-head{grid-column:1/-1}
 .ecard-pic{margin:0;min-width:0}
 .ecard-pic img{display:block;width:100%;height:auto;border:1px solid var(--line)}
+/* the picture opens itself, full size, on a page of its own */
+.ecard-open{display:block;text-decoration:none;color:var(--red)}
+.ecard-open img{transition:border-color .2s}
+.ecard-open:hover img{border-color:var(--red)}
+.ecard-open-say{display:block;margin-top:9px;font-family:var(--ui);font-size:.7rem;
+  font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.ecard-open:hover .ecard-open-say{text-decoration:underline;text-underline-offset:3px}
 .ecard-shot .ecard-said{min-width:0}
 .ecard-shot .ecard-body{margin-top:0}
 @media(max-width:760px){
