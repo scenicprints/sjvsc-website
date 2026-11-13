@@ -11,7 +11,21 @@
 
    It fails closed. If CLERK_JWT_KEY is not set, no write is accepted by
    anyone, which is the right behaviour for a half-configured deployment:
-   an unconfigured site is read-only, never open. */
+   an unconfigured site is read-only, never open.
+
+   SETTING CLERK_JWT_KEY: pipe the PEM in from a shell that does not touch
+   bytes.
+
+       cat clerk-prod.pem | npx wrangler secret put CLERK_JWT_KEY
+
+   Not PowerShell. It rewrites line endings on the way through, and the key
+   arrives with carriage returns inside it. Base64 with a stray  in it
+   decodes to something that is not the key, every token is refused, and
+   nothing says why: Clerk reports token-verification-failed for a wrong
+   key, a bad signature and an expired token alike. The key will look
+   correct in the dashboard, in the file and at the JWKS endpoint, because
+   it is correct everywhere except in transit. This cost an hour on
+   13 Nov 2026. */
 
 import { verifyToken } from '@clerk/backend';
 
