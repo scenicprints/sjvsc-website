@@ -47,12 +47,13 @@ step whose only purpose is to make cancelling the builder plan safe.
       version creation (Workers degraded on their status page), so it has not gone
       out. Re-run `npx wrangler deploy` once they recover and confirm
       `/.git/config` 404s.
-- [ ] Swap Clerk's development instance for a production one. New issuer, new keys,
-      and `CLERK_JWT_KEY` / `CLERK_AUTHORIZED_PARTIES` both change with it.
-      **Invite-only must be set again on the new instance** — it is a separate
-      instance and the setting does not carry over, and `worker/auth.js` depends on
-      it entirely. The board's accounts do not carry over either; they need
-      re-inviting.
+- [x] ~~Swap Clerk's development instance for a production one.~~ Done 13 Nov 2026.
+      Cloned from the development instance, which carried invite-only across —
+      checked on the new instance rather than assumed. Sign-in is served from
+      `clerk.sjvscriponswiss.com`; `CLERK_AUTHORIZED_PARTIES` is the live domain
+      only, so the admin now works there and not on workers.dev. Accounts did not
+      carry over: Kevin is invited, the rest of the board still needs inviting from
+      Users → Invitations.
 - [x] ~~Redirects for the old URLs that do not match.~~ Done and live: eleven of
       them in `MOVED` in `worker/index.js`, tested on workers.dev. Seven are
       renames; four are judgement calls (`/playground` → `/rentals`,
