@@ -13,7 +13,7 @@
     "db:seed:local": "wrangler d1 execute sjvsc --local --file db/seed.sql",
     "db:seed": "wrangler d1 execute sjvsc --remote --file db/seed.sql",
     "stamp": "python tools/stamp-assets.py",
-    "test": "node scripts/test-shape.mjs && node scripts/test-rates.mjs && node scripts/test-ties.mjs"
+    "test": "node scripts/test-shape.mjs && node scripts/test-rates.mjs && node scripts/test-ties.mjs && node scripts/test-404.mjs"
   },
   "dependencies": {
     "@clerk/backend": "^2.32.0"

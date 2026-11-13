@@ -18,7 +18,10 @@ import os
 import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-REF = re.compile(r'(?P<attr>href|src)="(?P<path>assets/(?:css|js)/[^"?]+)(?:\?v=[^"]*)?"')
+# The leading slash is optional because 404.html alone has to use absolute
+# paths: it is served at whatever address the visitor asked for, so a
+# relative link on it would resolve against the wrong folder.
+REF = re.compile(r'(?P<attr>href|src)="(?P<path>/?assets/(?:css|js)/[^"?]+)(?:\?v=[^"]*)?"')
 
 
 def short_hash(path):
@@ -34,7 +37,7 @@ def main():
 
         def stamp(m):
             rel = m.group('path')
-            full = os.path.join(ROOT, rel.replace('/', os.sep))
+            full = os.path.join(ROOT, rel.lstrip('/').replace('/', os.sep))
             if not os.path.exists(full):
                 return m.group(0)
             if rel not in cache:
