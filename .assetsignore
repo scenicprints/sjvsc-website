@@ -4,6 +4,7 @@ db/
 scripts/
 tools/
 docs/
+archive/
 node_modules/
 *.md
 wrangler.jsonc

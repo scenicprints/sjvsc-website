@@ -1,0 +1,30 @@
+# Every page of the old site, and the pictures on it.
+# Taken 13 November 2026, from https://sjvscriponswiss.com/ while it was still live.
+# "logo" means the page's only image was the builder's 27x15 grey spacer, which
+# is not kept. A page listed with no pictures carried none.
+
+/                                        Swiss1.JPG, Alphorns_Grindelwald1.jpg
+/calendar                                (none)
+/hall-rental                             (none)
+/membership                              SwissClub02_600.jpg, SwissHall02_400.jpg, SwissHall03_600.jpg
+/contact                                 SwissHall05_400.jpg, 12140628_...n.jpg, 12241435_...n.jpg
+/swiss-echoes                            SwissEchoesFlag_600.jpg, 96ef58_...jpeg
+/schwingers-club                         Schwinger02_600.jpg, 80_400.jpg, 07_400.jpg
+/club-history                            (none)
+/scholarships                            16184736_lel_600.jpg (LOST), Alphorns_Grindelwald.jpg,
+                                         Alphorns_Grindelwald1.jpg, on-june-21st-the-swiss-8131.jpg
+/oktoberfest                             Oktoberfest-1.jpg, OF-2.jpg, OF-3.jpg, OF-6.jpg, OF.jpg
+/schwingfests                            (none)
+/jass                                    (none)
+/kids-swiss-camp                         Flags.JPG, Group.JPG, Project.JPG, recycle-cans.jpg
+/playground                              (none)
+/may-birthday-celebration                DSCN9698.jpg, DSCN9701.jpg, DSCN9710.jpg, DSCN9714.jpg
+/swiss-miss                              Swiss.jpg
+/newsletters                             newsletter.PNG  + 2 PDFs
+/eidgenössisches-2022                    WITH-SCHWINGERVERBAND.jpg
+/memorials                               Swiss-flag.jpg
+/children-s-christmas-party              (none)
+/other-swiss-clubs                       (none)
+/almond-blossom-dance                    (none)  + 1 PDF
+/west-coast-swiss-wrestling-association   (none)  + 1 PDF (listed under documents)
+/küche-kästle-kochbuch                   (none)
