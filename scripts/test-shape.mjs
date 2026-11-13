@@ -114,4 +114,37 @@ test('a round trip keeps the values', () => {
   }
 });
 
+console.log('')
+console.log('what a ticket costs');
+
+test('a list of prices survives the round trip', () => {
+  const prices = [{ who: 'Adults', price: '$20' }, { who: 'Children', price: '$10' }];
+  const after = rowToEvent({ id: 'x', ...eventToRow({
+    title: 'Oktoberfest', date: '2027-10-02', tickprices: prices,
+  }) });
+  assert.deepEqual(after.tickprices, prices);
+});
+
+test('an event with no prices comes back with an empty list', () => {
+  const after = rowToEvent({ id: 'x', ...eventToRow({ title: 'A', date: '2027-01-01' }) });
+  assert.deepEqual(after.tickprices, []);
+});
+
+/* The old single field is the one every event written before today has,
+   and it must keep reading after the column exists. */
+test('the old single price is left exactly where it was', () => {
+  const after = rowToEvent({ id: 'x', ...eventToRow({
+    title: 'A', date: '2027-01-01', tickprice: '$15',
+  }) });
+  assert.equal(after.tickprice, '$15');
+  assert.deepEqual(after.tickprices, []);
+});
+
+test('prices sent as something other than a list are refused', () => {
+  const problems = validateEvent({
+    title: 'A', date: '2027-01-01', tickprices: '$20',
+  });
+  assert.ok(problems.some((q) => q.includes('tickprices')), problems.join(' '));
+});
+
 console.log(`\n${pass} checks passed`);

@@ -396,3 +396,13 @@
 /* the buttons on a template row */
 .adm .eacts{display:flex;gap:8px;align-items:center;flex-shrink:0}
 .adm .eacts .abtn.small{padding:8px 12px;font-size:1rem;line-height:1}
+
+
+/* ------------------------------------------------------------------ */
+/* ticket prices: who it is for, and what they pay */
+.prow{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:10px;
+  margin-bottom:10px;align-items:center}
+.prow .pprice{font-weight:600}
+@media(max-width:760px){
+  .prow{grid-template-columns:1fr}
+}

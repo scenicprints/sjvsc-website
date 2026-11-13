@@ -22,6 +22,7 @@
   var drows = document.getElementById('drows');
   var tickrows = document.getElementById('tickrows');
   var attachrows = document.getElementById('attachrows');
+  var pricerows = document.getElementById('pricerows');
   var saved = D.savedAll();
 
   /* set from /api/me once the Worker has answered */
@@ -32,7 +33,7 @@
 
   /* the plain fields; details rows and attachments are their own thing */
   var NAMES = ['title', 'note', 'desc', 'page', 'date', 'time', 'from',
-               'tickfrom', 'tickto', 'tickprice'];
+               'tickfrom', 'tickto'];
   var DATES = ['date', 'from', 'tickfrom', 'tickto'];
   var F = {};
   NAMES.forEach(function (k) { F[k] = document.getElementById('f-' + k); });
@@ -173,6 +174,24 @@
     drows.appendChild(group);
     (values && values.length ? values : ['']).forEach(function (v) { addLine(group, v); });
     return group;
+  }
+
+  /* ---- what a ticket costs -------------------------------------------
+
+     One row per price: who it is for, and what they pay. Who it is for is
+     left empty on the ordinary event where one price covers everybody,
+     and then the price reads on its own. */
+
+  function addPriceRow(p) {
+    var row = document.createElement('div');
+    row.className = 'prow';
+    row.innerHTML = '<div class="pwho val"></div><div class="pprice val"></div>';
+    editable(row.querySelector('.pwho')).textContent = (p && p.who) || '';
+    var cost = (p && p.price) || '';
+    editable(row.querySelector('.pprice')).textContent =
+      canEdit ? cost : D.priceText(cost);
+    pricerows.appendChild(row);
+    return row;
   }
 
   /* ---- where to get a ticket -----------------------------------------
@@ -416,7 +435,6 @@
       } else {
         if (isDate) F[k].type = 'text';
         if (v && isDate) v = D.fullDate(v);
-        if (v && k === 'tickprice') v = D.priceText(v);
         F[k].value = v;
       }
     });
@@ -434,6 +452,14 @@
     var files = (e && e.attachments) || [];
     if (files.length) files.forEach(function (a) { addAttachRow(a); });
     else nothing(attachrows, 'Nothing is attached.');
+
+    pricerows.innerHTML = '';
+    var cost = (e && e.tickprices) || [];
+    /* an event saved before a price could be a list carries one price and
+       nobody it is for, and opens as exactly that row */
+    if (!cost.length && e && e.tickprice) cost = [{ who: '', price: e.tickprice }];
+    if (cost.length) cost.forEach(function (p) { addPriceRow(p); });
+    else nothing(pricerows, 'No price is set, so there are no tickets.');
 
     tickrows.innerHTML = '';
     var sellers = (e && e.ticksellers) || [];
@@ -476,6 +502,12 @@
     }).filter(function (a) { return a.name || a.link; });
   }
 
+  function readPrices() {
+    return [].map.call(pricerows.querySelectorAll('.prow'), function (r) {
+      return { who: text(r.querySelector('.pwho')), price: text(r.querySelector('.pprice')) };
+    }).filter(function (p) { return p.price; });
+  }
+
   function readSellers() {
     return [].map.call(tickrows.querySelectorAll('.trow'), function (r) {
       var sel = r.querySelector('.tkind select');
@@ -497,6 +529,11 @@
     out.details = readDetails();
     out.attachments = readAttachments();
     out.ticksellers = readSellers();
+    out.tickprices = readPrices();
+    /* the old single field is left behind rather than kept in step: the
+       pages read it only when the list is empty, and from here on it
+       never is. */
+    out.tickprice = '';
     return out;
   }
 
@@ -512,6 +549,11 @@
         var empty = attachrows.querySelector('.eempty');
         if (empty) empty.remove();
         addAttachRow({});
+      }],
+     [pricerows, 'Add a price', function () {
+        var empty = pricerows.querySelector('.eempty');
+        if (empty) empty.remove();
+        addPriceRow({});
       }],
      [tickrows, 'Add a way to get one', function () {
         var empty = tickrows.querySelector('.eempty');

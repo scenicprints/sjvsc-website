@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="assets/css/site.css?v=8cf7757a">
-<link rel="stylesheet" href="assets/css/admin.css?v=9334dc6e">
+<link rel="stylesheet" href="assets/css/admin.css?v=4351c946">
 <script>window.SJVSC_ADMIN = true;</script>
 <script src="assets/js/store.js?v=64c910ed"></script>
 <script async crossorigin="anonymous"
@@ -161,9 +161,13 @@
             <label for="f-tickto">On sale until <span class="opt">optional</span></label>
             <input type="text" id="f-tickto">
           </div>
-          <div class="field">
-            <label for="f-tickprice">Price <span class="opt">optional</span></label>
-            <input type="text" id="f-tickprice" placeholder="$15" autocomplete="off">
+          <div class="field wide">
+            <label id="pricehead">Price <span class="opt">optional</span></label>
+            <p class="hint" style="margin:0 0 12px">A line for each price. Say who it is
+              for where there is more than one &#8212; adults and children, members and
+              everybody else &#8212; and leave that empty where one price covers
+              everybody.</p>
+            <div id="pricerows" role="group" aria-labelledby="pricehead"></div>
           </div>
           <div class="field wide">
             <label id="tickhead">Where to get one <span class="opt">optional</span></label>
@@ -197,7 +201,7 @@
   </div>
 </main>
 
-<script src="assets/js/events-data.js?v=a6ceb644"></script>
-<script src="assets/js/admin-events.js?v=f5eb7392"></script>
+<script src="assets/js/events-data.js?v=1feb0787"></script>
+<script src="assets/js/admin-events.js?v=ce75fa5e"></script>
 </body>
 </html>

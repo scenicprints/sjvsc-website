@@ -161,9 +161,16 @@ window.SJVSC = (function () {
       row.querySelector('p').textContent = list[i].note;
       row.querySelector('.meta').textContent = longDate(list[i]);
       /* a price belongs on the listing too, while it is on sale */
+      /* The listing has room for what it costs, not for who each price is
+         for -- that is on the event itself. Two prices read as two prices,
+         and the same price twice reads once. */
       var t = tickets(list[i]);
       var tag = row.querySelector('.evt-price');
-      if (t && t.price) tag.textContent = 'Tickets ' + t.price;
+      var seen = [];
+      (t ? t.prices : []).forEach(function (p) {
+        if (seen.indexOf(p.price) < 0) seen.push(p.price);
+      });
+      if (seen.length) tag.textContent = 'Tickets ' + seen.join(' / ');
       else tag.remove();
     });
   }
@@ -253,16 +260,40 @@ window.SJVSC = (function () {
   /* Tickets show only while they are on sale. No dates means they show for as
      long as the event itself is advertised. Nothing shows when there is neither
      a price nor somewhere to get one. */
+  /* What a ticket costs. A club event rarely has one price -- one thing
+     for an adult and another for a child, one for a member and another
+     for everybody else -- so the event carries a list, each entry saying
+     who it is for and what they pay. Who it is for may be left out, and
+     that is the ordinary single-price event. Events written before the
+     list existed carry one tickprice, which reads as one price with
+     nobody named, so none of them needed rewriting. */
+  function prices(e) {
+    var list = (e.tickprices || []).map(function (p) {
+      return { who: (p.who || '').trim(), price: priceText(p.price) };
+    }).filter(function (p) { return p.price; });
+    if (!list.length && e.tickprice) {
+      list = [{ who: '', price: priceText(e.tickprice) }];
+    }
+    return list;
+  }
+
+  /* One line per price, for the Tickets row on the event's own card. */
+  function priceLines(e) {
+    return prices(e).map(function (p) {
+      return p.who ? p.who + ' — ' + p.price : p.price;
+    });
+  }
+
   function tickets(e) {
-    var price = priceText(e.tickprice);
+    var cost = prices(e);
     var where = sellers(e);
-    if (!price && !where.length) return null;
+    if (!cost.length && !where.length) return null;
 
     var now = today();
     if (e.tickfrom && now < at(e.tickfrom)) return null;
     if (e.tickto && now > at(e.tickto)) return null;
 
-    return { price: price, where: where };
+    return { prices: cost, lines: priceLines(e), where: where };
   }
 
   /* The details box a tied page carries. It is the page's own Details card,
@@ -345,8 +376,8 @@ window.SJVSC = (function () {
 
     details.forEach(function (d) { row(d.label, d.values); });
     if (t) {
-      if (t.price) row('Tickets', [t.price]);
-      if (t.where.length) row(t.price ? 'Where from' : 'Tickets', t.where);
+      if (t.lines.length) row('Tickets', t.lines);
+      if (t.where.length) row(t.lines.length ? 'Where from' : 'Tickets', t.where);
     }
 
     /* attachments: a file kept with the event, or an address somewhere else.
@@ -534,7 +565,8 @@ window.SJVSC = (function () {
            showing: showing,
            href: href, TIED: TIED, blocks: blocks, onPage: onPage,
            renderPages: renderPages, render: render, at: at,
-           tickets: tickets, contactText: contactText, priceText: priceText,
+           tickets: tickets, prices: prices, contactText: contactText,
+           priceText: priceText,
            today: today, pretty: pretty, fullDate: fullDate, longDate: longDate,
            MONTH: MONTH };
 })();
