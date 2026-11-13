@@ -21,7 +21,7 @@ so there is no 150 MB browser download:
     venv\Scripts\python check_offline.py      # open it with the network cut off
 
     venv\Scripts\python -m PyInstaller --onefile --name SJVSC-old-site ^
-        --add-data "offline;site" --console launcher.py
+        --add-data "offline;site" --windowed launcher.py
 
 ## Why it is not just "save page as"
 
@@ -56,3 +56,15 @@ like, and sniffs the file type from the bytes.
 `capture.py` only works while the old site is still serving. Once the
 nameservers move, there is nothing left to capture and these scripts become a
 record of how it was done rather than a way to do it again.
+
+## The window
+
+`launcher.py` serves the pages on a loopback port and opens them with the
+Chromium-based browser already installed — Edge on any Windows machine — run
+with `--app=`, which is a window with the tabs and address bar taken off, and
+a throwaway profile so it cannot see the reader's own browsing.
+
+A second engine was tried first and dropped. Bundling one adds weight, adds a
+third-party runtime to the archive that can rot, and buys nothing a reader
+would notice: the window looks the same either way. Using what is already on
+the machine keeps this file something that will still run in ten years.

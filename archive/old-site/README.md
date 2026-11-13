@@ -13,8 +13,9 @@ cancelling the Network Solutions plan destroys nothing.
 - `pages.txt`, `image-ids.txt` — what was on each page, and where it came from.
 
 A running copy of the whole thing is `../SJVSC-old-site.exe`. It is one file,
-installs nothing, writes nothing, and reaches no network. Run it and the old
-site opens in your browser, page by page, as it was.
+installs nothing, and reaches no network. Run it and the old site opens in its
+own window — no tabs, no address bar, its own entry on the taskbar — and you
+click through it as it was.
 
 ## A correction
 
