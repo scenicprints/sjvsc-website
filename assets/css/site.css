@@ -607,11 +607,21 @@ html.mcalpop-open{overflow:hidden}
 .ecard-open-say{display:block;margin-top:9px;font-family:var(--ui);font-size:.7rem;
   font-weight:700;letter-spacing:.14em;text-transform:uppercase}
 .ecard-open:hover .ecard-open-say{text-decoration:underline;text-underline-offset:3px}
+/* every other picture attached, each opening itself the same way */
+.ecard-more{margin-top:15px;display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.ecard-more-one{display:block;text-decoration:none;color:var(--ink-soft)}
+.ecard-more-one img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;
+  border:1px solid var(--line);transition:border-color .2s}
+.ecard-more-one:hover img{border-color:var(--red)}
+.ecard-more-one span{display:block;margin-top:5px;font-family:var(--ui);font-size:.68rem;
+  line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ecard-more-one:hover span{color:var(--red)}
 .ecard-shot .ecard-said{min-width:0}
 .ecard-shot .ecard-body{margin-top:0}
 @media(max-width:760px){
   .ecard-shot{grid-template-columns:1fr;gap:18px}
-  .ecard-pic img{max-height:62vh;width:auto;max-width:100%;margin:0 auto}
+  .ecard-open img{max-height:62vh;width:auto;max-width:100%;margin:0 auto}
 }
 
 .ecard-file{color:var(--red);text-underline-offset:3px}

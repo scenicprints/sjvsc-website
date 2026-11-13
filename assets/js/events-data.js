@@ -58,12 +58,26 @@ window.SJVSC = (function () {
     return found ? found.link : '';
   }
 
-  /* everything attached except the one being shown as the picture */
+  /* The pictures attached beyond the one leading the card. A flyer is a
+     flyer whether it was attached first or third, and until now only the
+     first was shown as one: the others fell into the list of files below
+     and came out as file names, looking like a different kind of thing
+     altogether beside the picture of the first. */
+  function morePictures(e) {
+    var lead = e && e.image ? null : pictureFor(e);
+    return (e && e.attachments || []).filter(function (a) {
+      return a && a.link && LOOKS_LIKE_A_PICTURE.test(a.link) && a.link !== lead;
+    });
+  }
+
+  /* everything attached that is not already being shown as a picture */
   function filesFor(e) {
-    var shown = e && e.image ? null : pictureFor(e);
+    var shown = morePictures(e).map(function (a) { return a.link; });
+    var lead = e && e.image ? null : pictureFor(e);
+    if (lead) shown.push(lead);
     return (e && e.attachments || []).filter(function (a) {
       if (!a.name || !(a.data || a.link)) return false;
-      return !(shown && a.link === shown);
+      return shown.indexOf(a.link) < 0;
     });
   }
 
@@ -352,6 +366,39 @@ window.SJVSC = (function () {
       open.appendChild(say);
 
       fig.appendChild(open);
+
+      /* Every other picture under the first, each opening itself the same
+         way. Small, because the first one is the one the event leads
+         with, but a picture all the same and not a file name. */
+      var more = morePictures(e);
+      if (more.length) {
+        var strip = document.createElement('div');
+        strip.className = 'ecard-more';
+        more.forEach(function (a) {
+          var one = document.createElement('a');
+          one.className = 'ecard-more-one';
+          one.href = a.link;
+          one.target = '_blank';
+          one.rel = 'noopener';
+          one.title = a.name || '';
+          one.setAttribute('aria-label',
+            'Open ' + (a.name || 'this picture') + ' full size');
+
+          var thumb = document.createElement('img');
+          thumb.src = a.link;
+          thumb.alt = a.name || '';
+          thumb.loading = 'lazy';
+          one.appendChild(thumb);
+
+          var said = document.createElement('span');
+          said.textContent = a.name || '';
+          one.appendChild(said);
+
+          strip.appendChild(one);
+        });
+        fig.appendChild(strip);
+      }
+
       card.appendChild(fig);
       card.appendChild(holder);
     }
