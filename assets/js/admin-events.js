@@ -86,10 +86,13 @@
 
   /* The repeating rows are divs, not inputs, so lock never touched them and
      unlock cannot either. Signed in, they become editable in place. */
-  function editable(el) {
+  function editable(el, hint) {
     if (canEdit) {
       el.contentEditable = 'true';
       el.classList.add('edit');
+      /* An empty box shows what goes in it. Two boxes side by side that
+         both say "Type here" leave the club guessing which is which. */
+      if (hint) el.setAttribute('data-hint', hint);
     }
     return el;
   }
@@ -156,7 +159,7 @@
     var row = document.createElement('div');
     row.className = 'drow';
     row.innerHTML = '<span class="dspacer"></span><div class="dvalue val"></div>';
-    editable(row.querySelector('.dvalue')).textContent = value || '';
+    editable(row.querySelector('.dvalue'), 'What it says').textContent = value || '';
     group.appendChild(row);
     if (group.querySelector('.drow') === row) {     // the heading box lives here
       row.replaceChild(group.querySelector('.dlabel'), row.querySelector('.dspacer'));
@@ -169,7 +172,7 @@
     group.className = 'dgroup';
     var box = document.createElement('div');
     box.className = 'dlabel val';
-    editable(box).textContent = label || '';
+    editable(box, 'The heading').textContent = label || '';
     group.appendChild(box);                      // picked up by the first line
     drows.appendChild(group);
     (values && values.length ? values : ['']).forEach(function (v) { addLine(group, v); });
@@ -186,9 +189,9 @@
     var row = document.createElement('div');
     row.className = 'prow';
     row.innerHTML = '<div class="pwho val"></div><div class="pprice val"></div>';
-    editable(row.querySelector('.pwho')).textContent = (p && p.who) || '';
+    editable(row.querySelector('.pwho'), 'Who it is for').textContent = (p && p.who) || '';
     var cost = (p && p.price) || '';
-    editable(row.querySelector('.pprice')).textContent =
+    editable(row.querySelector('.pprice'), 'Price').textContent =
       canEdit ? cost : D.priceText(cost);
     pricerows.appendChild(row);
     return row;
@@ -234,8 +237,8 @@
     /* only somebody has a name and a way to reach them */
     var who = row.querySelector('.twho');
     var contact = row.querySelector('.tcontact');
-    editable(who).textContent = (seller && seller.who) || '';
-    editable(contact).textContent = (seller && seller.contact) || '';
+    editable(who, 'Their name').textContent = (seller && seller.who) || '';
+    editable(contact, 'Email or telephone').textContent = (seller && seller.contact) || '';
     if (how !== 'person') {
       who.hidden = true;
       contact.hidden = true;
@@ -255,8 +258,8 @@
     row.className = 'afrow';
     row.innerHTML = '<div class="aname val"></div><div class="alink val"></div>';
 
-    editable(row.querySelector('.aname')).textContent = (a && a.name) || '';
-    editable(row.querySelector('.alink')).textContent = a && a.data
+    editable(row.querySelector('.aname'), 'What it is called').textContent = (a && a.name) || '';
+    editable(row.querySelector('.alink'), 'Its address, or choose a file').textContent = a && a.data
       ? 'A file in the data, ' + size(a.size || 0)
       : (a && a.link) || '';
 

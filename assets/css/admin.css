@@ -320,6 +320,9 @@
 .adm .val.edit{background:var(--white);border-color:var(--line-dark);cursor:text}
 .adm .val.edit:focus{outline:2px solid var(--red);outline-offset:-2px;background:#fff}
 .adm .val.edit:empty::before{content:'Type here';color:var(--ink-soft);font-style:italic}
+/* Two empty boxes beside each other both saying "Type here" say nothing.
+   A box that knows what belongs in it says that instead. */
+.adm .val.edit[data-hint]:empty::before{content:attr(data-hint)}
 
 .adm .arowadd{margin:10px 0 4px}
 
