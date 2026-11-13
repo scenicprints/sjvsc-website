@@ -4,6 +4,7 @@ A copy of what stood at `sjvscriponswiss.com` before the club moved, taken on
 **13 November 2026** while the old site was still serving. It is here so that
 cancelling the Network Solutions plan destroys nothing.
 
+- `pages/` — the text of all 25 pages, one file each, as it read on screen.
 - `images/` — 32 photographs, 6.4 MB. Named `<builder-folder>__<original name>`.
 - `documents/` — the 3 PDFs the site linked to, 6.8 MB.
 - `pages.txt` — all 24 pages and which pictures were on each.
@@ -29,12 +30,29 @@ was 40 KB on the page.
 - **One photograph is lost.** `16184736_lel_600.jpg`, on the scholarships page,
   404s at the builder's storage under every path it is referenced by. It was
   already broken on the live site.
-- **The text.** Not copied, because it is not at risk: the new site was written
-  from it, and `docs/current-site-audit.md` records the rest — the board roster,
-  the mission statement, the membership tiers, the Swiss Echoes history, the
-  2026 calendar and the copy errors.
 - **A browsable replica.** These are the club's materials, not a working copy of
-  the old site.
+  the old site. Nothing here can be opened and clicked through the way the site
+  was; that is a separate job.
+- **The embedded video.** The Swiss Echoes page carried twelve videos in players
+  from another service. Only their titles survive here.
+- **Link targets.** The old site's buttons were images with click handlers rather
+  than links, so `/other-swiss-clubs` is a list of club names whose destinations
+  could not be read back out of the rendered page.
+
+## About the text
+
+Taken from the rendered page, so it is what a visitor read, not what the
+builder stored. The club's own typos are kept — "vidoes", "Secretay",
+"invovlved", "JAPRIL", the year "20026" — because an archive that quietly
+corrects its source stops being one. Where a page contradicted itself or
+pointed somewhere dead, a bracketed note at the foot of that file says so.
+Several of those are worth knowing: `/swiss-miss` was still advertising a
+deadline of 31 July 2021, `/playground` still carried two paragraphs of the
+website builder's placeholder text, and `/memorials` gave a phone number with
+a digit missing.
+
+German letters came back from the capture flattened, so they are written out
+as ae, oe and ue. The club spells it Küche Kästli Kochbuch.
 
 ## The thing worth knowing
 
