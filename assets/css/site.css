@@ -359,14 +359,8 @@ a.evt:hover .dt b,a.evt:hover .dt span{color:#fff}
 .swc text{font-family:var(--ui);fill:var(--ink)}
 .swn{font-family:var(--display);font-size:25px;font-weight:600;letter-spacing:-.01em}
 .swt{font-size:18px;fill:var(--ink-soft)}
-/* The phone map is about a third the width of the wide one, so a label
-   set for the wide map comes out at eleven or twelve pixels here. These
-   are sized so the names land near nineteen pixels on a 375px phone --
-   larger than the page's own text, which is what a label on a map has
-   to be. The viewBox was cropped to pay for the extra width. */
-.swnarrow .swn{font-size:48px}
-.swnarrow .swt{font-size:36px}
-.swnarrow .swpin{r:13}
+.swnarrow .swn{font-size:44px}
+.swnarrow .swt{font-size:32px}
 .swc a{text-decoration:none}
 .swc:hover .swlead{stroke:var(--red)}
 .swc:hover .swpin{fill:var(--red-deep)}
