@@ -1,43 +1,32 @@
 """The old San Joaquin Valley Swiss Club site, in one file.
 
 Everything the site was -- every page, every photograph, every PDF it offered
--- is carried inside this program. Run it and it opens in its own window:
-no tabs, no address bar, its own entry on the taskbar.
+-- is carried inside this program, and so is the engine that draws it. It
+borrows nothing from the computer it runs on. No browser has to be installed,
+no runtime, no Edge, no Chrome. Copy the file to any Windows machine and it
+opens.
 
-Nothing is installed. Nothing is written to the computer it runs on except a
-scratch folder that is deleted on the way out. Nothing reaches the internet:
-unplug the network and it behaves the same.
+That self-sufficiency is the whole point of an archive. A copy that leans on
+software someone else maintains is a copy with a clock running on it.
 
 Close the window to stop it.
 
                                   *
 
-Two things are worth saying plainly about how this works.
-
-The pages are served over a loopback address rather than opened as files,
-because a file:// page cannot follow the old site's own links. The server
-listens on 127.0.0.1 -- this machine talking to itself, reachable by nothing
-else -- and dies with the window.
-
-The window is drawn by the browser engine already on the machine, run in
-"app mode", which is a window with the browser furniture taken off. That is a
-deliberate choice over bundling a second engine: the archive stays small, it
-starts immediately, and there is no third-party runtime inside it to rot. A
-separate scratch profile is used so the window cannot see, touch or disturb
-anything in your ordinary browsing.
+The pages are served to the window over a loopback address rather than handed
+over as files. The server listens on 127.0.0.1 -- this machine talking to
+itself, reachable by nothing else -- and dies with the window. It is there so
+that links between pages, and the PDFs, behave exactly as they did on the
+real site.
 """
-import atexit
 import http.server
 import os
-import shutil
 import socket
 import socketserver
-import subprocess
 import sys
-import tempfile
 import threading
 
-TITLE = 'San Joaquin Valley Swiss Club \u2014 the old site'
+TITLE = 'San Joaquin Valley Swiss Club — the old site, archived 13 November 2026'
 
 
 def site_root():
@@ -67,76 +56,105 @@ def serve():
     return port
 
 
-def a_browser():
-    """The first Chromium-based browser on this machine, if there is one.
+def point_qt_at_its_own_parts():
+    """Tell the web engine where it is.
 
-    Edge ships with Windows, so on the machines this archive is meant for
-    the first candidate almost always answers.
+    Qt's web engine runs its rendering in a separate helper executable and
+    finds it by looking beside the Qt libraries. Packed into a single file
+    that unpacks itself to a temporary folder at run time, that assumption
+    breaks: the helper is there, but nothing has told Qt where "there" is,
+    so the window never appears and nothing is printed.
     """
-    env = os.environ
-    roots = [env.get('PROGRAMFILES(X86)', r'C:\Program Files (x86)'),
-             env.get('PROGRAMFILES', r'C:\Program Files'),
-             env.get('LOCALAPPDATA', '')]
-    rel = [r'Microsoft\Edge\Application\msedge.exe',
-           r'Google\Chrome\Application\chrome.exe',
-           r'BraveSoftware\Brave-Browser\Application\brave.exe']
-    for root in roots:
-        if not root:
-            continue
-        for r in rel:
-            p = os.path.join(root, r)
-            if os.path.isfile(p):
-                return p
-    return None
-
-
-def say(message):
-    try:
-        import ctypes
-        ctypes.windll.user32.MessageBoxW(None, message, TITLE, 0x40)
-    except Exception:
-        print(message)
+    base = getattr(sys, '_MEIPASS', None)
+    if not base:
+        return
+    for folder in (os.path.join(base, 'PySide6'), base):
+        helper = os.path.join(folder, 'QtWebEngineProcess.exe')
+        if os.path.isfile(helper):
+            os.environ['QTWEBENGINEPROCESS_PATH'] = helper
+            break
+    for name, rel in (('QTWEBENGINE_RESOURCES_PATH', 'resources'),
+                      ('QTWEBENGINE_LOCALES_PATH', os.path.join('translations',
+                                                                'qtwebengine_locales'))):
+        for folder in (os.path.join(base, 'PySide6'), base):
+            path = os.path.join(folder, rel)
+            if os.path.isdir(path):
+                os.environ[name] = path
+                break
 
 
 def main():
+    point_qt_at_its_own_parts()
     if not os.path.isfile(os.path.join(site_root(), 'index.html')):
-        say('The pages are missing from this program.\n\nExpected them at:\n'
-            + site_root())
+        import ctypes
+        ctypes.windll.user32.MessageBoxW(
+            None, 'The pages are missing from this program.\n\nExpected them at:\n'
+            + site_root(), TITLE, 0x10)
         return 1
 
-    url = 'http://127.0.0.1:%d/index.html' % serve()
-    browser = a_browser()
+    port = serve()
 
-    if not browser:
-        # Nothing Chromium-based to make a window with, so fall back to
-        # whatever opens web pages here rather than fail.
-        import webbrowser
-        say('Opening the archive in your usual browser.')
-        webbrowser.open(url)
-        try:
-            input('Press Enter to close. ')
-        except Exception:
-            threading.Event().wait()
-        return 0
+    from PySide6.QtCore import QUrl, Qt
+    from PySide6.QtGui import QKeySequence, QShortcut
+    from PySide6.QtWidgets import QApplication, QMainWindow
+    from PySide6.QtWebEngineWidgets import QWebEngineView
 
-    profile = tempfile.mkdtemp(prefix='sjvsc-archive-')
-    atexit.register(shutil.rmtree, profile, True)
+    app = QApplication(sys.argv)
+    app.setApplicationName('SJVSC old site')
 
-    # --app strips the tabs and the address bar. The separate profile keeps
-    # this window away from the reader's own browsing entirely.
-    proc = subprocess.Popen([
-        browser,
-        '--app=' + url,
-        '--user-data-dir=' + profile,
-        '--window-size=1280,900',
-        '--no-first-run',
-        '--no-default-browser-check',
-        '--disable-extensions',
-        '--disable-background-networking',
-    ])
-    proc.wait()
-    return 0
+    window = QMainWindow()
+    window.setWindowTitle(TITLE)
+    window.resize(1280, 900)
+
+    view = QWebEngineView()
+    view.setUrl(QUrl('http://127.0.0.1:%d/index.html' % port))
+    window.setCentralWidget(view)
+
+    # The ordinary things a reader expects of a window showing pages.
+    QShortcut(QKeySequence.Back, window, activated=view.back)
+    QShortcut(QKeySequence.Forward, window, activated=view.forward)
+    QShortcut(QKeySequence('Alt+Left'), window, activated=view.back)
+    QShortcut(QKeySequence('Alt+Right'), window, activated=view.forward)
+    QShortcut(QKeySequence('Ctrl+Home'), window,
+              activated=lambda: view.setUrl(
+                  QUrl('http://127.0.0.1:%d/index.html' % port)))
+    QShortcut(QKeySequence.ZoomIn, window,
+              activated=lambda: view.setZoomFactor(min(3.0, view.zoomFactor() + 0.1)))
+    QShortcut(QKeySequence.ZoomOut, window,
+              activated=lambda: view.setZoomFactor(max(0.3, view.zoomFactor() - 0.1)))
+    QShortcut(QKeySequence('Ctrl+0'), window,
+              activated=lambda: view.setZoomFactor(1.0))
+
+    # Keep the title the archive's, not whatever the old page called itself,
+    # so a window on a taskbar can never be mistaken for the live site.
+    view.titleChanged.connect(lambda t: window.setWindowTitle(
+        (t + '  —  ' if t else '') + 'archived copy, 13 November 2026'))
+
+    window.show()
+    window.raise_()
+    window.activateWindow()
+    return app.exec()
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    # Packed with no console, a crash is silent: the window simply never
+    # appears and there is nowhere for the reason to go. So it goes to a file
+    # and then to the reader, rather than nowhere.
+    try:
+        sys.exit(main())
+    except BaseException:
+        import tempfile, traceback
+        report = os.path.join(tempfile.gettempdir(), 'sjvsc-archive-error.log')
+        try:
+            with open(report, 'w', encoding='utf-8') as f:
+                f.write(traceback.format_exc())
+        except Exception:
+            pass
+        try:
+            import ctypes
+            ctypes.windll.user32.MessageBoxW(
+                None, 'The archive could not open.\n\nDetails were written to:\n'
+                + report, TITLE, 0x10)
+        except Exception:
+            pass
+        raise

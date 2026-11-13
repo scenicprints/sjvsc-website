@@ -12,10 +12,11 @@ cancelling the Network Solutions plan destroys nothing.
 - `documents/` — the 3 PDFs the site linked to, 6.6 MB.
 - `pages.txt`, `image-ids.txt` — what was on each page, and where it came from.
 
-A running copy of the whole thing is `../SJVSC-old-site.exe`. It is one file,
-installs nothing, and reaches no network. Run it and the old site opens in its
-own window — no tabs, no address bar, its own entry on the taskbar — and you
-click through it as it was.
+A running copy of the whole thing is the **SJVSC Old Site** program, in
+`Desktop\Apps\SJVSC Old Site`, with a shortcut on the Desktop. It opens in its
+own window and carries its own web engine, so it borrows nothing from the
+machine it runs on — no browser, no runtime, no installer. Copy the folder to
+any Windows computer and it works. `tools/old-site` builds it again.
 
 ## A correction
 

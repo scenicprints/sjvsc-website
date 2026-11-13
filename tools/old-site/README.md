@@ -20,7 +20,7 @@ so there is no 150 MB browser download:
     venv\Scripts\python build_offline.py      # assemble the browsable folder
     venv\Scripts\python check_offline.py      # open it with the network cut off
 
-    venv\Scripts\python -m PyInstaller --onefile --name SJVSC-old-site ^
+    venv\Scripts\python -m PyInstaller --onedir --name "SJVSC Old Site" ^
         --add-data "offline;site" --windowed launcher.py
 
 ## Why it is not just "save page as"
@@ -59,12 +59,24 @@ record of how it was done rather than a way to do it again.
 
 ## The window
 
-`launcher.py` serves the pages on a loopback port and opens them with the
-Chromium-based browser already installed — Edge on any Windows machine — run
-with `--app=`, which is a window with the tabs and address bar taken off, and
-a throwaway profile so it cannot see the reader's own browsing.
+`launcher.py` serves the pages on a loopback port and shows them in a Qt
+window with Qt's own web engine, which is Chromium and which travels inside
+the program. Nothing on the reader's machine is borrowed: no Edge, no Chrome,
+no runtime to install. That is the point of an archive — a copy that leans on
+software somebody else maintains is a copy with a clock running on it.
 
-A second engine was tried first and dropped. Bundling one adds weight, adds a
-third-party runtime to the archive that can rot, and buys nothing a reader
-would notice: the window looks the same either way. Using what is already on
-the machine keeps this file something that will still run in ten years.
+It costs 649 MB and it is worth it.
+
+## Two things that will bite whoever builds this next
+
+**Build it as a folder, not one packed file.** `--onefile` produces a program
+that starts, unpacks itself, and then hangs forever with no window and no
+error. Chromium's sandbox will not launch from a directory the program
+created for itself a second earlier, and it fails silently. The fix people
+reach for is `--no-sandbox`; the better one is `--onedir`, where the sandbox
+works normally because the files are where they claim to be. A folder is also
+how the rest of this machine's apps are built.
+
+**Build from a short path.** PySide6 unpacks file names long enough to break
+a `pip install` run from a deep temporary directory, and the error names a
+missing `.obj` file rather than the real cause. `C:\sjvsc-build` is enough.
