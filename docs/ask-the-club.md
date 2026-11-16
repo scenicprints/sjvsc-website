@@ -52,12 +52,6 @@ One entry on the sheet, so one event on the site: the children wrestle and then
 everyone eats. A start time for the day. Does the barbecue cost anything? And
 the raffle — what do tickets cost, and who sells them?
 
-**Swiss National Day — Sun 1 August**
-An entry of its own on the sheet, with the flag icon, so it is on the site as
-one. When the sheet means a date that is not a club event it says so in the
-month heading instead — "MARCH (EASTER MAR 28TH)", "SEPTEMBER (LABOR DAY 6TH)".
-So: what does the club do on the day, and at what time?
-
 **Fall Schwingfest — Sat 28 August**
 Start time, admission, and the dinner price.
 
