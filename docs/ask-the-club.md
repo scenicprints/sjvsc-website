@@ -70,13 +70,17 @@ Nothing needed yet. It will be in next year's autumn newsletter.
 
 ## Not events
 
-**The membership number.** The newsletter says 715. The site says 702.
+**The president's name.** The Oct–Dec 2026 newsletter spells it "Chris Portman" in
+the officers box and "Chris Portmann" where he signs his own letter. The site uses
+Portmann, on the grounds that a man knows how to spell his own name — so this is a
+typo in the newsletter rather than a question for anybody. Worth passing to whoever
+sets it, before it is copied again.
 
-**The president's name.** The newsletter spells it "Chris Portman" in the officers
-box and "Chris Portmann" in his own letter. The site uses Portmann.
-
-**Gary Marchy's telephone number.** It is (209) 606-5844 everywhere on the site and
-in the newsletter, except on the scholarships page, which has (209) 537-0630.
+**Gary Marchy's second telephone number.** He is (209) 606-5844 as 1st Vice
+President, shared with Bob Marchy, and the scholarships page gives (209) 537-0630
+with g1marchy@gmail.com for scholarship questions. Two numbers for one man is
+ordinary, but the second pair comes from the old website and nothing current
+confirms it. Are they still right, and should the email be on the page too?
 
 **The caretaker vacancy.** The newsletter's officers box leaves the line blank and
 the site says the club is looking. Still open?
