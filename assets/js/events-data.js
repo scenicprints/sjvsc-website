@@ -241,7 +241,17 @@ window.SJVSC = (function () {
   /* Where an event opens. Either it belongs to something the club already
      has a page for, and that page carries it, or it has a page of its own
      and says so in link. One or the other, never neither. */
-  function href(e) { return TIED[e.page] || e.link || ''; }
+  /* Every event has somewhere to go. Most go to the page they are tied to,
+     which carries the club's own writing about the thing itself. The ones
+     with no tie -- the monthly meeting, the hall clean-up, the birthday
+     lunch -- went nowhere at all: the listing drew them as a span with no
+     href, so an event the club had written a description for sat on the
+     page as dead text. They go to event.html now, which draws the same card
+     on a page of its own. */
+  function href(e) {
+    return TIED[e.page] || e.link ||
+      (e && e.id ? 'event.html?id=' + encodeURIComponent(e.id) : '');
+  }
 
   /* The club writes its links as event-agm.html, and the host serves that
      page at /event-agm -- it redirects the one to the other. So the address
@@ -572,6 +582,27 @@ window.SJVSC = (function () {
       if (!list.length) return;
       el.innerHTML = '';
       list.forEach(function (e) { el.appendChild(box(e)); });
+    });
+
+    /* The page an event with no tie opens. The address says which event,
+       and the card drawn is the same one every other page draws. */
+    [].forEach.call(document.querySelectorAll('[data-eventid]'), function (el) {
+      var asked = (location.search.match(/[?&]id=([^&]*)/) || [])[1] || '';
+      var id = decodeURIComponent(asked.replace(/\+/g, ' '));
+      var found = null;
+      all().forEach(function (e) { if (e.id === id) found = e; });
+
+      if (!found) {
+        el.innerHTML = '<p class="lead" style="margin:0">That event is not on the '
+          + 'calendar. <a href="calendar.html">See what is on</a>.</p>';
+        return;
+      }
+
+      el.innerHTML = '';
+      el.appendChild(box(found));
+      document.title = found.title + ' · Ripon Swiss Club';
+      [].forEach.call(document.querySelectorAll('[data-eventtitle], [data-eventcrumb]'),
+        function (node) { node.textContent = found.title; });
     });
   }
 
