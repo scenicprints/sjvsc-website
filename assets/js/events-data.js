@@ -609,6 +609,11 @@ window.SJVSC = (function () {
     pop.querySelector('h3').textContent = e.title;
     pop.querySelector('.mcalpop-when').textContent = fullDate(e.date) +
       (e.time ? ', ' + e.time : '');
+    /* An event with no page of its own has nowhere else to be read, so
+       this dialog is the whole of what a member gets. It used to show the
+       same hardcoded sentence whatever the club had written. */
+    pop.querySelector('.mcalpop-say').textContent =
+      String(e.desc || '').trim() || String(e.note || '').trim() || 'Details to come.';
     pop.hidden = false;
     document.documentElement.classList.add('mcalpop-open');
     pop.querySelector('button').focus();
@@ -649,7 +654,14 @@ window.SJVSC = (function () {
       }
 
       on.forEach(function (e) {
-        var open = live.indexOf(e) > -1 && href(e);
+        /* Two different questions, and they were being asked as one.
+           Whether the row is a link depends on there being a page to go
+           to. Whether it says "Details to come" depends on whether the
+           event is being advertised yet. The monthly meeting has no page
+           of its own and never will, so asking them together left it
+           promising details on the morning of the meeting. */
+        var yet = live.indexOf(e) > -1;
+        var open = yet && href(e);
         var row = document.createElement(open ? 'a' : 'button');
         row.className = 'ev';
         if (open) row.href = href(e);
@@ -662,7 +674,7 @@ window.SJVSC = (function () {
         var when = document.createElement('span');
         var d = at(e.date);
         when.textContent = WEEK[d.getDay()].slice(0, 3) + ' ' + d.getDate() +
-          (open ? '' : '  ·  Details to come');
+          (yet ? '' : '  ·  Details to come');
         row.appendChild(when);
 
         if (!open) {
