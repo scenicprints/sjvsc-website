@@ -84,6 +84,25 @@ window.SJVSC = (function () {
   function at(s) { var p = (s || '').split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
   function today() { var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
 
+  /* When an event stops being advertised.
+
+     `until` is the day after the event, and an event comes down at three in
+     the morning of that day rather than at midnight. Midnight is the wrong
+     moment: a Saturday evening party would vanish from the website while it
+     was still going on, and somebody checking the address at half past
+     midnight on the way there would find nothing. Three o'clock is after
+     any club night has ended and before anybody is looking.
+
+     This is the reader's own clock, like every other date on the site. A
+     member in Ripon, which is who this is for, sees it go at three. */
+  var COMES_DOWN_AT = 3;
+
+  function endOf(until) {
+    var d = at(until);
+    d.setHours(COMES_DOWN_AT, 0, 0, 0);
+    return d;
+  }
+
   /* the list as it stands in this page, loaded from data/events.json */
   var LIST = SEED.slice();
 
@@ -117,10 +136,16 @@ window.SJVSC = (function () {
      reads oddly written down and is the only arrangement that keeps the
      promise the admin screen makes, because `until` is set to the day after
      the event. Compare it inclusively and an event that happened yesterday
-     is still on the front page today. */
+     is still on the front page today.
+
+     The end is a moment rather than a date: three in the morning, as
+     endOf() explains. */
   function showing() {
-    var now = today();
-    return all().filter(function (e) { return at(e.from) <= now && now < at(e.until); });
+    var startOfToday = today();
+    var rightNow = new Date();
+    return all().filter(function (e) {
+      return at(e.from) <= startOfToday && rightNow < endOf(e.until);
+    });
   }
 
   /* The hall is tied up the day before an event, the day of it, and the day
@@ -676,7 +701,7 @@ window.SJVSC = (function () {
   return { all: all, load: load, savedAll: savedAll, savedLoad: savedLoad,
            showing: showing,
            href: href, TIED: TIED, blocks: blocks, onPage: onPage,
-           renderPages: renderPages, render: render, at: at,
+           renderPages: renderPages, render: render, at: at, endOf: endOf,
            tickets: tickets, prices: prices, schedule: schedule, contactText: contactText,
            priceText: priceText,
            today: today, pretty: pretty, fullDate: fullDate, longDate: longDate,

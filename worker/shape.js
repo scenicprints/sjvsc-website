@@ -107,7 +107,11 @@ function shiftDays(iso, days) {
    `until` is the first day the event is NOT shown, not the last day it is.
    The window is [from, until). That is why the day after the event is the
    right default: the event shows through its own day and is gone the
-   morning after, which is what the admin screen promises. */
+   morning after, which is what the admin screen promises.
+
+   The end is a moment rather than a date. events-data.js drops the event at
+   three in the morning of `until`, not at midnight, so a Saturday evening
+   party does not vanish from the website while it is still going on. */
 export function withWindow(body, { today = new Date().toISOString().slice(0, 10) } = {}) {
   const out = { ...body };
   const date = String(out.date || '').trim();

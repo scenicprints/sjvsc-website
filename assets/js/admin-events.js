@@ -39,7 +39,7 @@
   var F = {};
   NAMES.forEach(function (k) { F[k] = document.getElementById('f-' + k); });
 
-  var at = D.at, today = D.today;
+  var at = D.at, today = D.today, endOf = D.endOf;
   var dayName = D.fullDate;
   function pretty(s) { return s ? D.pretty(s) : ''; }
   function iso(d) {
@@ -136,10 +136,10 @@
   function standing(e) {
     var now = today();
     if (now < at(e.from)) return { cls: 'soon', text: 'Starts showing ' + pretty(e.from) };
-    /* `until` is the first day it is gone, not the last day it shows, so
-       this has to be >= or the admin claims an event is still up on the
-       day the website has already dropped it. */
-    if (now >= at(e.until)) return { cls: 'done', text: 'Finished showing' };
+    /* The website drops an event at three in the morning of `until`, so the
+       admin has to use the same moment or it will disagree with the site
+       for the first three hours of that day. */
+    if (new Date() >= endOf(e.until)) return { cls: 'done', text: 'Finished showing' };
     return { cls: 'live', text: 'Showing on the website now' };
   }
 
