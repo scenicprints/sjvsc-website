@@ -1,0 +1,6 @@
+# The site is public. The admin and the API are not pages.
+# Cloudflare adds its own content-signal notes above this.
+User-agent: *
+Disallow: /admin
+Disallow: /api/
+Sitemap: https://sjvscriponswiss.com/sitemap.xml
