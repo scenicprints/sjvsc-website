@@ -1,0 +1,26 @@
+F.A.Q. / We've got the answers
+https://sjvalleyswissclub.godaddysites.com/we%E2%80%99ve-got-the-answers
+Captured from the Wayback Machine snapshot of 17 September 2024
+------------------------------------------------------------
+Frequently Asked Questions
+
+Please reach us at SJValleySwissClub@gmail.com if you cannot find an answer
+to your question.
+
+- What is the maximum guest count?
+- Can we come in early to set up and decorate?
+- Is a no-host bar allowed?
+
+[NOTE: the three answers are lost. They sat in a collapsible accordion whose
+ contents GoDaddy loaded separately, and the Wayback Machine captured the
+ questions without them. Clicking each question in the archived page opens
+ nothing. The answers are not recoverable from this source.
+
+ Two of the three the new site does answer, from the rental agreements:
+ setting up the day before runs 9am to 8pm on request, and the hall is for
+ private parties with no beverages sold, which rules a no-host bar out.
+
+ The maximum guest count it does not answer, and neither does any other
+ document the club has. The only number anywhere is in the security guard
+ rule -- four guards for up to 399 attendees -- which sets a floor, not a
+ capacity. That question is now in docs/ask-the-club.md.]

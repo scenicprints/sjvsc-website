@@ -84,3 +84,15 @@ confirms it. Are they still right, and should the email be on the page too?
 
 **The caretaker vacancy.** The newsletter's officers box leaves the line blank and
 the site says the club is looking. Still open?
+
+**What the hall holds.** The old GoDaddy rental site had "What is the maximum guest
+count?" as its first FAQ, and the answer is lost — the Wayback Machine saved the
+question and not the answer. Nothing else the club has written down answers it
+either. The only figure anywhere is in the security guard rule, which goes up to
+399 attendees, and that is a staffing threshold rather than a capacity. The rental
+calculator currently lets somebody type up to 600. What is the real number, seated
+and standing?
+
+**Who holds SJValleySwissClub@gmail.com.** It was the contact address on the hall
+rental site and it is not the same as the webmaster account. Does anybody still
+have it, and does anything still arrive there?
