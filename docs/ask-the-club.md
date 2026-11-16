@@ -48,10 +48,9 @@ Start time, admission, and whether there is a dinner after.
 - The Venmo note changes each year: it was "KSC 2026".
 
 **Buebe/Meitli Schwingfest and Members BBQ — Sat 31 July**
-Two entries sharing a date, not one event: each has its own icon on the sheet,
-which is how every other entry is drawn. Both are on the site separately.
-A start time for each. Does the barbecue cost anything? And the raffle — what
-do tickets cost, and who sells them?
+One entry on the sheet, so one event on the site: the children wrestle and then
+everyone eats. A start time for the day. Does the barbecue cost anything? And
+the raffle — what do tickets cost, and who sells them?
 
 **Swiss National Day — Sun 1 August**
 An entry of its own on the sheet, with the flag icon, so it is on the site as
