@@ -514,7 +514,11 @@ window.SJVSC = (function () {
     details.forEach(function (d) { row(d.label, d.values); });
     if (t) {
       if (t.lines.length) row('Tickets', t.lines);
-      if (t.where.length) row(t.lines.length ? 'Where from' : 'Tickets', t.where);
+      /* With no price there is no ticket to get, and the contacts are simply
+         the people to ask. Heading them "Tickets" told a reader that a free
+         event sold them -- which is what the Children's Christmas Party said
+         above Marge Betschart's telephone number once its price came off. */
+      if (t.where.length) row(t.lines.length ? 'Where from' : 'Who to ask', t.where);
     }
 
     /* attachments: a file kept with the event, or an address somewhere else.
