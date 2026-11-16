@@ -102,7 +102,12 @@ function shiftDays(iso, days) {
    event "comes off the website by itself the day after the event", and this
    is where that promise is kept.
 
-   `from` falls back to today, so an event added now is advertised now. */
+   `from` falls back to today, so an event added now is advertised now.
+
+   `until` is the first day the event is NOT shown, not the last day it is.
+   The window is [from, until). That is why the day after the event is the
+   right default: the event shows through its own day and is gone the
+   morning after, which is what the admin screen promises. */
 export function withWindow(body, { today = new Date().toISOString().slice(0, 10) } = {}) {
   const out = { ...body };
   const date = String(out.date || '').trim();

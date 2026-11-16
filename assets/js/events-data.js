@@ -110,10 +110,17 @@ window.SJVSC = (function () {
     });
   }
 
-  /* what a visitor should see right now: inside its advertising window */
+  /* What a visitor should see right now.
+
+     `from` is the first day an event is advertised and `until` is the first
+     day it is not: the window includes `from` and excludes `until`. That
+     reads oddly written down and is the only arrangement that keeps the
+     promise the admin screen makes, because `until` is set to the day after
+     the event. Compare it inclusively and an event that happened yesterday
+     is still on the front page today. */
   function showing() {
     var now = today();
-    return all().filter(function (e) { return at(e.from) <= now && now <= at(e.until); });
+    return all().filter(function (e) { return at(e.from) <= now && now < at(e.until); });
   }
 
   /* The hall is tied up the day before an event, the day of it, and the day

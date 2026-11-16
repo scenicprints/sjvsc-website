@@ -136,7 +136,10 @@
   function standing(e) {
     var now = today();
     if (now < at(e.from)) return { cls: 'soon', text: 'Starts showing ' + pretty(e.from) };
-    if (now > at(e.until)) return { cls: 'done', text: 'Finished showing' };
+    /* `until` is the first day it is gone, not the last day it shows, so
+       this has to be >= or the admin claims an event is still up on the
+       day the website has already dropped it. */
+    if (now >= at(e.until)) return { cls: 'done', text: 'Finished showing' };
     return { cls: 'live', text: 'Showing on the website now' };
   }
 
