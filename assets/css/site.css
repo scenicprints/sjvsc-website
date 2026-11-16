@@ -819,3 +819,47 @@ html.gv-open,html.gv-open body{overflow:hidden}
   .rq .cf-turnstile{padding:20px 18px 0}
   .rq-wrong{margin:14px 18px 0}
 }
+
+/* ---- standing notices on the home page --------------------------------
+   Under the events, before the page changes colour: a label, a sentence,
+   a link, ruled above and below like the index. On a phone the three
+   parts take their own lines and the link goes last. */
+.notes{list-style:none;margin:30px 0 0;padding:0;border-top:1px solid var(--line)}
+.notes li{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 20px;
+  padding:16px 0;border-bottom:1px solid var(--line);font-size:.95rem;line-height:1.5}
+.notes b{flex:0 0 auto;font-family:var(--ui);font-size:.68rem;font-weight:700;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--red);min-width:64px}
+.notes span{flex:1 1 300px;min-width:0;color:var(--ink-2)}
+.notes a{flex:0 0 auto;font-size:.78rem;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--red);text-decoration:none;white-space:nowrap}
+.notes a:hover{text-decoration:underline}
+@media(max-width:560px){
+  .notes li{gap:4px 0;padding:14px 0}
+  .notes span{flex-basis:100%}
+  .notes a{margin-top:4px}
+}
+
+/* ---- the brick on the bricks page -------------------------------------
+   A drawn brick, two to one like a real one, in a clay red with the
+   lines cut into it. The text is a plain condensed face in capitals, as
+   an engraver would set it, sized to the brick so twenty characters
+   always fit across it. */
+.brick-tool{margin-top:22px}
+.brick{width:100%;max-width:420px;aspect-ratio:2/1;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;gap:.35em;padding:6%;
+  background:linear-gradient(135deg,#B5553A 0%,#A3472F 55%,#96402A 100%);
+  border:1px solid #7E3522;border-radius:3px;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.14),inset 0 -3px 0 rgba(0,0,0,.18),0 10px 24px rgba(60,20,8,.18);
+  container-type:inline-size}
+.brick span{display:block;font-family:"Archivo",system-ui,sans-serif;font-weight:700;
+  font-size:clamp(14px,6.2cqw,26px);letter-spacing:.06em;line-height:1.15;color:#3A1409;
+  text-shadow:0 1px 0 rgba(255,255,255,.22);white-space:pre;text-align:center;min-height:1.15em}
+.brick span.brick-empty{color:rgba(58,20,9,.38);text-shadow:none;font-weight:600}
+.brick-lines{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px;
+  max-width:560px}
+.brick-lines .field{flex:none}
+.brick-lines input{font-family:var(--ui);font-size:1.02rem;letter-spacing:.04em;
+  text-transform:uppercase;padding:12px}
+@media(max-width:620px){
+  .brick-lines{grid-template-columns:1fr;gap:10px}
+}
