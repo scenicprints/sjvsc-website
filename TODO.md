@@ -5,9 +5,6 @@ out of date; this is the live list.
 
 ## Content
 
-- [ ] **Put the rental saving on the membership page.** Membership is $50 a year and
-      takes $600 off a single hall rental — $600 instead of $1,200. That is the
-      strongest argument the club has for joining and it is nowhere on the site.
 - [x] ~~Recover the photographs from the Network Solutions builder.~~ Done
       13 Nov 2026: `archive/old-site/` holds all 32, at full size, plus the 3 PDFs.
       The four heading-only pages were **not** galleries — seven photographs between
