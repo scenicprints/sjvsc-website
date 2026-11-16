@@ -758,3 +758,26 @@ html.gv-open,html.gv-open body{overflow:hidden}
   .jset{padding:24px 18px}
   .jset .btn{width:100%}
 }
+
+/* asking the club to put an event on the calendar */
+.rq h2{font-size:1.15rem;margin-top:26px}
+.rq .fields{margin-top:10px}
+.rq .field .muted{font-size:.8rem;font-weight:400;letter-spacing:0;text-transform:none}
+.rq textarea{font-family:var(--ui);font-size:.94rem;padding:11px 12px;
+  border:1.5px solid var(--line);background:var(--white);color:var(--ink);
+  width:100%;border-radius:0;resize:vertical}
+.rq input[type=file]{font-family:var(--ui);font-size:.88rem;padding:10px 0}
+.rq-sked{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.rq-sked .rq-at{flex:0 0 110px}
+.rq-sked .rq-what{flex:1 1 auto}
+.rq-off{flex:0 0 auto;padding:8px 12px;line-height:1;font-size:1rem}
+.rq-files{list-style:none;margin:10px 0 0;padding:0}
+.rq-files li{display:flex;align-items:center;gap:10px;padding:8px 0;
+  border-top:1px solid var(--line);font-size:.92rem}
+.rq-files li span{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap}
+.rq-files li i{flex:0 0 auto;font-style:normal;color:var(--ink-soft);font-size:.82rem}
+@media (max-width:620px){
+  .rq-sked{flex-wrap:wrap}
+  .rq-sked .rq-at{flex:1 1 90px}
+}

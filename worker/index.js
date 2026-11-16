@@ -9,6 +9,7 @@
 
 import { requireBoard } from './auth.js';
 import { rowToEvent, eventToRow, validateEvent, withWindow, WRITABLE } from './shape.js';
+import { createRequest } from './requests.js';
 
 const json = (data, status = 200, headers = {}) =>
   new Response(JSON.stringify(data), {
@@ -504,6 +505,20 @@ async function route(request, env) {
         ? json({ signedIn: true, who: auth.who, role: auth.role })
         : json({ signedIn: false });
     }
+  }
+
+  /* ---- the one write that is not board only ----
+
+     Anybody may ask the club to put an event on the calendar. Nothing it
+     writes reaches a page: it goes to the requests table and to the
+     webmaster's inbox, and a board member still has to type it into the
+     admin. Turnstile stands where the sign-in stands everywhere else, and
+     requests.js explains what else holds the door. */
+
+  if (method === 'POST' && path === '/api/request') {
+    const out = await createRequest(request, env, url);
+    return out.ok ? json({ ok: true, id: out.id }, out.status)
+                  : oops(out.status, out.message);
   }
 
   /* ---- writes, board only ---- */
