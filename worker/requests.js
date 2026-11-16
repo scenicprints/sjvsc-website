@@ -38,7 +38,10 @@ const MAX_ALL = 12 * 1024 * 1024;
    a request cannot be used to fill the database with prose. */
 const LIMITS = {
   who: 120, contact: 120, title: 140, note: 200, desc: 4000,
-  date: 10, time: 40, tickprice: 200, tickwhere: 300, tickto: 10,
+  /* tickprice is a paragraph rather than a figure: the form asks what a
+     ticket costs, who to buy one from and by when, all in one box, because
+     three narrow fields are three chances to be stumped. */
+  date: 10, time: 40, tickprice: 600, tickwhere: 300, tickto: 10,
 };
 
 const trim = (v, max) => String(v == null ? '' : v).trim().slice(0, max);
@@ -94,12 +97,14 @@ const escape = (s) => String(s == null ? '' : s)
    blank is left out rather than shown empty, because an empty row reads as
    a fact ("no time") when it only means they did not say. */
 function emailHtml(r, files, site) {
+  /* The facts that are one line each. What they wrote about the event and
+     about its tickets are paragraphs and are set out below, because a
+     sentence squeezed into a table cell reads as an afterthought. */
   const rows = [
     ['Event', r.title],
     ['Day', r.event_date],
     ['Time', r.event_time],
     ['One line', r.note],
-    ['What it costs', r.tickprice],
     ['Where to get a ticket', r.tickwhere],
     ['Tickets on sale until', r.tickto],
   ].filter(([, v]) => v);
@@ -121,6 +126,8 @@ ${r.contact ? `  <tr>
   </tr>` : ''}
 </table>
 ${r.description ? `<p style="margin:0 0 18px;white-space:pre-wrap">${escape(r.description)}</p>` : ''}
+${r.tickprice ? `<p style="margin:0 0 6px;color:#6b625b">Tickets and cost</p>
+<p style="margin:0 0 18px;white-space:pre-wrap">${escape(r.tickprice)}</p>` : ''}
 ${sked.length ? `<p style="margin:0 0 6px;color:#6b625b">Through the day</p>
 <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 18px">
 ${sked.map((s) => `  <tr>

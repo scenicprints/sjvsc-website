@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=364e5268">
+<link rel="stylesheet" href="assets/css/site.css?v=3d810028">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
@@ -41,120 +41,75 @@
   <div class="phead">
     <div class="wrap">
       <p class="crumb"><a href="index.html">Home</a> / Ask for an event</p>
-      <span class="eyebrow">For members running something at the hall</span>
+      <span class="eyebrow">For anyone running something at the hall</span>
       <h1>Ask for an event</h1>
-      <p>Fill this in and it goes straight to the webmaster, flyer and all. Nothing
-         appears on the calendar until a board member puts it there.</p>
+      <p>Tell us what you are putting on and it goes straight to the webmaster.
+         Only two things are needed: what it is called and what day it is.</p>
       </div>
   </div>
 
   <section class="sec">
     <div class="wrap">
-      <form class="card rq" id="rqform" style="max-width:720px" novalidate>
+      <form class="card rq" id="rqform" novalidate>
 
-        <h2 style="margin:0 0 4px">The event</h2>
-        <p class="muted" style="margin:0 0 4px">A name and a day are all that is
-           needed. Everything else saves somebody asking you for it later.</p>
-
-        <div class="fields">
-          <div class="field" style="flex:1 1 100%">
-            <label for="q-title">What is it called</label>
-            <input type="text" id="q-title" autocomplete="off" required>
-          </div>
+        <div class="rq-flyer">
+          <h2>Have you got a flyer?</h2>
+          <p>Send a photograph of it. Take one with your phone &#8212; it does not
+             need to be straight or tidy. Most of what we need is usually on it.</p>
+          <input type="file" id="q-files" class="rq-hidden"
+                 accept="image/jpeg,image/png,image/webp,application/pdf" multiple>
+          <button class="btn btn-red rq-big" type="button" id="q-choose">Choose a photograph</button>
+          <p class="rq-hint">Up to three. A PDF is fine too.</p>
+          <ul id="q-filelist" class="rq-files"></ul>
         </div>
 
-        <div class="fields">
-          <div class="field">
-            <label for="q-date">What day</label>
-            <input type="date" id="q-date" required>
-          </div>
-          <div class="field">
-            <label for="q-time">What time it starts</label>
-            <input type="text" id="q-time" placeholder="7pm" autocomplete="off">
-          </div>
+        <div class="rq-ask">
+          <label for="q-title">What is it called?</label>
+          <input type="text" id="q-title" autocomplete="off">
         </div>
 
-        <div class="fields">
-          <div class="field" style="flex:1 1 100%">
-            <label for="q-note">One line for the calendar</label>
-            <input type="text" id="q-note" autocomplete="off"
-                   placeholder="Cards, lunch and a raffle">
-            <span class="muted">What a member sees beside the date. Keep it short.</span>
-          </div>
+        <div class="rq-ask">
+          <label for="q-date">What day is it?</label>
+          <input type="date" id="q-date">
         </div>
 
-        <div class="fields">
-          <div class="field" style="flex:1 1 100%">
-            <label for="q-desc">A paragraph about it</label>
-            <textarea id="q-desc" rows="5"></textarea>
-          </div>
+        <div class="rq-ask">
+          <label for="q-time">What time does it start? <i>if you know</i></label>
+          <input type="text" id="q-time" placeholder="7pm" autocomplete="off">
         </div>
 
-        <div class="fields">
-          <div class="field" style="flex:1 1 100%">
-            <label>What happens through the day</label>
-            <span class="muted" style="margin:-2px 0 2px">A line for each thing:
-              when it is, and what it is. Leave it empty if the day is one thing.</span>
-            <div id="q-sked"></div>
-            <button class="btn" type="button" id="q-addsked"
-                    style="align-self:flex-start;margin-top:8px">Add a time</button>
-          </div>
+        <div class="rq-ask">
+          <label for="q-desc">Tell us about it <i>if you like</i></label>
+          <p class="rq-hint">What happens, who it is for, what to bring. Write it
+             however you would say it.</p>
+          <textarea id="q-desc" rows="5"></textarea>
         </div>
 
-        <h2 style="margin:28px 0 4px">Tickets</h2>
-        <p class="muted" style="margin:0 0 4px">Only if there are any.</p>
-
-        <div class="fields">
-          <div class="field">
-            <label for="q-price">What it costs</label>
-            <input type="text" id="q-price" autocomplete="off"
-                   placeholder="$5 to play, $10 for lunch">
-          </div>
-          <div class="field">
-            <label for="q-tickto">On sale until</label>
-            <input type="date" id="q-tickto">
-          </div>
+        <div class="rq-ask">
+          <label for="q-price">Does it cost anything? <i>if you like</i></label>
+          <p class="rq-hint">What a ticket costs, who to buy one from, and by when.</p>
+          <textarea id="q-price" rows="3"
+                    placeholder="$5 to play and $10 for lunch. Ring Karen by the 23rd."></textarea>
         </div>
 
-        <div class="fields">
-          <div class="field" style="flex:1 1 100%">
-            <label for="q-where">Where to get one</label>
-            <input type="text" id="q-where" autocomplete="off"
-                   placeholder="Upon entry, or a name and a telephone number">
-          </div>
+        <div class="rq-ask">
+          <label for="q-who">Your name</label>
+          <input type="text" id="q-who" autocomplete="name">
         </div>
 
-        <h2 style="margin:28px 0 4px">The flyer</h2>
-        <p class="muted" style="margin:0 0 4px">A photograph of it is fine. Up to
-           three files &#8212; JPEG, PNG or PDF.</p>
-
-        <div class="fields">
-          <div class="field" style="flex:1 1 100%">
-            <input type="file" id="q-files" accept="image/jpeg,image/png,image/webp,application/pdf" multiple>
-            <ul id="q-filelist" class="rq-files"></ul>
-          </div>
-        </div>
-
-        <h2 style="margin:28px 0 4px">You</h2>
-        <p class="muted" style="margin:0 0 4px">So the webmaster can come back to
-           you if something is missing.</p>
-
-        <div class="fields">
-          <div class="field">
-            <label for="q-who">Your name</label>
-            <input type="text" id="q-who" autocomplete="name">
-          </div>
-          <div class="field">
-            <label for="q-contact">Telephone or email</label>
-            <input type="text" id="q-contact" autocomplete="email">
-          </div>
+        <div class="rq-ask">
+          <label for="q-contact">Your telephone number or email</label>
+          <p class="rq-hint">So we can ring you if something is missing.</p>
+          <input type="text" id="q-contact" autocomplete="tel">
         </div>
 
         <div class="cf-turnstile" data-sitekey="0x4AAAAAAGDzFsMNfKV_48t9"
-             data-theme="light" style="margin-top:22px"></div>
+             data-theme="light"></div>
 
-        <button class="btn btn-red" type="submit" id="q-send" style="margin-top:18px">Send it</button>
-        <p class="muted" id="q-said" role="status" aria-live="polite" style="margin-top:12px"></p>
+        <p class="rq-wrong" id="q-said" role="alert" hidden></p>
+        <button class="btn btn-red rq-big rq-send" type="submit" id="q-send">Send it to the webmaster</button>
+        <p class="rq-hint" style="text-align:center">Nothing goes on the calendar
+           until a board member puts it there.</p>
       </form>
     </div>
   </section>
@@ -182,6 +137,6 @@
 </footer>
 <script src="assets/js/site.js?v=6a88a173"></script>
 <script src="assets/js/store.js?v=64c910ed"></script>
-<script src="assets/js/request.js?v=e45f7e10"></script>
+<script src="assets/js/request.js?v=2b485fe3"></script>
 </body>
 </html>

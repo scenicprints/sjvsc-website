@@ -1,18 +1,20 @@
 /* The form that asks the club to put an event on the calendar.
 
-   Everything a member knows about their own event, collected once, in the
-   order a person would say it. It posts to /api/request, which checks
-   Turnstile, keeps a copy and emails the webmaster.
+   Whoever is running the event fills this in. At this club that means a
+   member who has been one for forty years, doing it once a year, on a
+   tablet, having never seen the page before. So there is one question
+   down the page, two of them are required, and the flyer comes first:
+   a photograph of it usually answers the time, the price and who to ring,
+   and somebody who manages only that has still told us everything.
 
-   A photograph of a flyer off a phone is several megabytes and nothing on
-   screen will ever show it that large, so it is resized here before it is
-   sent -- the same trick the Pictures screen uses. A PDF goes as it is,
-   because a PDF cannot be resized without being re-rendered, and a flyer
-   is a thing to be printed.
+   It posts to /api/request, which checks Turnstile, keeps a copy and
+   emails the webmaster.
 
-   The ceiling is enforced again on the Worker. This half is a courtesy to
-   the member's data allowance, not a security measure: anything the page
-   decides can be decided differently by whoever is holding the keyboard. */
+   A photograph off a phone is several megabytes and nothing will ever
+   show it that large, so it is resized here before it is sent -- the same
+   trick the Pictures screen uses. A PDF goes as it is, because a flyer is
+   a thing to be printed. The ceilings are enforced again on the Worker:
+   this half is a courtesy to the sender's data allowance, not a lock. */
 
 (function () {
   'use strict';
@@ -22,8 +24,8 @@
 
   var said = document.getElementById('q-said');
   var send = document.getElementById('q-send');
-  var skedbox = document.getElementById('q-sked');
   var chooser = document.getElementById('q-files');
+  var choose = document.getElementById('q-choose');
   var filelist = document.getElementById('q-filelist');
 
   var LONG_EDGE = 2000;         // a flyer is read, not glanced at
@@ -33,59 +35,27 @@
 
   var picked = [];              // { name, type, blob }
 
-  function tell(message, bad) {
+  /* Said loudly and next to the button, not quietly at the foot of the
+     page. Somebody who cannot see why nothing happened will simply press
+     it again. */
+  function wrong(message) {
     said.textContent = message || '';
-    said.style.color = bad ? 'var(--red)' : '';
+    said.hidden = !message;
+    if (message) said.scrollIntoView({ block: 'center', behavior: 'smooth' });
   }
 
-  var val = function (id) { return (document.getElementById(id).value || '').trim(); };
+  var val = function (id) {
+    var el = document.getElementById(id);
+    return el ? (el.value || '').trim() : '';
+  };
 
-  /* ---- what happens through the day ---------------------------------- */
+  /* ---- the flyer ------------------------------------------------------
 
-  function skedRow(at, what) {
-    var row = document.createElement('div');
-    row.className = 'rq-sked';
+     The file input itself is hidden and a proper button stands in front of
+     it. "Choose Files / No file chosen" in 11px grey is the browser's own
+     control and it is the least obvious thing on any form. */
 
-    var when = document.createElement('input');
-    when.type = 'text';
-    when.className = 'rq-at';
-    when.placeholder = '1pm';
-    when.value = at || '';
-
-    var doing = document.createElement('input');
-    doing.type = 'text';
-    doing.className = 'rq-what';
-    doing.placeholder = 'Doors open';
-    doing.value = what || '';
-
-    var off = document.createElement('button');
-    off.type = 'button';
-    off.className = 'btn rq-off';
-    off.textContent = '×';
-    off.setAttribute('aria-label', 'Take this line off');
-    off.addEventListener('click', function () { row.remove(); });
-
-    row.appendChild(when);
-    row.appendChild(doing);
-    row.appendChild(off);
-    skedbox.appendChild(row);
-    return when;
-  }
-
-  document.getElementById('q-addsked').addEventListener('click', function () {
-    skedRow('', '').focus();
-  });
-
-  function readSked() {
-    return [].map.call(skedbox.querySelectorAll('.rq-sked'), function (row) {
-      return {
-        at: row.querySelector('.rq-at').value.trim(),
-        what: row.querySelector('.rq-what').value.trim(),
-      };
-    }).filter(function (s) { return s.at || s.what; });
-  }
-
-  /* ---- the flyer ------------------------------------------------------ */
+  choose.addEventListener('click', function () { chooser.click(); });
 
   function shrink(file) {
     return new Promise(function (resolve, reject) {
@@ -101,7 +71,7 @@
         canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
         canvas.toBlob(function (blob) {
           if (blob) resolve(blob);
-          else reject(new Error('That picture could not be read.'));
+          else reject(new Error('That picture could not be read. Try another one.'));
         }, 'image/jpeg', QUALITY);
       };
       img.onerror = function () {
@@ -122,24 +92,31 @@
     filelist.innerHTML = '';
     picked.forEach(function (f, i) {
       var li = document.createElement('li');
+
       var name = document.createElement('span');
       name.textContent = f.name;
+
       var size = document.createElement('i');
       size.textContent = sizeSaid(f.blob.size);
+
       var off = document.createElement('button');
       off.type = 'button';
       off.className = 'btn rq-off';
-      off.textContent = '×';
-      off.setAttribute('aria-label', 'Take ' + f.name + ' off');
+      off.textContent = 'Remove';
+      off.setAttribute('aria-label', 'Remove ' + f.name);
       off.addEventListener('click', function () {
         picked.splice(i, 1);
         drawFiles();
       });
+
       li.appendChild(name);
       li.appendChild(size);
       li.appendChild(off);
       filelist.appendChild(li);
     });
+    choose.textContent = picked.length
+      ? 'Choose another'
+      : 'Choose a photograph';
   }
 
   chooser.addEventListener('change', function () {
@@ -147,31 +124,38 @@
     chooser.value = '';
     if (!chosen.length) return;
 
-    tell('');
-    var queue = chosen.reduce(function (chain, file) {
+    wrong('');
+    choose.disabled = true;
+    choose.textContent = 'Just a moment…';
+
+    chosen.reduce(function (chain, file) {
       return chain.then(function () {
         if (picked.length >= MAX_FILES) {
-          throw new Error('Three files is the most.');
+          throw new Error('Three is the most. Remove one if you want to add another.');
         }
         var isPicture = /^image\//.test(file.type);
         if (!isPicture && file.type !== 'application/pdf') {
-          throw new Error(file.name + ' is not a JPEG, a PNG or a PDF.');
+          throw new Error(file.name + ' is not a photograph or a PDF.');
         }
         return (isPicture ? shrink(file) : Promise.resolve(file)).then(function (blob) {
           if (blob.size > MAX_ONE) {
-            throw new Error(file.name + ' is too big. Eight megabytes is the most.');
+            throw new Error(file.name + ' is too big to send. Eight megabytes is the most.');
           }
           picked.push({
             name: isPicture ? file.name.replace(/\.[^.]+$/, '') + '.jpg' : file.name,
             type: isPicture ? 'image/jpeg' : 'application/pdf',
             blob: blob,
           });
-          drawFiles();
         });
       });
-    }, Promise.resolve());
-
-    queue.catch(function (err) { tell(err.message, true); drawFiles(); });
+    }, Promise.resolve()).then(function () {
+      choose.disabled = false;
+      drawFiles();
+    }).catch(function (err) {
+      choose.disabled = false;
+      drawFiles();
+      wrong(err.message);
+    });
   });
 
   /* A blob as base64, because the rest of the request is JSON and one
@@ -197,21 +181,28 @@
     return field ? field.value : '';
   }
 
+  function ask(id, message) {
+    var el = document.getElementById(id);
+    wrong(message);
+    if (el) { el.focus(); el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+  }
+
   form.addEventListener('submit', function (ev) {
     ev.preventDefault();
     if (send.disabled) return;
 
-    if (!val('q-title')) { tell('The event needs a name.', true); return; }
-    if (!val('q-date')) { tell('The event needs a day.', true); return; }
+    if (!val('q-title')) return ask('q-title', 'We need to know what it is called.');
+    if (!val('q-date')) return ask('q-date', 'We need to know what day it is on.');
 
     var token = turnstileToken();
     if (!token) {
-      tell('Wait a moment for the box above to tick, then press again.', true);
+      wrong('Give the box above a moment to tick, then press again.');
       return;
     }
 
     send.disabled = true;
-    tell('Sending…');
+    send.textContent = 'Sending…';
+    wrong('');
 
     Promise.all(picked.map(function (f) {
       return asBase64(f.blob).then(function (data) {
@@ -226,12 +217,8 @@
           title: val('q-title'),
           date: val('q-date'),
           time: val('q-time'),
-          note: val('q-note'),
           desc: val('q-desc'),
-          schedule: readSked(),
           tickprice: val('q-price'),
-          tickwhere: val('q-where'),
-          tickto: val('q-tickto'),
           who: val('q-who'),
           contact: val('q-contact'),
           files: files,
@@ -244,21 +231,23 @@
       });
     }).then(function () {
       form.innerHTML =
-        '<h2 style="margin:0 0 10px">That has gone to the webmaster</h2>' +
-        '<p style="margin:0 0 6px">Thank you. It is with Kevin now, flyer and all.</p>' +
-        '<p class="muted" style="margin:0">Nothing is on the calendar yet &#8212; a board ' +
-        'member puts it there, and you will see it on the site when they do. If ' +
-        'something was missing, whoever reads it will come back to you.</p>';
+        '<div class="rq-ask" style="border:0">' +
+        '<h2 style="margin:0 0 12px">Thank you &#8212; that has gone to the webmaster</h2>' +
+        '<p style="font-size:1.05rem;line-height:1.6;margin:0 0 10px">' +
+        'It is with Kevin Wagner now, flyer and all. There is nothing more for you to do.</p>' +
+        '<p class="rq-hint" style="margin:0">It will not be on the calendar straight away. ' +
+        'A board member puts it there, and you will see it on the website when they have. ' +
+        'If anything was missing, whoever reads it will be in touch.</p></div>';
       form.scrollIntoView({ block: 'center', behavior: 'smooth' });
     }).catch(function (err) {
       send.disabled = false;
+      send.textContent = 'Send it to the webmaster';
       /* The challenge is spent once it has been checked, so a second
-         attempt needs a fresh one or it fails for a reason the member
-         cannot see. */
+         attempt needs a fresh one or it fails for a reason nobody can see. */
       if (window.turnstile && window.turnstile.reset) {
         try { window.turnstile.reset(); } catch (e) { /* nothing to do */ }
       }
-      tell(err.message || 'That did not go through.', true);
+      wrong(err.message || 'That did not go through. Please try once more.');
     });
   });
 })();
