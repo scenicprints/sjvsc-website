@@ -48,13 +48,16 @@ Start time, admission, and whether there is a dinner after.
 - The Venmo note changes each year: it was "KSC 2026".
 
 **Buebe/Meitli Schwingfest and Members BBQ — Sat 31 July**
-The sheet puts both on one line. Are they one event or two? Times for each.
-Raffle tickets are now sold by Venmo or check ahead of the day rather than mailed
-out — what do they cost, and who takes the money?
+Two entries sharing a date, not one event: each has its own icon on the sheet,
+which is how every other entry is drawn. Both are on the site separately.
+A start time for each. Does the barbecue cost anything? And the raffle — what
+do tickets cost, and who sells them?
 
 **Swiss National Day — Sun 1 August**
-The sheet lists it with no date beside it. Does the club hold something of its own,
-or is it marked at the BBQ the day before?
+An entry of its own on the sheet, with the flag icon, so it is on the site as
+one. When the sheet means a date that is not a club event it says so in the
+month heading instead — "MARCH (EASTER MAR 28TH)", "SEPTEMBER (LABOR DAY 6TH)".
+So: what does the club do on the day, and at what time?
 
 **Fall Schwingfest — Sat 28 August**
 Start time, admission, and the dinner price.
