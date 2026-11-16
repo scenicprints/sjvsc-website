@@ -22,6 +22,8 @@
   .gate{max-width:34rem;margin:0 auto;padding:12vh 0 8vh}
   .gate h1{margin:0 0 14px}
   .gate p{margin:0 0 18px;line-height:1.65}
+  /* With nothing to say there is nothing to leave room for. */
+  .gate p:empty{margin:0}
   .gate .gdo{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
   .gate .gaway{font-family:var(--ui);font-size:.9rem}
 </style>
@@ -43,9 +45,8 @@
 <main id="main">
   <div class="awrap">
     <div class="gate">
-      <h1>This part is the board&#8217;s</h1>
-      <p id="gmsg">Behind here is where the website is changed &#8212; the events,
-        the hall rates, the photographs. It opens for board members.</p>
+      <h1>Administration</h1>
+      <p id="gmsg"></p>
       <p class="gdo" id="gact"></p>
       <p class="gaway"><a href="/index.html">Back to the website</a></p>
     </div>
@@ -74,8 +75,7 @@
 
   function signedOut() {
     clear();
-    say('Behind here is where the website is changed — the events, the hall ' +
-        'rates, the photographs. It opens for board members.');
+    say('');
     button('Sign in', function () {
       window.Clerk.redirectToSignIn({ redirectUrl: location.href });
     });
@@ -114,17 +114,16 @@
 
   function stuck() {
     clear();
-    say('You are signed in, but the sign-in is not reaching the website. That is ' +
-        'usually a browser that is turning cookies away. Signing out and in again ' +
-        'fixes it most of the time.');
-    button('Sign out and start again', function () {
+    say('You are signed in, but the website is not seeing it. Your browser may be ' +
+        'blocking cookies. Sign out and back in.');
+    button('Sign out', function () {
       window.Clerk.signOut().then(function () { location.reload(); });
     });
   }
 
   function settle() {
     if (window.Clerk && window.Clerk.user) {
-      say('Checking your sign-in…');
+      say('Checking…');
       askServer(3);
     } else {
       signedOut();
@@ -137,8 +136,7 @@
       .catch(function (err) {
         console.error('Clerk did not load', err);
         clear();
-        say('The sign-in did not load. That is almost always the connection. ' +
-            'Try again in a moment.');
+        say('Sign-in did not load. Check your connection and try again.');
         button('Try again', function () { location.reload(); });
       });
   }
@@ -147,7 +145,7 @@
   (function wait(tries) {
     if (window.Clerk) return start();
     if (tries <= 0) {
-      say('The sign-in did not load. That is almost always the connection.');
+      say('Sign-in did not load. Check your connection and try again.');
       button('Try again', function () { location.reload(); });
       return;
     }
