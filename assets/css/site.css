@@ -597,20 +597,6 @@ html.gv-open,html.gv-open body{overflow:hidden}
 .mo a.ev:hover b,.mo button.ev:hover b{color:var(--red)}
 .mo .ev-soon span{color:var(--ink-2)}
 
-/* what a day says when its event is not being advertised yet */
-.mcalpop{position:fixed;inset:0;z-index:200;background:rgba(26,22,19,.55);
-  display:flex;align-items:center;justify-content:center;padding:24px}
-.mcalpop[hidden]{display:none}
-.mcalpop-box{background:var(--white);border:1px solid var(--line);
-  border-left:5px solid var(--red);border-radius:6px;padding:28px 26px;
-  max-width:420px;width:100%;text-align:left}
-.mcalpop-box h3{margin:0;font-family:var(--display);font-size:1.45rem;font-weight:600;
-  line-height:1.2}
-.mcalpop-when{margin:8px 0 0;font-size:.82rem;font-weight:700;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--ink-soft)}
-.mcalpop-say{margin:16px 0 0;color:var(--ink-2);line-height:1.6}
-.mcalpop-box .btn{margin-top:22px}
-html.mcalpop-open{overflow:hidden}
 
 /* Seven columns on a phone leaves about forty pixels a day, which breaks a
    title into pieces of two letters. The day carries a mark instead, and

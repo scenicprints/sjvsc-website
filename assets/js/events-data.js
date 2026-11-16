@@ -362,6 +362,19 @@ window.SJVSC = (function () {
     return { prices: cost, lines: priceLines(e), where: where };
   }
 
+  /* Whether the club has said anything a member could turn up on. A title,
+     a day and a sentence about what the thing is are not arrangements: the
+     90th Birthday Celebration has all three and still nobody knows what
+     time to arrive. A time, an hour-by-hour schedule, a price or a detail
+     row is the club having settled something. */
+  function settled(e) {
+    return !!(String(e && e.time || '').trim()
+      || ((e && e.schedule) || []).length
+      || ((e && e.tickprices) || []).length
+      || String(e && e.tickprice || '').trim()
+      || ((e && e.details) || []).length);
+  }
+
   /* The details box a tied page carries. It is the page's own Details card,
      in the page's own card and row styling, so it reads as part of the page
      rather than as something bolted on top of it. */
@@ -616,56 +629,11 @@ window.SJVSC = (function () {
 
   var yrAt = null;
 
-  function calSay(e) {
-    var pop = document.getElementById('mcalpop');
-    if (!pop) {
-      pop = document.createElement('div');
-      pop.id = 'mcalpop';
-      pop.className = 'mcalpop';
-      pop.setAttribute('role', 'dialog');
-      pop.setAttribute('aria-modal', 'true');
-      pop.innerHTML =
-        '<div class="mcalpop-box">' +
-        '<h3></h3><p class="mcalpop-when"></p>' +
-        '<p class="mcalpop-say">Details to come.</p>' +
-        '<button class="btn btn-ink" type="button">Close</button></div>';
-      document.body.appendChild(pop);
-      pop.addEventListener('click', function (ev) {
-        if (ev.target === pop || ev.target.tagName === 'BUTTON') calShut();
-      });
-      document.addEventListener('keydown', function (ev) {
-        if (ev.key === 'Escape' && !pop.hidden) calShut();
-      });
-    }
-    pop.querySelector('h3').textContent = e.title;
-    pop.querySelector('.mcalpop-when').textContent = fullDate(e.date) +
-      (e.time ? ', ' + e.time : '');
-    /* An event with no page of its own has nowhere else to be read, so
-       this dialog is the whole of what a member gets. It used to show the
-       same hardcoded sentence whatever the club had written. */
-    pop.querySelector('.mcalpop-say').textContent =
-      String(e.desc || '').trim() || String(e.note || '').trim() || 'Details to come.';
-    pop.hidden = false;
-    document.documentElement.classList.add('mcalpop-open');
-    pop.querySelector('button').focus();
-  }
-
-  function calShut() {
-    var pop = document.getElementById('mcalpop');
-    if (!pop) return;
-    pop.hidden = true;
-    document.documentElement.classList.remove('mcalpop-open');
-    if (calCameFrom && calCameFrom.focus) calCameFrom.focus();
-  }
-
-  var calCameFrom = null;
-
   function drawYear() {
     var grid = document.getElementById('yrgrid');
     if (!grid) return;
     document.getElementById('yrtitle').textContent = yrAt;
 
-    var live = showing();
     var mine = all().filter(function (e) { return at(e.date).getFullYear() === yrAt; })
       .sort(function (a, b) { return at(a.date) - at(b.date); });
 
@@ -685,36 +653,29 @@ window.SJVSC = (function () {
       }
 
       on.forEach(function (e) {
-        /* Two different questions, and they were being asked as one.
-           Whether the row is a link depends on there being a page to go
-           to. Whether it says "Details to come" depends on whether the
-           event is being advertised yet. The monthly meeting has no page
-           of its own and never will, so asking them together left it
-           promising details on the morning of the meeting. */
-        var yet = live.indexOf(e) > -1;
-        var open = yet && href(e);
-        var row = document.createElement(open ? 'a' : 'button');
+        /* Every row opens its event. It used to be that an event not yet
+           advertised opened a dialog saying "Details to come" instead, and
+           an event with no page of its own could not be opened at all. */
+        var to = href(e);
+        var row = document.createElement(to ? 'a' : 'span');
         row.className = 'ev';
-        if (open) row.href = href(e);
-        else row.type = 'button';
+        if (to) row.href = to;
 
         var b = document.createElement('b');
         b.textContent = e.title;
         row.appendChild(b);
 
+        /* "Details to come" is about the detail, not the date. The club
+           has named a day and nothing else until there is a time to turn
+           up at, an hour-by-hour schedule, a price or a detail row -- and
+           saying so is what tells a member whether it is worth opening. */
         var when = document.createElement('span');
         var d = at(e.date);
         when.textContent = WEEK[d.getDay()].slice(0, 3) + ' ' + d.getDate() +
-          (yet ? '' : '  ·  Details to come');
+          (settled(e) ? '' : '  ·  Details to come');
         row.appendChild(when);
 
-        if (!open) {
-          row.classList.add('ev-soon');
-          row.addEventListener('click', function () {
-            calCameFrom = row;
-            calSay(e);
-          });
-        }
+        if (!settled(e)) row.classList.add('ev-soon');
         box.appendChild(row);
       });
 
