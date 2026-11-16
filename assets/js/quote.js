@@ -367,6 +367,8 @@
     var q = R.quoteFor(card, {
       member: member, use: useId, options: chosen, guests: guests, waiver: waiver
     });
+    /* counted as a use, and only that: the date and the guests stay here */
+    if (window.SJVSC_HIT) window.SJVSC_HIT('quote');
 
     var used = R.byId(card.use, useId);
     var usedName = used ? used.name : '';

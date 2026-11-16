@@ -432,3 +432,46 @@
 .arowdrop{grid-column:-2/-1;justify-self:end;align-self:center;
   line-height:1;padding:9px 14px;font-size:1.05rem}
 .dmore{margin:0 0 14px}
+
+/* ---- the Visits screen ---------------------------------------------
+
+   Figures first, then the days as bars, then short tables. The bars are
+   divs: thirty rectangles do not need a chart library, and the board
+   reads this on a tablet. Every table row carries a faint bar behind its
+   name so the biggest number is the longest line without reading any. */
+.adm .vperiod{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px}
+.adm .vtiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;
+  margin-bottom:28px}
+.adm .vtile{background:var(--white);border:2px solid var(--line);border-radius:6px;
+  padding:18px 18px 16px}
+.adm .vtile b{display:block;font-family:var(--display);font-size:2.1rem;font-weight:600;
+  line-height:1;font-variant-numeric:tabular-nums}
+.adm .vtile span{display:block;margin-top:8px;font-size:.8rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.adm .vhead{font-family:var(--display);font-size:1.3rem;font-weight:600;margin:0 0 10px}
+.adm .vchart{display:flex;align-items:flex-end;gap:3px;height:190px;padding:0 0 26px;
+  background:var(--white);border:2px solid var(--line);border-radius:6px;
+  padding:16px 14px 30px;position:relative}
+.adm .vcol{flex:1 1 0;min-width:0;height:100%;display:flex;flex-direction:column;
+  justify-content:flex-end;position:relative}
+.adm .vbarv{background:#E8D9AE;border-radius:2px 2px 0 0;position:relative;min-height:0}
+.adm .vbarp{position:absolute;left:0;right:0;bottom:0;background:var(--red);border-radius:2px 2px 0 0}
+.adm .vlab{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:6px;
+  font-size:.66rem;color:var(--ink-soft);white-space:nowrap}
+.adm .vlab.vquiet{display:none}
+.adm .vcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px 34px;
+  margin:30px 0}
+.adm .vtbl{width:100%;border-collapse:collapse;font-size:.95rem}
+.adm .vtbl td{padding:8px 4px;border-bottom:1px solid var(--line);vertical-align:middle;
+  position:relative}
+.adm .vtbl td.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;
+  font-weight:600;width:1%}
+.adm .vbar{position:absolute;left:0;top:4px;bottom:4px;background:var(--cream-2);
+  border-radius:3px;z-index:0}
+.adm .vname{position:relative;z-index:1;padding-left:6px;overflow-wrap:anywhere}
+.adm .vnone{color:var(--ink-soft);font-style:italic}
+@media(max-width:620px){
+  .adm .vtile b{font-size:1.7rem}
+  .adm .vchart{height:150px}
+  .adm .vcols{grid-template-columns:1fr}
+}

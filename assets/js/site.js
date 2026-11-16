@@ -118,3 +118,37 @@
     if (name && name.focus) name.focus();
   }
 }());
+
+/* Telling the Worker the page was opened.
+
+   One short message as the page opens: the address, the page that linked
+   here, and what kind of thing this is -- a page, or the Jass table, which
+   the body says with data-hit. The 404 page says "none" and sends nothing:
+   an address that is not there is not a page anybody read. The Worker counts
+   it; the board reads the counts on the Visits screen. Nothing about the
+   visitor goes with it that the request did not already carry, and
+   worker/visits.js explains what is kept.
+
+   sendBeacon is used because it survives the page being left at once,
+   which is what happens to a 404. It is sent as plain text: a JSON blob
+   would make the browser ask permission first and then not send it. The
+   other tools call SJVSC_HIT themselves when they are used. */
+(function () {
+  function hit(kind, path) {
+    try {
+      var body = JSON.stringify({
+        k: kind || 'view',
+        p: path || window.location.pathname,
+        r: document.referrer || ''
+      });
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/api/hit', new Blob([body], { type: 'text/plain' }));
+      } else if (window.fetch) {
+        fetch('/api/hit', { method: 'POST', body: body, keepalive: true });
+      }
+    } catch (e) { /* a count that did not happen is not the visitor's problem */ }
+  }
+  window.SJVSC_HIT = hit;
+  var kind = document.body && document.body.getAttribute('data-hit');
+  if (kind !== 'none') hit(kind || 'view');
+}());

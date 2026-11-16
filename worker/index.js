@@ -10,6 +10,7 @@
 import { requireBoard } from './auth.js';
 import { rowToEvent, eventToRow, validateEvent, withWindow, WRITABLE } from './shape.js';
 import { createRequest } from './requests.js';
+import { recordHit, visitFigures } from './visits.js';
 
 const json = (data, status = 200, headers = {}) =>
   new Response(JSON.stringify(data), {
@@ -453,7 +454,7 @@ const MOVED = {
   '/jass-game.html': '/jass-table'
 };
 
-async function route(request, env) {
+async function route(request, env, ctx) {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/, '') || '/';
   const method = request.method.toUpperCase();
@@ -498,6 +499,13 @@ async function route(request, env) {
       return getUpload(env, path.slice('/uploads/'.length));
     }
 
+    /* The count of visits is the board's too. */
+    if (path === '/api/visits') {
+      const auth = await requireBoard(request, env);
+      if (!auth.ok) return oops(auth.status, auth.message);
+      return json(await visitFigures(env, url.searchParams.get('period') || 'month'));
+    }
+
     /* The admin asks this to decide whether to show the form as editable. */
     if (path === '/api/me') {
       const auth = await requireBoard(request, env);
@@ -517,8 +525,23 @@ async function route(request, env) {
 
   if (method === 'POST' && path === '/api/request') {
     const out = await createRequest(request, env, url);
+    if (out.ok) ctx.waitUntil(count(request, env, { p: path }, 'request'));
     return out.ok ? json({ ok: true, id: out.id }, out.status)
                   : oops(out.status, out.message);
+  }
+
+  /* ---- a page saying it was opened ----
+
+     Not a write anyone can see: a row in the count, read back on the
+     Visits screen. The page sends it as it opens, as plain text so the
+     browser's beacon will carry it, and gets its 204 before the row is
+     written. visits.js says what is kept and what is deliberately not. */
+
+  if (method === 'POST' && path === '/api/hit') {
+    let body = {};
+    try { body = JSON.parse(await request.text()); } catch (e) { body = {}; }
+    ctx.waitUntil(count(request, env, body));
+    return new Response(null, { status: 204 });
   }
 
   /* ---- writes, board only ---- */
@@ -567,10 +590,16 @@ async function route(request, env) {
   return env.ASSETS.fetch(request);
 }
 
+/* A failed count is a log line, never a failed page. */
+async function count(request, env, body, kind) {
+  try { await recordHit(request, env, body, kind); }
+  catch (err) { console.error('hit not counted', err?.stack || err); }
+}
+
 export default {
   async fetch(request, env, ctx) {
     try {
-      return await route(request, env);
+      return await route(request, env, ctx);
     } catch (err) {
       /* A failure here must not return a stack trace to a visitor. The
          detail goes to the Workers log, which observability keeps. */
