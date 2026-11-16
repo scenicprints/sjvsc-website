@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+<title>Sign in &#183; Ripon Swiss Club</title>
+<!-- EVERY LINK AND EVERY ASSET ON THIS PAGE IS ROOT-ABSOLUTE. The Worker
+     hands this page back at whatever admin address was asked for, exactly
+     as 404.html is served at the address that was missing. A relative path
+     here would resolve against that address and point at nothing. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/assets/css/site.css?v=0f865ef4">
+<link rel="stylesheet" href="/assets/css/admin.css?v=b2ce1fa8">
+<script async crossorigin="anonymous"
+  data-clerk-publishable-key="pk_live_Y2xlcmsuc2p2c2NyaXBvbnN3aXNzLmNvbSQ"
+  src="https://clerk.sjvscriponswiss.com/npm/@clerk/clerk-js@6/dist/clerk.browser.js"></script>
+<style>
+  .gate{max-width:34rem;margin:0 auto;padding:12vh 0 8vh}
+  .gate h1{margin:0 0 14px}
+  .gate p{margin:0 0 18px;line-height:1.65}
+  .gate .gdo{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .gate .gaway{font-family:var(--ui);font-size:.9rem}
+</style>
+</head>
+<body class="adm">
+
+<header class="abar">
+  <div class="awrap">
+    <span class="abrand">
+      <svg viewBox="0 0 32 34" aria-hidden="true"><path d="M1 1h30v17c0 7.5-6.5 13-15 15.5C7.5 31 1 25.5 1 18Z" fill="#C8102E"/><path d="M13.2 6h5.6v6.2H25v5.6h-6.2V24h-5.6v-6.2H7v-5.6h6.2Z" fill="#fff"/></svg>
+      <span><b>Ripon Swiss Club</b><i>Website admin</i></span>
+    </span>
+    <span class="awho">
+      <a href="/index.html">Back to the website</a>
+    </span>
+  </div>
+</header>
+
+<main id="main">
+  <div class="awrap">
+    <div class="gate">
+      <h1>This part is the board&#8217;s</h1>
+      <p id="gmsg">Behind here is where the website is changed &#8212; the events,
+        the hall rates, the photographs. It opens for board members.</p>
+      <p class="gdo" id="gact"></p>
+      <p class="gaway"><a href="/index.html">Back to the website</a></p>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  var msg = document.getElementById('gmsg');
+  var act = document.getElementById('gact');
+  var here = location.pathname + location.search;
+
+  function say(text) { msg.textContent = text; }
+
+  function button(label, fn) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'abtn';
+    b.textContent = label;
+    b.addEventListener('click', fn);
+    act.appendChild(b);
+    return b;
+  }
+
+  function clear() { act.textContent = ''; }
+
+  function signedOut() {
+    clear();
+    say('Behind here is where the website is changed — the events, the hall ' +
+        'rates, the photographs. It opens for board members.');
+    button('Sign in', function () {
+      window.Clerk.redirectToSignIn({ redirectUrl: location.href });
+    });
+  }
+
+  /* The server refused the page, so ask it plainly whether it can see the
+     session. /api/me runs the same check the page did, on the cookie alone.
+     Saying yes means the refusal is already out of date and the page will
+     open on a reload; saying no means the sign-in is not reaching us, and
+     that is worth telling somebody rather than bouncing them around. */
+  function askServer(tries) {
+    fetch('/api/me', { credentials: 'same-origin', cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (me) {
+        if (me && me.signedIn) return onward();
+        if (tries > 0) return setTimeout(function () { askServer(tries - 1); }, 600);
+        stuck();
+      })
+      .catch(function () {
+        if (tries > 0) return setTimeout(function () { askServer(tries - 1); }, 600);
+        stuck();
+      });
+  }
+
+  /* A reload is what opens the page. The note of where and when stops that
+     turning into a merry-go-round if the two checks ever disagree: a second
+     arrival at the same address within a few seconds stops and says so. */
+  function onward() {
+    var seen = '';
+    try { seen = sessionStorage.getItem('sjvsc.gate') || ''; } catch (e) { /* private window */ }
+    var parts = seen.split('|');
+    if (parts[0] === here && Date.now() - Number(parts[1] || 0) < 15000) return stuck();
+    try { sessionStorage.setItem('sjvsc.gate', here + '|' + Date.now()); } catch (e) { /* private window */ }
+    location.reload();
+  }
+
+  function stuck() {
+    clear();
+    say('You are signed in, but the sign-in is not reaching the website. That is ' +
+        'usually a browser that is turning cookies away. Signing out and in again ' +
+        'fixes it most of the time.');
+    button('Sign out and start again', function () {
+      window.Clerk.signOut().then(function () { location.reload(); });
+    });
+  }
+
+  function settle() {
+    if (window.Clerk && window.Clerk.user) {
+      say('Checking your sign-in…');
+      askServer(3);
+    } else {
+      signedOut();
+    }
+  }
+
+  function start() {
+    window.Clerk.load({ afterSignOutUrl: location.href })
+      .then(settle)
+      .catch(function (err) {
+        console.error('Clerk did not load', err);
+        clear();
+        say('The sign-in did not load. That is almost always the connection. ' +
+            'Try again in a moment.');
+        button('Try again', function () { location.reload(); });
+      });
+  }
+
+  /* Clerk's script is async and may land either side of this one. */
+  (function wait(tries) {
+    if (window.Clerk) return start();
+    if (tries <= 0) {
+      say('The sign-in did not load. That is almost always the connection.');
+      button('Try again', function () { location.reload(); });
+      return;
+    }
+    setTimeout(function () { wait(tries - 1); }, 100);
+  }(100));
+}());
+</script>
+
+</body>
+</html>

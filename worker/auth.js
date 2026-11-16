@@ -19,7 +19,8 @@
        cat clerk-prod.pem | npx wrangler secret put CLERK_JWT_KEY
 
    Not PowerShell. It rewrites line endings on the way through, and the key
-   arrives with carriage returns inside it. Base64 with a stray  in it
+   arrives with carriage returns inside it. Base64 with a stray 
+ in it
    decodes to something that is not the key, every token is refused, and
    nothing says why: Clerk reports token-verification-failed for a wrong
    key, a bad signature and an expired token alike. The key will look
@@ -34,17 +35,28 @@ const BEARER = /^Bearer\s+(.+)$/i;
 /* Clerk puts the session token in a __session cookie for same-origin
    requests, and the admin screens are same-origin. An Authorization header
    is accepted too, which is what a script or a test will send. */
-function readToken(request) {
+function readTokens(request) {
+  const out = [];
+
   const header = request.headers.get('Authorization') || '';
   const match = BEARER.exec(header.trim());
-  if (match) return match[1].trim();
+  if (match) out.push(match[1].trim());
 
+  /* Every __session, not the first one. A browser can be holding two of
+     them -- one set for the bare host and one for the whole domain -- and
+     it sends both, in no order worth relying on. Stopping at the first
+     would turn a stale cookie into a sign-in that fails for no visible
+     reason. There are never more than a couple, and a wrong one costs one
+     signature check. */
   const cookie = request.headers.get('Cookie') || '';
   for (const part of cookie.split(';')) {
     const [name, ...rest] = part.trim().split('=');
-    if (name === '__session' && rest.length) return rest.join('=').trim();
+    if (name === '__session' && rest.length) {
+      const value = rest.join('=').trim();
+      if (value) out.push(value);
+    }
   }
-  return null;
+  return out;
 }
 
 /**
@@ -62,11 +74,23 @@ export async function requireBoard(request, env) {
     };
   }
 
-  const token = readToken(request);
-  if (!token) {
+  const tokens = readTokens(request);
+  if (!tokens.length) {
     return { ok: false, status: 401, message: 'Sign in to make changes.' };
   }
 
+  for (const token of tokens) {
+    const seen = await check(token, env);
+    if (seen) return seen;
+  }
+
+  /* Expired, tampered with, or signed by someone else. The caller gets one
+     answer for all three. */
+  return { ok: false, status: 401, message: 'Sign in again to make changes.' };
+}
+
+/* One token: the claims it carries if it is genuinely ours, or null. */
+async function check(token, env) {
   try {
     const claims = await verifyToken(token, {
       jwtKey: env.CLERK_JWT_KEY,
@@ -107,8 +131,6 @@ export async function requireBoard(request, env) {
       role: role === 'admin' ? 'admin' : 'editor',
     };
   } catch {
-    /* Expired, tampered with, or signed by someone else. The caller gets
-       one answer for all three. */
-    return { ok: false, status: 401, message: 'Sign in again to make changes.' };
+    return null;
   }
 }

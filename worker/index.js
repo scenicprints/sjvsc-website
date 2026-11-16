@@ -586,8 +586,45 @@ async function route(request, env, ctx) {
 
   if (path.startsWith('/api/')) return oops(404, 'No such endpoint.');
 
+  /* ---- the admin screens ----------------------------------------------
+
+     Everything above is a page anybody may read. The admin is not. Until
+     now only the writing was guarded, so the screens themselves opened for
+     anyone who knew the address: nothing could be changed from them and
+     nothing private was on them, because the history and the visit figures
+     were already behind the same check as a write. What was on them was the
+     club's back office and its unpublished drafts, and neither of those is
+     for the street.
+
+     The check is the one every write goes through, on the cookie Clerk sets
+     for this domain. A refusal hands back the sign-in page AT THE ADDRESS
+     THAT WAS ASKED FOR, the way 404.html is served, so signing in returns
+     to the screen that was wanted rather than to the front door. */
+  if (isAdminPage(path)) {
+    const auth = await requireBoard(request, env);
+    if (!auth.ok) {
+      const gate = await env.ASSETS.fetch(new Request(new URL('/board-sign-in', url)));
+      return new Response(gate.body, {
+        status: 401,
+        headers: {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Cache-Control': 'no-store',
+        },
+      });
+    }
+  }
+
   /* Not the API: it is a page, a stylesheet or a photograph. */
   return env.ASSETS.fetch(request);
+}
+
+/* /admin and every /admin-something, with or without the .html and with or
+   without a trailing slash. The admin's stylesheets and scripts are not in
+   here: they hold no secret, only the shape of a screen, and gating them
+   would buy nothing for the trouble of it. */
+export function isAdminPage(path) {
+  const p = path.toLowerCase().replace(/\.html$/, '').replace(/\/$/, '');
+  return p === '/admin' || p.startsWith('/admin-');
 }
 
 /* A failed count is a log line, never a failed page. */

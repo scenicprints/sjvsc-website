@@ -28,6 +28,13 @@
       "/api/*",
       "/uploads/*",
 
+      // The admin screens are files on disk, so the asset handler would
+      // hand them to anybody before the Worker ever saw the request. These
+      // send them through the Worker first, which asks who is asking.
+      "/admin",
+      "/admin.html",
+      "/admin-*",
+
       "/hall-rental",
       "/oktoberfest",
       "/jass",
