@@ -26,6 +26,10 @@ const json = (data, status = 200, headers = {}) =>
    cache-buster, so an edit shows up the moment it is saved. */
 const READ_CACHE = { 'Cache-Control': 'public, max-age=30' };
 
+/* What only a signed-in board member may see is never held anywhere on the
+   way back to them. */
+const NO_CACHE = { 'Cache-Control': 'no-store' };
+
 const oops = (status, message) => json({ error: message }, status);
 
 /* Ids read better as words than as timestamps — jass-fall rather than
@@ -482,7 +486,16 @@ async function route(request, env, ctx) {
 
   if (method === 'GET' || method === 'HEAD') {
     if (path === '/api/events') return json(await listEvents(env, 0), 200, READ_CACHE);
-    if (path === '/api/saved')  return json(await listEvents(env, 1), 200, READ_CACHE);
+    /* The shelf, which is the back office rather than the website: events
+       put aside, not yet on any calendar and never drawn for a reader. No
+       page outside the admin asks for it, so nobody outside the admin
+       needs an answer. (data/saved.json, the fallback copy in the
+       repository, is empty, so this is the only way to the shelf.) */
+    if (path === '/api/saved') {
+      const auth = await requireBoard(request, env);
+      if (!auth.ok) return oops(auth.status, auth.message);
+      return json(await listEvents(env, 1), 200, NO_CACHE);
+    }
     if (path === '/api/rates')  return json(await activeRates(env) ?? {}, 200, READ_CACHE);
     if (path === '/api/gallery') return json(await allGallery(env), 200, READ_CACHE);
     if (path === '/api/flyer')   return json(await getFlyer(env), 200, READ_CACHE);

@@ -28,8 +28,19 @@ window.SJVSC_STORE = (function () {
       .catch(function () { return fallback; });
   }
 
+  /* The public lists need nothing to read. The shelf of saved events is the
+     board's, and asking for it now needs the same proof a write does, so the
+     token goes on every read where there is one to send. On a page outside
+     the admin there is no SJVSC_TOKEN and this is the old fetch with an
+     empty set of headers. */
   function read(name, fallback) {
-    return fetch(bust(API + name))
+    var token = window.SJVSC_TOKEN ? window.SJVSC_TOKEN() : Promise.resolve(null);
+    return token
+      .then(function (t) {
+        var headers = {};
+        if (t) headers.Authorization = 'Bearer ' + t;
+        return fetch(bust(API + name), { credentials: 'same-origin', headers: headers });
+      })
       .then(function (r) {
         if (r.ok) return r.json();
         if (r.status === 404) return fromFile(name, fallback);
