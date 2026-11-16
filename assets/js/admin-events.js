@@ -17,6 +17,10 @@
   var listview = document.getElementById('listview');
   var formview = document.getElementById('formview');
   var list = document.getElementById('elist');
+  var archList = document.getElementById('archlist');
+  var archWrap = document.getElementById('archwrap');
+  var archToggle = document.getElementById('archtoggle');
+  var archOpen = false;
   var slist = document.getElementById('slist');
   var form = document.getElementById('eform');
   var drows = document.getElementById('drows');
@@ -143,38 +147,74 @@
     return { cls: 'live', text: 'Showing on the website now' };
   }
 
+  function row(e) {
+    var s = standing(e);
+    var li = document.createElement('li');
+    li.className = 'eitem';
+    li.innerHTML =
+      '<span class="ewhen"><b></b><i></i></span>' +
+      '<span class="ebody"><b></b><span class="enote"></span>' +
+      '<span class="estand ' + s.cls + '"></span>' +
+      '<span class="estand none" hidden>Not on a page, so it does not open one</span>' +
+      '</span>' +
+      '<button class="abtn" type="button">Open</button>';
+    li.querySelector('.ewhen b').textContent = at(e.date).getDate();
+    li.querySelector('.ewhen i').textContent = D.MONTH[at(e.date).getMonth()].slice(0, 3);
+    li.querySelector('.ebody b').textContent = e.title;
+    li.querySelector('.enote').textContent = dayName(e.date) + (e.time ? ', ' + e.time : '');
+    li.querySelector('.estand').textContent = s.text;
+    /* a row with no tie shows on the calendar but is not a link, because
+       there is nowhere for it to go */
+    li.querySelector('.estand.none').hidden = !!e.page;
+    li.querySelector('button').addEventListener('click', function () { open(e); });
+    return li;
+  }
+
+  /* Has the website finished with it? The same moment the site uses, so
+     the two never disagree. */
+  function finished(e) {
+    return new Date() >= endOf(e.until);
+  }
+
+  /* The list is what the club still has to think about.
+
+     An event that has been and gone is not deleted -- last year's Jass
+     party is how next year's gets written -- but it does not belong at the
+     top of the screen either, and sorting by date put it there. So the
+     finished ones go into an archive under the list: most recent first,
+     because that is the one somebody comes looking for, and shut unless
+     asked for. */
   function render() {
     events.sort(function (a, b) { return at(a.date) - at(b.date); });
+
+    var current = events.filter(function (e) { return !finished(e); });
+    var past = events.filter(finished).reverse();
+
     list.innerHTML = '';
+    archList.innerHTML = '';
+
     if (!events.length) {
       var empty = document.createElement('li');
       empty.className = 'eempty';
-      empty.textContent = 'There is nothing in data/events.json.';
+      empty.textContent = 'No events yet. Press Add an event.';
       list.appendChild(empty);
-      return;
+    } else if (!current.length) {
+      var none = document.createElement('li');
+      none.className = 'eempty';
+      none.textContent = 'Nothing coming up. Everything is in the archive below.';
+      list.appendChild(none);
+    } else {
+      current.forEach(function (e) { list.appendChild(row(e)); });
     }
-    events.forEach(function (e) {
-      var s = standing(e);
-      var li = document.createElement('li');
-      li.className = 'eitem';
-      li.innerHTML =
-        '<span class="ewhen"><b></b><i></i></span>' +
-        '<span class="ebody"><b></b><span class="enote"></span>' +
-        '<span class="estand ' + s.cls + '"></span>' +
-        '<span class="estand none" hidden>Not on a page, so it does not open one</span>' +
-        '</span>' +
-        '<button class="abtn" type="button">Open</button>';
-      li.querySelector('.ewhen b').textContent = at(e.date).getDate();
-      li.querySelector('.ewhen i').textContent = D.MONTH[at(e.date).getMonth()].slice(0, 3);
-      li.querySelector('.ebody b').textContent = e.title;
-      li.querySelector('.enote').textContent = dayName(e.date) + (e.time ? ', ' + e.time : '');
-      li.querySelector('.estand').textContent = s.text;
-      /* a row with no tie shows on the calendar but is not a link, because
-         there is nowhere for it to go */
-      li.querySelector('.estand.none').hidden = !!e.page;
-      li.querySelector('button').addEventListener('click', function () { open(e); });
-      list.appendChild(li);
-    });
+
+    past.forEach(function (e) { archList.appendChild(row(e)); });
+
+    archWrap.hidden = !past.length;
+    if (!past.length) archOpen = false;
+    archList.hidden = !archOpen || !past.length;
+    archToggle.setAttribute('aria-expanded', archOpen ? 'true' : 'false');
+    archToggle.textContent = (archOpen ? 'Hide' : 'Show') + ' ' + past.length +
+      (past.length === 1 ? ' finished event' : ' finished events');
   }
 
   /* ---- details: the club writes its own headings ---------------------
@@ -819,6 +859,7 @@
   document.getElementById('cancelbtn').addEventListener('click', function () { show('list'); });
   document.getElementById('backbtn').addEventListener('click', function () { show('list'); });
   document.getElementById('savebtn').addEventListener('click', save);
+  archToggle.addEventListener('click', function () { archOpen = !archOpen; render(); });
   document.getElementById('delbtn').addEventListener('click', remove);
   document.getElementById('tplbtn').addEventListener('click', saveAsTemplate);
   document.getElementById('addbtn').addEventListener('click', function () {
