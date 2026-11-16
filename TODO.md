@@ -19,8 +19,13 @@ out of date; this is the live list.
       a single still picture rather than moving. `history`, `hall` and `wcswa` have two.
       Six fills a band.
 - [ ] Decide what the four empty pages above should redirect to.
-- [ ] The monthly club meeting is missing from the events data. December's second
-      Wednesday falls the day before the AGM — ask whether the club holds both.
+- [x] ~~The monthly club meeting is missing from the events data. December's second
+      Wednesday falls the day before the AGM — ask whether the club holds both.~~
+      Answered 16 Nov 2026 by the club's own calendars: the AGM *is* December's
+      second Wednesday and takes the meeting's slot. The Oct–Dec 2026 newsletter
+      lists the AGM for Wed 9 December and no monthly meeting that month; the 2027
+      sheet does the same for Wed 8 December. The site had the AGM on the 10th,
+      a Thursday — now corrected.
 
 ## Decide
 
@@ -41,12 +46,10 @@ That means going live does not need a transfer. Repointing the nameservers is
 enough, it takes minutes, and it is reversible. The transfer is a separate, later
 step whose only purpose is to make cancelling the builder plan safe.
 
-- [ ] **Deploy the pending fix.** `.git/` and `.wrangler/` were being served as
-      static assets — the whole repository was fetchable from the live site. Fixed
-      in `.assetsignore` and committed, but Cloudflare's API was returning 500 on
-      version creation (Workers degraded on their status page), so it has not gone
-      out. Re-run `npx wrangler deploy` once they recover and confirm
-      `/.git/config` 404s.
+- [x] ~~**Deploy the pending fix.** `.git/` and `.wrangler/` were being served as
+      static assets — the whole repository was fetchable from the live site.~~ Done
+      16 Nov 2026, once Cloudflare's version-creation API recovered. `/.git/config`
+      and `/.wrangler/state` both 404.
 - [x] ~~Swap Clerk's development instance for a production one.~~ Done 13 Nov 2026.
       Cloned from the development instance, which carried invite-only across —
       checked on the new instance rather than assumed. Sign-in is served from
