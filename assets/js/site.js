@@ -132,9 +132,18 @@
    sendBeacon is used because it survives the page being left at once,
    which is what happens to a 404. It is sent as plain text: a JSON blob
    would make the browser ask permission first and then not send it. The
-   other tools call SJVSC_HIT themselves when they are used. */
+   other tools call SJVSC_HIT themselves when they are used.
+
+   A browser that has signed in to the admin is a board member's, and the
+   board reading its own site is not the public reading it. admin-auth.js
+   marks such a browser in local storage and the beacon stays home; the
+   Visits screen shows the mark and can take it off. */
 (function () {
+  function board() {
+    try { return window.localStorage.getItem('sjvsc_board') === '1'; } catch (e) { return false; }
+  }
   function hit(kind, path) {
+    if (board()) return;
     try {
       var body = JSON.stringify({
         k: kind || 'view',

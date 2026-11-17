@@ -136,6 +136,23 @@
       : 'Nothing has been counted yet.';
   }
 
+  /* This browser. Signing in marked it as the board's and site.js has
+     stopped counting it; the board can count it after all, to try the
+     counter, and that choice survives the next sign-in. */
+  function mine() {
+    var out = false;
+    try { out = window.localStorage.getItem('sjvsc_board') === '1'; } catch (e) { out = false; }
+    el('vMineText').textContent = out
+      ? 'This browser is a board member’s and its visits are not counted.'
+      : 'This browser is counted like anyone else’s.';
+    el('vMineBtn').textContent = out ? 'Count it after all' : 'Leave it out';
+    el('vMineBtn').onclick = function () {
+      try { window.localStorage.setItem('sjvsc_board', out ? '0' : '1'); } catch (e) {}
+      mine();
+    };
+  }
+  mine();
+
   function load() {
     var token = window.SJVSC_TOKEN ? window.SJVSC_TOKEN() : Promise.resolve(null);
     token.then(function (t) {

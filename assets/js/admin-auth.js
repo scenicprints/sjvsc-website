@@ -84,8 +84,20 @@ window.SJVSC_AUTH = (function () {
     state.signedIn = !!u;
     state.who = u ? (u.primaryEmailAddress ? u.primaryEmailAddress.emailAddress : u.id) : '';
     state.name = u ? [u.firstName, u.lastName].filter(Boolean).join(' ') : '';
+    if (u) markBoard();
     paint();
     announce();
+  }
+
+  /* A browser that signs in is a board member's, and site.js stops
+     counting its visits. '1' is out, '0' is counted after all (set on the
+     Visits screen), and only an unmarked browser is marked here, so that
+     choice is not undone at the next sign-in. Signing out does not clear
+     it: the device is still theirs. */
+  function markBoard() {
+    try {
+      if (window.localStorage.getItem('sjvsc_board') === null) window.localStorage.setItem('sjvsc_board', '1');
+    } catch (e) { /* storage off; the browser is counted, which is no harm */ }
   }
 
   function start() {
