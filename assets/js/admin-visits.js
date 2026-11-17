@@ -194,6 +194,6 @@
 
   /* wait for the sign-in to settle, then ask; and ask again if it changes */
   var A = window.SJVSC_AUTH;
-  if (A && A.onChange) A.onChange(function () { load(); });
+  if (A && A.onChange) A.onChange(function () { mine(); load(); });
   else load();
 }());
