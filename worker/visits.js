@@ -21,7 +21,7 @@
 
    hitRow is pure and tested. recordHit and visitFigures talk to D1. */
 
-const KINDS = ['view', 'quote', 'request', 'jass'];
+const KINDS = ['view', 'quote', 'request', 'jass', 'contact'];
 
 const ROBOT = /bot|crawl|spider|slurp|headless|lighthouse|preview|facebookexternalhit|whatsapp|telegram|curl|wget|python|httpclient|monitor|scan/i;
 const PHONE = /Mobi|Android|iPhone|iPad|iPod/;
@@ -198,7 +198,7 @@ export async function visitFigures(env, period) {
            AND country IS NOT NULL GROUP BY country ORDER BY views DESC LIMIT 12`, from),
       q(`SELECT region, COUNT(*) AS views FROM hits WHERE kind = 'view' AND day >= ?
            AND country = 'US' AND region IS NOT NULL GROUP BY region ORDER BY views DESC LIMIT 12`, from),
-      q(`SELECT kind, COUNT(*) AS n FROM hits WHERE kind IN ('quote', 'request', 'jass') AND day >= ?
+      q(`SELECT kind, COUNT(*) AS n FROM hits WHERE kind IN ('quote', 'request', 'jass', 'contact') AND day >= ?
            GROUP BY kind`, from),
       q(`SELECT MIN(day) AS first FROM hits`),
     ]);
@@ -222,6 +222,6 @@ export async function visitFigures(env, period) {
     devices: rows(devices),
     countries: rows(countries),
     regions: rows(regions),
-    tools: { quote: toolCount.quote || 0, request: toolCount.request || 0, jass: toolCount.jass || 0 },
+    tools: { quote: toolCount.quote || 0, request: toolCount.request || 0, jass: toolCount.jass || 0, contact: toolCount.contact || 0 },
   };
 }

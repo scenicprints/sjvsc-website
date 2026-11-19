@@ -10,6 +10,7 @@
 import { requireBoard } from './auth.js';
 import { rowToEvent, eventToRow, validateEvent, withWindow, WRITABLE } from './shape.js';
 import { createRequest } from './requests.js';
+import { createMessage } from './messages.js';
 import { recordHit, visitFigures } from './visits.js';
 
 const json = (data, status = 200, headers = {}) =>
@@ -539,6 +540,18 @@ async function route(request, env, ctx) {
   if (method === 'POST' && path === '/api/request') {
     const out = await createRequest(request, env, url);
     if (out.ok) ctx.waitUntil(count(request, env, { p: path }, 'request'));
+    return out.ok ? json({ ok: true, id: out.id }, out.status)
+                  : oops(out.status, out.message);
+  }
+
+  /* ---- and the other one: a message from the contact page ----
+
+     Kept and emailed the same way, behind the same Turnstile check.
+     messages.js says where it goes. */
+
+  if (method === 'POST' && path === '/api/contact') {
+    const out = await createMessage(request, env, url);
+    if (out.ok) ctx.waitUntil(count(request, env, { p: path }, 'contact'));
     return out.ok ? json({ ok: true, id: out.id }, out.status)
                   : oops(out.status, out.message);
   }

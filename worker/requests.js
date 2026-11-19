@@ -48,7 +48,7 @@ const trim = (v, max) => String(v == null ? '' : v).trim().slice(0, max);
 
 /* Cloudflare decides whether the visitor is a person. A missing secret
    fails closed: with no way to tell, nothing is accepted. */
-async function passedTurnstile(token, ip, env) {
+export async function passedTurnstile(token, ip, env) {
   if (!env.TURNSTILE_SECRET) return false;
   if (!token) return false;
   try {
@@ -89,7 +89,7 @@ function fileKey(type) {
   return `request/${Date.now().toString(36)}-${rand}.${FILE_TYPES[type]}`;
 }
 
-const escape = (s) => String(s == null ? '' : s)
+export const escape = (s) => String(s == null ? '' : s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 /* What the webmaster reads. Every field the member filled in, in the order

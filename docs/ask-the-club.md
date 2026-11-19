@@ -82,6 +82,11 @@ with g1marchy@gmail.com for scholarship questions. Two numbers for one man is
 ordinary, but the second pair comes from the old website and nothing current
 confirms it. Are they still right, and should the email be on the page too?
 
+**Peggy Kaelin and memorials.** The officers table on the contact page lists her against
+"Memorials". Kevin says memorial notices go to Andrea or Jace, as the memorials page has it
+(19 Nov 2026). Her row was taken off the table that day on his word. What is her role, and should she be back on it under another title? The memorials
+page also gives Andrea and Jace no surnames and no telephone number, though it says "call".
+
 **The caretaker vacancy.** The newsletter's officers box leaves the line blank and
 the site says the club is looking. Still open?
 

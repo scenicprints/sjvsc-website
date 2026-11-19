@@ -127,6 +127,7 @@
     table('vTools', [
       { name: 'Hall rental quotes worked out', n: data.tools.quote },
       { name: 'Events requested', n: data.tools.request },
+      { name: 'Messages sent from the contact page', n: data.tools.contact || 0 },
       { name: 'Hands of Jass dealt', n: data.tools.jass }
     ], function (r) { return r.name; }, function (r) { return r.n; });
 

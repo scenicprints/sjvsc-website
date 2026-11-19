@@ -8,5 +8,22 @@
 # Scripts and stylesheets already carry a content hash in their URL, so a
 # revalidation on them is cheap and the long cache was not worth a
 # self-contradicting header.
+#
+# What a browser is told about handling the site, on every page.
+#   - only ever over https, for a year
+#   - a file is the type it says it is
+#   - no other site may put these pages inside a frame of its own
+#     (the Jass table is framed by this site, which SAMEORIGIN allows)
+#   - another site is told which site a visitor came from, not which page
+#   - the pages ask for no camera, microphone or location
+# There is no Content-Security-Policy. The pages carry inline styles and
+# scripts, and Clerk, Turnstile and Google Fonts each load from their own
+# addresses; a policy written without testing every screen against it
+# would break the admin before it stopped anything.
 /*
   Cache-Control: no-cache
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()

@@ -23,7 +23,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..800&family=Archivo:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=0f865ef4">
+<link rel="stylesheet" href="assets/css/site.css?v=53c0af1b">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -130,7 +131,6 @@
             <tr><td>Financial Secretary</td><td>Margie Imfeld</td><td>(209) 531-7574</td></tr>
             <tr><td>Corresponding Secretary</td><td>Anna Newburg</td><td>(209) 276-5067</td></tr>
             <tr><td>Membership</td><td>Cathy Quinn</td><td>(209) 602-4366</td></tr>
-            <tr><td>Memorials</td><td>Peggy Kaelin</td><td>(209) 599-2352</td></tr>
             <tr><td>Swiss Echoes President</td><td>Chico Gunder</td><td>(209) 322-5199</td></tr>
             <tr><td>Trustees</td><td>John Ott, Larry Betschart, Don Widmer</td><td></td></tr>
             <tr><td>Webmaster</td><td>Kevin Wagner</td><td>(209) 405-1566</td></tr>
@@ -161,14 +161,14 @@
         </div>
         <div>
           <h2>Send a message</h2>
-          <form class="card" style="margin-top:16px" onsubmit="event.preventDefault();this.querySelector('.sent').hidden=false;">
+          <form class="card ct-form" id="ctform" style="margin-top:16px" novalidate>
             <div class="field" style="margin-bottom:12px">
               <label for="cName">Your name</label>
-              <input type="text" id="cName" required>
+              <input type="text" id="cName" autocomplete="name" maxlength="120" required>
             </div>
             <div class="field" style="margin-bottom:12px">
-              <label for="cEmail">Email</label>
-              <input type="email" id="cEmail" required>
+              <label for="cEmail">Your email or telephone number</label>
+              <input type="text" id="cEmail" autocomplete="email" maxlength="120" required>
             </div>
             <div class="field" style="margin-bottom:12px">
               <label for="cTopic">About</label>
@@ -180,10 +180,12 @@
             </div>
             <div class="field">
               <label for="cMsg">Message</label>
-              <textarea id="cMsg" rows="4" style="font-family:var(--ui);font-size:.94rem;padding:10px 12px;border:1px solid var(--line);background:var(--white);width:100%;border-radius:2px"></textarea>
+              <textarea id="cMsg" rows="4" maxlength="4000" required style="font-family:var(--ui);font-size:.94rem;padding:10px 12px;border:1px solid var(--line);background:var(--white);width:100%;border-radius:2px"></textarea>
             </div>
-            <button class="btn btn-red" type="submit" style="margin-top:16px">Send</button>
-            <p class="sent muted" hidden style="margin-top:12px">Concept demo. Nothing is sent. On the real site this would reach the officer for the topic chosen.</p>
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAAGDzFsMNfKV_48t9"
+                 data-theme="light"></div>
+            <p class="ct-said" id="ctsaid" role="alert" hidden></p>
+            <button class="btn btn-red" type="submit" id="ctsend" style="margin-top:16px">Send</button>
           </form>
         </div>
       </div>
@@ -217,5 +219,6 @@
   </div>
 </footer>
 <script src="assets/js/site.js?v=3f0ec38f"></script>
+<script src="assets/js/contact.js?v=9e6534f6"></script>
 </body>
 </html>

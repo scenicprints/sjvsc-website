@@ -384,9 +384,19 @@ window.SJVSC = (function () {
 
     var head = document.createElement('div');
     head.className = 'ecard-head';
-    var h = document.createElement('h3');
-    h.textContent = e.title;
-    head.appendChild(h);
+    /* On a page named for the event, the heading above the card has already
+       said it. Said twice in a row it reads as a mistake, so the card keeps
+       its title only where it adds something: "Swiss Echoes Christmas
+       Dinner" under "Swiss Echoes" stays. */
+    var same = function (s) {
+      return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+    };
+    var top = document.querySelector('.phead h1');
+    if (!top || same(top.textContent) !== same(e.title)) {
+      var h = document.createElement('h3');
+      h.textContent = e.title;
+      head.appendChild(h);
+    }
     var w = document.createElement('p');
     w.className = 'ecard-when';
     w.textContent = fullDate(e.date) + (e.time ? ', ' + e.time : '');
